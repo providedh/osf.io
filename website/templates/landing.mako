@@ -18,8 +18,8 @@
     <div id="home-hero">
       <div class="container text-center">
         <div class="visible-xs-block visible-sm-block visible-md-block network-bg"></div>
-        <h1 class="hero-brand">Open Science Framework</h1>
-        <h3 class="hero-tagline">A scholarly commons to connect the entire research cycle</h3>
+        <h1 class="hero-brand">PROVIDEDH Collaborative Platform Prototype</h1>
+        <h3 class="hero-tagline">Open Science Framework - a scholarly commons to connect the entire research cycle</h3>
 
         <div id="canvas-container">
           <canvas id="demo-canvas"></canvas>

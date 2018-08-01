@@ -119,7 +119,7 @@ services:
   #########################
 
   mfr_requirements:
-    image: quay.io/centerforopenscience/mfr:develop
+    image: providedh/modular-file-renderer:develop
     command:
       - /bin/bash
       - -c
@@ -133,7 +133,7 @@ services:
       - mfr_requirements_local_bin_vol:/usr/local/bin
 
   mfr:
-    image: quay.io/centerforopenscience/mfr:develop
+    image: providedh/modular-file-renderer:develop
     command: invoke server
     restart: unless-stopped
     ports:
@@ -165,7 +165,7 @@ services:
   ###############
 
   wb_requirements:
-    image: quay.io/centerforopenscience/wb:develop
+    image: providedh/waterbutler:develop
     command:
       - /bin/bash
       - -c
@@ -179,7 +179,7 @@ services:
       - wb_requirements_local_bin_vol:/usr/local/bin
 
   wb:
-    image: quay.io/centerforopenscience/wb:develop
+    image: providedh/waterbutler:develop
     command: invoke server
     restart: unless-stopped
     ports:
@@ -194,7 +194,7 @@ services:
     stdin_open: true
 
   wb_worker:
-    image: quay.io/centerforopenscience/wb:develop
+    image: providedh/waterbutler:develop
     command: invoke celery
     restart: unless-stopped
     depends_on:
@@ -211,7 +211,7 @@ services:
     stdin_open: true
 
   # wb_flower:
-  #   image: quay.io/centerforopenscience/wb:develop
+  #   image: providedh/waterbutler:develop
   #   # Install flower here, instead of in WB repo, due to tornado version conflict
   #   command: [/bin/bash, -c, "pip install flower && celery flower -A waterbutler.tasks.app.app --port=5556 --broker=amqp://guest:guest@192.168.168.167:5672//"]
   #   depends_on:
@@ -225,7 +225,7 @@ services:
   ##################################
 
   fakecas:
-    image: quay.io/centerforopenscience/fakecas:master
+    image: providedh/fakecas:master
     command: fakecas -host=0.0.0.0:8080 -osfhost=localhost:5000 -dbaddress=postgres://postgres@postgres:5432/osf?sslmode=disable
     restart: unless-stopped
     ports:
@@ -349,7 +349,7 @@ services:
   #######
 
   requirements:
-    image: quay.io/centerforopenscience/osf:develop
+    image: providedh/osf-io:develop
     command:
       - /bin/bash
       - -c
@@ -364,7 +364,7 @@ services:
       - osf_requirements_vol:/python2.7
 
   assets:
-    image: quay.io/centerforopenscience/osf:develop
+    image: providedh/osf-io:develop
     command: invoke assets -dw
     restart: unless-stopped
     environment:
@@ -376,7 +376,7 @@ services:
     stdin_open: true
 
   admin_assets:
-    image: quay.io/centerforopenscience/osf:develop
+    image: providedh/osf-io:develop
     command: invoke admin.assets -dw
     restart: unless-stopped
     environment:
@@ -390,7 +390,7 @@ services:
     stdin_open: true
 
   sharejs:
-    image: quay.io/centerforopenscience/sharejs:develop
+    image: providedh/sharejs:develop
     restart: unless-stopped
     ports:
       - 7007:7007
@@ -402,7 +402,7 @@ services:
     stdin_open: true
 
 #  beat:
-#    image: quay.io/centerforopenscience/osf:develop
+#    image: providedh/osf-io:develop
 #    command: invoke celery_beat
 #    depends_on:
 #      - postgres
@@ -418,7 +418,7 @@ services:
 #      - osf_node_modules_vol:/code/node_modules
 
   worker:
-    image: quay.io/centerforopenscience/osf:develop
+    image: providedh/osf-io:develop
     command: invoke celery_worker
     restart: unless-stopped
     depends_on:
@@ -441,7 +441,7 @@ services:
     stdin_open: true
 
   admin:
-    image: quay.io/centerforopenscience/osf:develop
+    image: providedh/osf-io:develop
     command: invoke adminserver -h 0.0.0.0
     restart: unless-stopped
     environment:
@@ -463,7 +463,7 @@ services:
       - osf_admin_node_modules_vol:/code/admin/node_modules
 
   api:
-    image: quay.io/centerforopenscience/osf:develop
+    image: providedh/osf-io:develop
     command: invoke apiserver -h 0.0.0.0
     restart: unless-stopped
     ports:
@@ -483,7 +483,7 @@ services:
     stdin_open: true
 
   web:
-    image: quay.io/centerforopenscience/osf:develop
+    image: providedh/osf-io:develop
     command: invoke server -h 0.0.0.0
     restart: unless-stopped
     ports:

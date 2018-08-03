@@ -70,7 +70,7 @@
 
 * _NOTE: After making changes to `Environment Variables` or `Volume Mounts` (e.g. docker-sync) you will need to recreate the container(s)._
 
-  - `$ docker-compose up --force-recreate --no-deps preprints`
+  - `$ docker-compose up --force-recreate --no-deps <container_name>`
 
 1. Application Settings
  - e.g. OSF & OSF API local.py
@@ -138,10 +138,10 @@ Ubuntu: Skip install of docker-sync. instead...
     containers._
 4. Start the Services (Detached)
   - `$ docker-compose up -d mfr wb fakecas sharejs`
-5. Run migrations and create preprint providers
-  - When starting with an empty database you will need to run migrations and populate preprint providers. See the [Running arbitrary commands](#running-arbitrary-commands) section below for instructions.
-6. Start the OSF Web, API Server, Preprints, and Registries (Detached)
-  - `$ docker-compose up -d worker web api admin preprints registries`
+5. Run migrations
+  - When starting with an empty database you will need to run migrations and populate the database. See the [Running arbitrary commands](#running-arbitrary-commands) section below for instructions.
+6. Start the OSF Web, API Server
+  - `$ docker-compose up -d worker web api admin`
 7. View the OSF at [http://localhost:5000](http://localhost:5000).
 
 
@@ -152,7 +152,7 @@ Ubuntu: Skip install of docker-sync. instead...
   ```bash
   $ docker-sync start
   # Wait until you see "Nothing to do: replicas have not changed since last sync."
-  $ docker-compose up -d assets admin_assets mfr wb fakecas sharejs worker web api admin preprints registries ember_osf_web
+  $ docker-compose up -d assets admin_assets mfr wb fakecas sharejs worker web api admin
   ```
 
 - To view the logs for a given container: 
@@ -168,22 +168,9 @@ Ubuntu: Skip install of docker-sync. instead...
 - Run migrations:
   - After creating migrations, resetting your database, or starting on a fresh install you will need to run migrations to make the needed changes to database. This command looks at the migrations on disk and compares them to the list of migrations in the `django_migrations` database table and runs any migrations that have not been run.
     - `docker-compose run --rm web python manage.py migrate`
-- Populate institutions:
-  - After resetting your database or with a new install you will need to populate the table of institutions. **You must have run migrations first.**
-    - `docker-compose run --rm web python -m scripts.populate_institutions test`
-- Populate preprint providers:
-  - After resetting your database or with a new install you will need to populate the table of preprint providers. **You must have run migrations first.**
-    - `docker-compose run --rm web python -m scripts.update_taxonomies`
-    - `docker-compose run --rm web python manage.py populate_fake_preprint_providers`
 - Populate citation styles
   - Needed for api v2 citation style rendering.
     - `docker-compose run --rm web python -m scripts.parse_citation_styles`
-- Start ember_osf_web
-  - Needed for quickfiles feature:
-    - `docker-compose up -d ember_osf_web`
-- OPTIONAL: Register OAuth Scopes
-  - Needed for things such as the ember-osf dummy app
-    - `docker-compose run --rm web python -m scripts.register_oauth_scopes`
 - OPTIONAL: Create migrations:
   - After changing a model you will need to create migrations and apply them. Migrations are python code that changes either the structure or the data of a database. This will compare the django models on disk to the database, find the differences, and create migration code to change the database. If there are no changes this command is a noop.
     - `docker-compose run --rm web python manage.py makemigrations`
@@ -326,8 +313,8 @@ resetting docker. To back up your database, follow the following sequence of com
 
 1. Install Postgres on your local machine, outside of docker. (eg `brew install postgres`) To avoid migrations, the 
   version you install must match the one used by the docker container. 
-  ([as of this writing](https://github.com/CenterForOpenScience/osf.io/blob/ce1702cbc95eb7777e5aaf650658a9966f0e6b0c/docker-compose.yml#L53), Postgres 9.6)
-2. Start postgres locally. This must be on a different port than the one used by [docker postgres](https://github.com/CenterForOpenScience/osf.io/blob/ce1702cbc95eb7777e5aaf650658a9966f0e6b0c/docker-compose.yml#L61). 
+  ([as of this writing](https://github.com/providedh/osf.io/blob/ce1702cbc95eb7777e5aaf650658a9966f0e6b0c/docker-compose.yml#L53), Postgres 9.6)
+2. Start postgres locally. This must be on a different port than the one used by [docker postgres](https://github.com/providedh/osf.io/blob/ce1702cbc95eb7777e5aaf650658a9966f0e6b0c/docker-compose.yml#L61). 
   Eg, `pg_ctl -D /usr/local/var/postgres start -o "-p 5433"`
 3. Verify that the postgres docker container is running (`docker-compose up -d postgres`)
 4. Tell your local (non-docker) version of postgres to connect to (and back up) data from the instance in docker 
@@ -397,7 +384,7 @@ When using `docker-compose`, set `privileged: true` for individual containers in
 
 ```yml
 wb:
-  image: quay.io/centerforopenscience/waterbutler:develop
+  image: providedh/waterbutler:develop
   command: invoke server
   privileged: true
   restart: unless-stopped

@@ -1,19 +1,15 @@
 # OSF
 
-The code for [https://osf.io](https://osf.io).
+The code for [https://providedh.ehum.psnc.pl](https://providedh.ehum.psnc.pl).
 
-[![Coverage Status](https://coveralls.io/repos/github/CenterForOpenScience/osf.io/badge.svg)](https://coveralls.io/github/CenterForOpenScience/osf.io)
-
-- `master` Build Status: [![Build Status](https://travis-ci.org/CenterForOpenScience/osf.io.svg?branch=master)](https://travis-ci.org/CenterForOpenScience/osf.io)
-- `develop` Build Status: [![Build Status](https://travis-ci.org/CenterForOpenScience/osf.io.svg?branch=develop)](https://travis-ci.org/CenterForOpenScience/osf.io)
-- Public Repo: https://github.com/CenterForOpenScience/osf.io/
-- Issues: https://github.com/CenterForOpenScience/osf.io/issues?state=open
+- Public Repo: https://github.com/providedh/osf.io/
+- Issues: https://github.com/providedh/osf.io/issues?state=open
 - COS Development Docs: http://cosdev.readthedocs.org/
 
 
 ## Running the OSF For Development
 
-To run the OSF for local development, see [README-docker-compose.md](https://github.com/CenterForOpenScience/osf.io/blob/develop/README-docker-compose.md).
+To run the OSF for local development, see [README-docker-compose.md](https://github.com/providedh/osf.io/blob/develop/README-docker-compose.md).
 
 ## More Resources
 

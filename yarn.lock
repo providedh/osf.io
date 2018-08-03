@@ -10,9 +10,9 @@
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@centerforopenscience/markdown-it-toc/-/markdown-it-toc-1.1.1.tgz#633c6367cf783a51a080e75a9cd62fd62037e140"
 
-"@centerforopenscience/osf-style@https://github.com/CenterForOpenScience/osf-style#370b544affcdafc5734cdd388587575895e4b33a":
+"@centerforopenscience/osf-style@https://github.com/providedh/osf-style#2d5bc406703d80ca515dcd2a20129b403b145b7c":
   version "1.7.0"
-  resolved "https://github.com/CenterForOpenScience/osf-style#370b544affcdafc5734cdd388587575895e4b33a"
+  resolved "https://github.com/providedh/osf-style#2d5bc406703d80ca515dcd2a20129b403b145b7c"
 
 URIjs@^1.14.1:
   version "1.16.1"

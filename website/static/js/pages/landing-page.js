@@ -187,7 +187,7 @@ var waitForFinalEvent = (function () {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p.closest[i].x, p.closest[i].y);
-            ctx.strokeStyle = 'rgba(156,217,249,'+ p.active+')';
+            ctx.strokeStyle = 'rgba(191,178,144,'+ p.active+')';
             ctx.stroke();
         }
     }
@@ -208,7 +208,7 @@ var waitForFinalEvent = (function () {
             }
             ctx.beginPath();
             ctx.arc(self.pos.x, self.pos.y, self.radius, 0, 2 * Math.PI, false);
-            ctx.fillStyle = 'rgba(156,217,249,'+ self.active+')';
+            ctx.fillStyle = 'rgba(191,178,144,'+ self.active+')';
             ctx.fill();
         };
     }

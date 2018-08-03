@@ -38,13 +38,6 @@ $(document).ready(function(){
                         m(columnSizeClass, m.component(ScheduledBanner, {}))
                     ]
                 )),
-                m('.prereg-banner', m('.container',
-                    [
-                        m('.row', [
-                            m(columnSizeClass,  m.component(PreregBanner, {}))
-                        ])
-                    ]
-                )),
                 m('.quickSearch', m('.container.p-t-lg',
                     [
                         m('.row.m-t-lg', [

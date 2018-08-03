@@ -18,103 +18,24 @@
     <div id="home-hero">
       <div class="container text-center">
         <div class="visible-xs-block visible-sm-block visible-md-block network-bg"></div>
-        <h1 class="hero-brand">PROVIDEDH Collaborative Platform Prototype</h1>
-        <h3 class="hero-tagline">Open Science Framework - a scholarly commons to connect the entire research cycle</h3>
+        <h1 class="hero-brand">PROgressive VIsual DEcision-Making in Digital Humanities</h1>
+        <h1 class="hero-tagline">Collaborative Platform Prototype</h1>
 
         <div id="canvas-container">
           <canvas id="demo-canvas"></canvas>
         </div>
 
         <div id="logo" class="off">
-          <div class="circle" id="circle-1"><span></span></div>
-          <div class="circle" id="circle-2"><span></span></div>
-          <div class="circle" id="circle-3"><span></span></div>
-          <div class="circle" id="circle-4"><span></span></div>
-          <div class="circle" id="circle-5"><span></span></div>
-          <div class="circle" id="circle-6"><span></span></div>
-          <div class="circle" id="circle-7"><span></span></div>
-          <div class="circle" id="circle-8"><span></span></div>
+          <img src="/static/img/providedh-max800.png"/>
         </div>
 
+        <!--
         <div id="hero-signup" class="container">
           <div class="row">
-            <div class="col-sm-6 hidden-xs">
-              <a class="youtube" href="//www.youtube.com/watch?v=2TV21gOzfhw" aria-label="OSF YouTube Video"><i class="icon icon-play"></i></a>
-              <img src="/static/img/front-page/screenshot.png" class="img-responsive" id="screenshot" alt="Screenshot of OSF" />
-            </div>
-            <div class="col-sm-6 sign-up-div">
-              <h2>Free and open source. Start now.</h2>
-
-             <div id="signUp" class="anchor"></div>
-                <div id="signUpScope">
-                    <form data-bind="submit: submit">
-                        <div class="form-group" data-bind="css: {'has-error': fullName() && !fullName.isValid(), 'has-success': fullName() && fullName.isValid()}">
-                              <label class="placeholder-replace" style="display:none">Full name</label>
-                              <input class="form-control" placeholder="Full Name" data-bind=" value: fullName, disable: submitted(), event: { blur: trim.bind($data, fullName)}">
-                              <p class="help-block osf-box-lt" data-bind="validationMessage: fullName" style="display: none;"></p>
-                          </div>
-                          <div class="form-group" data-bind="css: {'has-error': email1() && !email1.isValid(), 'has-success': email1() && email1.isValid()}">
-                              <label class="placeholder-replace" style="display:none">Contact email</label>
-                              <input class="form-control" placeholder="Contact Email" data-bind=" value: email1, disable: submitted(), event: { blur: trim.bind($data, email1)}">
-                              <p class="help-block osf-box-lt" data-bind="validationMessage: email1" style="display: none;"></p>
-                          </div>
-                          <div class="form-group" data-bind="css: {'has-error': email2() && !email2.isValid(),'has-success': email2() && email2.isValid()}">
-                              <label class="placeholder-replace" style="display:none">Confirm email</label>
-                              <input class="form-control" placeholder="Confirm Email" data-bind="value: email2, disable: submitted(), event: { blur: trim.bind($data, email2)}">
-                              <p class="help-block osf-box-lt" data-bind="validationMessage: email2" style="display: none;"></p>
-                          </div>
-                          <div class="form-group" data-bind="css: {'has-error': password() && !password.isValid(), 'has-success': password() && password.isValid()}">
-                              <label class="placeholder-replace" style="display:none">Password</label>
-                              <input type="password" class="form-control" placeholder="Password (Must be 8 to 255 characters)" data-bind=", textInput: typedPassword, value: password, disable: submitted(), event: {blur: trim.bind($data, password)}">
-
-                              <div class="row" data-bind="visible: typedPassword().length > 0">
-                                  <div class="col-xs-8">
-                                      <div class="progress create-password">
-                                          <div class="progress-bar progress-bar-sm" role="progressbar" data-bind="attr: passwordComplexityInfo().attr"></div>
-                                      </div>
-                                  </div>
-                                  <div class="col-xs-4 f-w-xl text-left pv-darkbg">
-                                      <!-- ko if: passwordFeedback() -->
-                                      <p id="front-password-info" data-bind="text: passwordComplexityInfo().text, attr: passwordComplexityInfo().text_attr"></p>
-                                      <!-- /ko -->
-                                  </div>
-                              </div>
-
-                              <div class="pv-darkbg">
-                                  <!-- ko if: passwordFeedback() -->
-                                  <p class="help-block osf-box-lt p-xs" data-bind="validationMessage: password" style="display: none;"></p>
-                                  <p class="osf-box-lt" data-bind="css : { 'p-xs': passwordFeedback().warning }, visible: typedPassword().length > 0, text: passwordFeedback().warning"></p>
-                                  <!-- /ko -->
-                              </div>
-
-
-                          </div>
-
-                          <!-- Flashed Messages -->
-                          <div class="help-block osf-box-lt" >
-                              <p data-bind="html: message, attr: {class: messageClass}" class=""></p>
-                          </div>
-                          <!-- ko ifnot: submitted -->
-                          <div>
-                              <small> By clicking "Sign up free", you agree to our <a style="color:#5BC0DE" href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/TERMS_OF_USE.md">Terms</a> and that you have read our <a style="color:#5BC0DE" href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/PRIVACY_POLICY.md">Privacy Policy</a>, including our information on <a style="color:#5BC0DE" href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/PRIVACY_POLICY.md#f-cookies">Cookie Use</a>.</small>
-                          </div>
-                          <!-- /ko -->
-                          %if recaptcha_site_key:
-                              <div data-bind="fadeVisible: (fullName.isValid() || email1.isValid() || email2.isValid() || password.isValid()) && !submitted()" class="col-md-12 m-t-sm" style="z-index: 9;">
-                                  <div class="g-recaptcha" style="display: inline-block; margin: 0 auto;" data-sitekey="${recaptcha_site_key}"></div>
-                              </div>
-                          %endif
-                          <div>
-                              <button type="submit" class="btn btn-warning m-t-sm" data-bind="visible: !submitted()" id="signupSubmit">Sign up free</button>
-                          </div>
-                  </form>
-
-                </div><!-- end #signUpScope -->
-
-
-            </div>
           </div>
         </div>
+        -->
+          
       </div>
     </div>
 

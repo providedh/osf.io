@@ -17,7 +17,7 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div id="home-hero">
       <div class="container text-center">
-        <div class="visible-xs-block visible-sm-block visible-md-block network-bg"></div>
+        <div class="visible-xs-block network-bg"></div>
         <h1 class="hero-brand">PROgressive VIsual DEcision-Making in Digital Humanities</h1>
         <h1 class="hero-tagline">Collaborative Platform Prototype</h1>
 
@@ -25,16 +25,11 @@
           <canvas id="demo-canvas"></canvas>
         </div>
 
-        <div id="logo" class="off">
-          <img src="/static/img/providedh-max800.png"/>
-        </div>
-
-        <!--
-        <div id="hero-signup" class="container">
-          <div class="row">
+        <div id="logo">
+          <div class="hidden-xs">
+            <img src="/static/img/providedh-logo-700.png"/>
           </div>
         </div>
-        -->
           
       </div>
     </div>
@@ -233,28 +228,6 @@
       </div>
     </div>
     <div class="space-top space-bottom feature-6">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-8">
-            <h2><strong>Free and open source.</strong></h2>
-            <h4>The OSF is a public good built to support your research.</h4>
-            <a href="#" class="btn btn-info btn-lg">Get started</a>
-          </div>
-          <div class="col-md-4 hidden-xs hidden-sm">
-            <div id="logo">
-              <div class="circle" id="circle-1"><span></span></div>
-              <div class="circle" id="circle-2"><span></span></div>
-              <div class="circle" id="circle-3"><span></span></div>
-              <div class="circle" id="circle-4"><span></span></div>
-              <div class="circle" id="circle-5"><span></span></div>
-              <div class="circle" id="circle-6"><span></span></div>
-              <div class="circle" id="circle-7"><span></span></div>
-              <div class="circle" id="circle-8"><span></span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
 
 </%def>

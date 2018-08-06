@@ -8,7 +8,7 @@
         <a class="navbar-brand" href="/" aria-label="Go home"><span class="osf-navbar-logo"></span></a>
         <div class="service-name">
             <a href="${service_url}">
-                <span class="hidden-xs"> PROVIDEDH </span>
+                <span class="hidden-xs"><span style="color: #A48A7A;">PROVIDE</span><span style="color: #33B9C1;">DH</span></span>
                 <span class="current-service"><strong>${service_name}</strong></span>
             </a>
         </div>

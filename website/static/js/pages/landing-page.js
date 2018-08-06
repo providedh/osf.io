@@ -5,13 +5,8 @@ require('vendor/youtube');
 
 var passwordForms = require('js/passwordForms');
 
-$(document).ready(function() {
-    new passwordForms.SignUp('#signUpScope');
-});
-
 // ANIMATION FOR FRONT PAGE
 $( document ).ready(function() {
-    $('#logo').removeClass('off');
     $('.youtube').YouTubeModal({autoplay:1, width:640, height:480});
 });
 
@@ -49,7 +44,7 @@ var waitForFinalEvent = (function () {
         height = 800;
         target = {
             x: width/2,
-            y: 300
+            y: 500
         };
 
         largeHeader = document.getElementById('home-hero');
@@ -61,16 +56,16 @@ var waitForFinalEvent = (function () {
 
         // create points
         points = [];
-        for(var x = 0; x < width; x = x + width/20) {
-            for(var y = 0; y < height; y = y + height/20) {
-                var px = x + Math.random()*width/20;
-                var py = y + Math.random()*height/20;
+        for(var x = 0; x < width; x = x + width/10) {
+            for(var y = 0; y < height; y = y + height/15) {
+                var px = x + Math.random()*width/10;
+                var py = y + Math.random()*height/15;
                 var p = {x: px, originX: px, y: py, originY: py };
                 points.push(p);
             }
         }
 
-        // for each point find the 5 closest points
+        // for each point find the 2 closest points
         for (var i = 0; i < points.length; i++) {
             var closest = [];
             var p1 = points[i];
@@ -78,7 +73,7 @@ var waitForFinalEvent = (function () {
                 var p2 = points[j];
                 if (p1 !== p2) {
                     var placed = false;
-                    for (var k = 0; k < 5; k++) {
+                    for (var k = 0; k < 2; k++) {
                         if (!placed) {
                             if(closest[k] === undefined) {
                                 closest[k] = p2;
@@ -86,7 +81,7 @@ var waitForFinalEvent = (function () {
                             }
                         }
                     }
-                    for (var m = 0; m < 5; m++) {
+                    for (var m = 0; m < 2; m++) {
                         if (!placed) {
                             if (getDistance(p1, p2) < getDistance(p1, closest[m])) {
                                 closest[m] = p2;
@@ -101,7 +96,7 @@ var waitForFinalEvent = (function () {
 
         // assign a circle to each point
         for(var n in points) {
-            var c = new Circle(points[n], 2+Math.random()*2, 'rgba(255,255,255,0.3)');
+            var c = new Circle(points[n], 2+Math.random()*3, 'rgba(255,255,255,0.3)');
             points[n].circle = c;
         }
     }
@@ -115,7 +110,7 @@ var waitForFinalEvent = (function () {
 
     function setPos(e) {
         target.x = window.innerWidth/2;
-        target.y = 330;
+        target.y = 530;
     }
 
     function scrollCheck() {
@@ -127,7 +122,7 @@ var waitForFinalEvent = (function () {
     }
 
     function resize() {
-        if (window.innerWidth > 990) {
+        if (window.innerWidth > 770) {
             waitForFinalEvent(function(){
                 $('#demo-canvas').remove();
                 $('#canvas-container').append('<canvas id="demo-canvas"></canvas>');
@@ -150,13 +145,13 @@ var waitForFinalEvent = (function () {
             ctx.clearRect(0,0,width,height);
             for(var i in points) {
                 // detect points in range
-                if(Math.abs(getDistance(target, points[i])) < 4000) {
+                if(Math.abs(getDistance(target, points[i])) < 20000) {
                     points[i].active = 0.3;
                     points[i].circle.active = 0.6;
-                } else if(Math.abs(getDistance(target, points[i])) < 20000) {
+                } else if(Math.abs(getDistance(target, points[i])) < 100000) {
                     points[i].active = 0.1;
                     points[i].circle.active = 0.3;
-                } else if(Math.abs(getDistance(target, points[i])) < 40000) {
+                } else if(Math.abs(getDistance(target, points[i])) < 200000) {
                     points[i].active = 0.02;
                     points[i].circle.active = 0.1;
                 } else {

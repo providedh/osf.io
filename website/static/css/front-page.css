@@ -127,7 +127,7 @@ h6 {
 @media(max-width: 767px){
 
     #home-hero {
-        height: 1000px;
+        height: 700px;
     }
 
     .sign-up-div {
@@ -145,7 +145,6 @@ h6 {
     margin-top: -10%;
 }
 #logo {
-    width: 200px;
     height: 200px;
     margin: 30px auto;
     position: relative;
@@ -455,12 +454,10 @@ footer {
 }
 
 .network-bg {
-    background: url("/static/img/front-page/bg-web.png") repeat;
+    background: url("/static/img/front-page/providedh-logo-bg.png") no-repeat bottom;
     background-size: contain;
-    height: 1000px;
-    margin-bottom: -1000px;
-    opacity: 0.25;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
+    height: 700px;
+    margin-bottom: -700px;
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -476,9 +473,6 @@ footer {
     }
 }
 @media (min-width: 768px) and (max-width: 1199px) {
-    canvas {
-        display: none;
-    }
     .student-wrap {
         padding: 0 10%;
     }

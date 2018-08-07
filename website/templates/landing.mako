@@ -18,19 +18,16 @@
     <div id="home-hero">
       <div class="container text-center">
         <div class="visible-xs-block network-bg"></div>
-        <h1 class="hero-brand">PROgressive VIsual DEcision-Making in Digital Humanities</h1>
-        <h1 class="hero-tagline">Collaborative Platform Prototype</h1>
-
         <div id="canvas-container">
           <canvas id="demo-canvas"></canvas>
         </div>
 
         <div id="logo">
-          <div class="hidden-xs">
-            <img src="/static/img/providedh-logo-700.png"/>
-          </div>
+          <img src="/static/img/providedh-logo.svg"/>
         </div>
-          
+        
+        <h1 class="hero-brand">Collaborative Platform Prototype</h1>
+                  
       </div>
     </div>
 

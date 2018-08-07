@@ -68,7 +68,7 @@ h6 {
     /* IE6-9 fallback on horizontal gradient */
     height: 900px;
     color: #fff;
-    padding-top: 100px;
+    padding-top: 0;
     position: relative;
 }
 #home-hero h1 {
@@ -127,16 +127,15 @@ h6 {
 @media(max-width: 767px){
 
     #home-hero {
+        height: 500px;
+    }
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+    
+    #home-hero {
         height: 700px;
     }
-
-    .sign-up-div {
-        position: relative;
-        margin-top: -100px;
-    }
-
 }
-
 #signUpScope button, #signUpScope input, #signUpScope .help-block {
     z-index: 9;
     position: relative;
@@ -145,13 +144,27 @@ h6 {
     margin-top: -10%;
 }
 #logo {
-    height: 200px;
+	max-width: 1000px;
+    height: 700px;
     margin: 30px auto;
     position: relative;
     -webkit-transition: all 1s ease-in-out;
     -o-transition: all 1s ease-in-out;
     transition: all 1s ease-in-out;
 }
+@media(max-width: 767px){
+	
+	#logo {
+        height: 300px;
+	}
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+    
+    #logo {
+        height: 500px;
+	}
+}
+
 #logo .circle {
     position: absolute;
     width: 50px;
@@ -454,10 +467,12 @@ footer {
 }
 
 .network-bg {
-    background: url("/static/img/front-page/providedh-logo-bg.png") no-repeat bottom;
+    background: url("/static/img/front-page/bg-web.png") repeat;
     background-size: contain;
-    height: 700px;
-    margin-bottom: -700px;
+    height: 1000px;
+    margin-bottom: -1000px;
+    opacity: 0.25;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {

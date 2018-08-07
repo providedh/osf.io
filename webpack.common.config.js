@@ -87,7 +87,7 @@ var entry = {
         // Main CSS files that get loaded above the fold
         nodePath('select2/select2.css'),
         nodePath('bootstrap/dist/css/bootstrap.css'),
-        '@centerforopenscience/osf-style',
+        '@providedh/osf-style',
         staticPath('css/style.css'),
     ],
 };

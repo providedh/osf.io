@@ -15,6 +15,10 @@ var activateToggleBox = function () {
     }
 };
 
+$(document).ready(function() {
+    var campaign = window.contextVars.campaign;
+    new passwordForms.SignUp('#signUpScope', campaign);
+});
 
 $('.toggle-box').on('click', activateToggleBox);
 $('.toggle-box').on('focus', '*', function() {

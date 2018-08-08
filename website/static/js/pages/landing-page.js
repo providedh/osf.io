@@ -40,7 +40,7 @@ var waitForFinalEvent = (function () {
     addListeners();
 
     function initHeader() {
-        width = window.innerWidth;
+        width = $(window).width();
         height = 800;
         target = {
             x: width/2,

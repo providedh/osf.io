@@ -153,17 +153,18 @@
 <div id="footerSlideIn">
     <div class="container">
         <div class="row">
-            <div class='col-sm-2 hidden-xs'>
-                <img class="logo" src="/static/img/circle_logo.png">
+            <div class='col-sm-3 hidden-xs'>
+                <img class="logo" src="/static/img/providedh-logo.svg">
             </div>
-            <div class='col-sm-10 col-xs-12'>
+            <div class='col-sm-9 col-xs-12'>
                 <a data-bind="click: dismiss" class="close" href="#">&times;</a>
-                <h1>Start managing your projects on the OSF today.</h1>
-                <p>Free and easy to use, the Open Science Framework supports the entire research lifecycle: planning, execution, reporting, archiving, and discovery.</p>
+                <h1>Start managing your projects on the PROVIDEDH collaborative platform today.</h1>
+                <p>Free and easy to use, the PROVIDEDH collaborative platform provides visual interactive tools that convey the degree of uncertainty of the datasets
+                   and computational models used behind, designed to progressively adapt the visualizations to incorporate the new, more complete or more accurate
+                   data of your research.</p>
                 <div>
-                    <a data-bind="click: trackClick.bind($data, 'Create Account')" class="btn btn-primary" href="${web_url_for('index')}#signUp">Create an Account</a>
+                    <a data-bind="click: trackClick.bind($data, 'Create Account')" class="btn btn-primary" href="${web_url_for('auth_register')}">Create an Account</a>
 
-                    <a data-bind="click: trackClick.bind($data, 'Learn More')" class="btn btn-primary" href="http://help.osf.io" target="_blank" rel="noreferrer">Learn More</a>
                     <a data-bind="click: dismiss">Hide this message</a>
                 </div>
             </div>

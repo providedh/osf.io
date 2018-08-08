@@ -1311,9 +1311,9 @@ domutils@1.5:
     dom-serializer "0"
     domelementtype "1"
 
-"dropzone@git://github.com/CenterForOpenScience/dropzone.git#aba21eb6b82cc823ac7a7a53d6e035791c082bae":
+"dropzone@git://github.com/providedh/dropzone.git#aba21eb6b82cc823ac7a7a53d6e035791c082bae":
   version "4.3.0"
-  resolved "git://github.com/CenterForOpenScience/dropzone.git#aba21eb6b82cc823ac7a7a53d6e035791c082bae"
+  resolved "git://github.com/providedh/dropzone.git#aba21eb6b82cc823ac7a7a53d6e035791c082bae"
 
 eachr@^3.2.0:
   version "3.2.0"
@@ -2869,9 +2869,9 @@ macaddress@^0.2.8:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/macaddress/-/macaddress-0.2.8.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"
 
-"markdown-it-imsize@git://github.com/cos-forks/markdown-it-imsize.git#v2.0.1.cos1":
+"markdown-it-imsize@git://github.com/providedh/markdown-it-imsize.git#v2.0.1.cos1":
   version "2.0.1"
-  resolved "git://github.com/cos-forks/markdown-it-imsize.git#fc313a03b00cb7379eab4785f880d072847ac0a0"
+  resolved "git://github.com/providedh/markdown-it-imsize.git#fc313a03b00cb7379eab4785f880d072847ac0a0"
 
 markdown-it-ins-del@^0.1.1:
   version "0.1.1"
@@ -4606,9 +4606,9 @@ tough-cookie@>=0.12.0, tough-cookie@~2.3.0, tough-cookie@~2.3.3:
   dependencies:
     punycode "^1.4.1"
 
-"treebeard@git://github.com/CenterForOpenScience/treebeard.git#d2bb8f6f8104fcac040402727f431c26722b269e":
+"treebeard@git://github.com/providedh/treebeard.git#d2bb8f6f8104fcac040402727f431c26722b269e":
   version "0.6.1"
-  resolved "git://github.com/CenterForOpenScience/treebeard.git#d2bb8f6f8104fcac040402727f431c26722b269e"
+  resolved "git://github.com/providedh/treebeard.git#d2bb8f6f8104fcac040402727f431c26722b269e"
   dependencies:
     bootstrap "~3.3.2"
     jquery ">=1.11.0"

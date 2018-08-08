@@ -14,7 +14,7 @@ Markdown==2.6.9
 WTForms==1.0.4
 beautifulsoup4==4.6.0
 # Fork of celery 4.2.1 with https://github.com/celery/celery/pull/4839 merged
-git+https://github.com/cos-forks/celery@v4.2.1+cos0
+git+https://github.com/providedh/celery@v4.2.1+cos0
 kombu==4.2.0
 amqp==2.2.2
 vine==1.1.4
@@ -43,7 +43,7 @@ progressbar==2.3
 # (http://docs.python-requests.org/en/latest/community/faq/#what-are-hostname-doesn-t-match-errors)
 ndg-httpsclient==0.3.0
 # Python markdown extensions for comment emails
-git+git://github.com/CenterForOpenScience/mdx_del_ins.git
+git+git://github.com/providedh/mdx_del_ins.git
 
 # Issue: certifi-2015.9.6.1 and 2015.9.6.2 fail verification (https://github.com/certifi/python-certifi/issues/26)
 # MailChimp Ticket: LTK1218902287135X, Domain: https://us9.api.mailchimp.com
@@ -89,8 +89,8 @@ maxminddb-geolite2==2018.308
 django-typed-models==0.7.0
 django-storages==1.6.6
 google-cloud-storage==0.22.0  # dependency of django-storages, hard-pin to version
-git+https://github.com/cos-forks/django-dirtyfields@develop
-git+https://github.com/cos-forks/django-extensions@master
+git+https://github.com/providedh/django-dirtyfields@develop
+git+https://github.com/providedh/django-extensions@master
 django-include==0.2.4
 psycopg2==2.7.3
 ujson==1.35

@@ -2,7 +2,7 @@
   "name": "OSF_Admin",
   "version": "0.0.0",
   "description": "Facilitating Open Science",
-  "repository": "https://github.com/CenterForOpenScience/osf.io",
+  "repository": "https://github.com/providedh/osf.io",
   "author": "Center for Open Science",
   "dependencies": {
     "babel-loader": "^4.1.0",

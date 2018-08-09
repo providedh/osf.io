@@ -128,7 +128,7 @@ function ProjectWiki(data) {
                                 },
                                 [
                                     m('option', {value: 'private', selected : item.data.select.permission === 'public' ? 'selected': ''}, 'Contributors (with write access)'),
-                                    m('option', {value: 'public', selected : item.data.select.permission === 'public' ? 'selected': '' }, 'All OSF users')
+                                    m('option', {value: 'public', selected : item.data.select.permission === 'public' ? 'selected': '' }, 'All PROVIDEDH users')
                             ])
                         ]);
                     }

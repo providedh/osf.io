@@ -212,7 +212,7 @@
                                 %if node['is_public']:
                                     <p class="text">Control who can edit the wiki of <b>${node['title']}</b></p>
                                 %else:
-                                    <p class="text">Control who can edit your wiki. To allow all OSF users to edit the wiki, <b>${node['title']}</b> must be public.</p>
+                                    <p class="text">Control who can edit your wiki. To allow all PROVIDEDH users to edit the wiki, <b>${node['title']}</b> must be public.</p>
                                 %endif
                             </div>
 
@@ -258,7 +258,7 @@
                             <div class="radio">
                                 <label>
                                     <input type="radio" name="commentLevel" value="public" ${'checked' if comments['level'] == 'public' else ''}>
-                                    When the ${node['node_type']} is public, any OSF user can post comments
+                                    When the ${node['node_type']} is public, any PROVIDEDH user can post comments
                                 </label>
                             </div>
 
@@ -342,7 +342,7 @@
                                             id="forwardUrl"
                                             class="form-control"
                                             data-bind="value: url"
-                                            placeholder="Send people who visit your OSF project page to this link instead"
+                                            placeholder="Send people who visit your PROVIDEDH project page to this link instead"
                                         />
                                     </div>
 
@@ -404,7 +404,7 @@
                             % else:
 
                                 <div class="help-block">
-                                    Withdrawing a registration will remove its content from the OSF, but leave basic metadata
+                                    Withdrawing a registration will remove its content from the PROVIDEDH, but leave basic metadata
                                     behind. The title of a withdrawn registration and its contributor list will remain, as will
                                     justification or explanation of the withdrawal, should you wish to provide it. Withdrawn
                                     registrations will be marked with a <strong>withdrawn</strong> tag.

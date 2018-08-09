@@ -18,7 +18,7 @@ var ShareButtons = {
     view: function(ctrl, options) {
         var title = encodeURIComponent(required(options, 'title'));
         var url = encodeURIComponent(required(options, 'url'));
-        var twitterHref = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title + '&via=OSFramework';
+        var twitterHref = 'https://twitter.com/intent/tweet?url=' + url + '&text=' + title + '&via=PROVIDEDH';
         var facebookHref = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
         var linkedinHref = 'https://www.linkedin.com/cws/share?url=' + url + '&title=' + title;
         var emailHref = 'mailto:?subject=' + title + '&body=' + url;

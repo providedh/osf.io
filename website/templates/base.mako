@@ -43,7 +43,7 @@
         <meta name="dc.identifier" content="${self.identifier_meta()['doi']}" />
         <meta name="dc.identifier" content="${self.identifier_meta()['ark']}" />
     %endif
-    <meta name="citation_publisher" content="Open Science Framework" />
+    <meta name="citation_publisher" content="PROVIDEDH Collaborative Platform" />
     %for institution in self.institutions_meta()[:10]:
         <meta name="citation_author_institution" content="${institution}" />
     %endfor
@@ -56,7 +56,7 @@
     <meta name="dc.license" content="${self.license_meta()}" />
     <meta name="dc.datemodified" content="${self.datemodified_meta()}" />
     <meta name="dc.datesubmitted" content="${self.datecreated_meta()}" />
-    <meta name="dc.publisher" content="Open Science Framework" />
+    <meta name="dc.publisher" content="PROVIDEDH Collaborative Platform" />
     <meta name="dc.language" content="en" />
     <meta name="dc.identifier" content="${self.url_meta()}" />
     <meta name="citation_description" content="${self.description_meta()}" />
@@ -65,7 +65,7 @@
 
     <!-- Facebook display -->
     <meta property="og:ttl" content="3" />
-    <meta property="og:site_name" content="Open Science Framework" />
+    <meta property="og:site_name" content="PROVIDEDH Collaborative Platform" />
     <meta property="og:url" content="${self.url_meta()}" />
     <meta property="og:title" content="${self.title_meta()}" />
     <meta property="og:description" content="${self.description_meta()}" />
@@ -73,7 +73,7 @@
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Open Science Framework" />
+    <meta property="og:image:alt" content="PROVIDEDH Collaborative Platform" />
 
     %for author in self.authors_meta()[:10]:
         <meta name="dc.creator" content="${author}" />
@@ -86,8 +86,8 @@
 
     <!-- Twitter display -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:site" content="@OSFramework">
-    <meta name="twitter:creator" content="@OSFramework">
+    <meta name="twitter:site" content="@PROVIDEDH">
+    <meta name="twitter:creator" content="@PROVIDEDH">
 
     ${includes_top()}
     ${self.stylesheets()}

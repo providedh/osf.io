@@ -25,7 +25,7 @@
     %if node['description']:
         ${sanitize.strip_html(node['description']) + ' '}
     %endif
-    Hosted on the Open Science Framework
+    Hosted on the PROVIDEDH Collaborative Platform
 </%def>
 
 <%def name="title_meta()">
@@ -116,7 +116,7 @@
 <%def name="image_meta()">
     <%
         from website import settings
-        return '{}{}/img/osf-sharing.png'.format(settings.DOMAIN.rstrip('/'), settings.STATIC_URL_PATH)
+        return '{}{}/img/providedh-sharing.png'.format(settings.DOMAIN.rstrip('/'), settings.STATIC_URL_PATH)
     %>
 </%def>
 

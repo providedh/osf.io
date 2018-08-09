@@ -43,7 +43,7 @@ ALIASES = {
     'component': 'Components',
     'registration': 'Registrations',
     'user': 'Users',
-    'total': 'All OSF Results',
+    'total': 'All Results',
     'file': 'Files',
     'institution': 'Institutions',
     'preprint': 'Preprints',

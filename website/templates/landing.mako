@@ -47,7 +47,7 @@
             </div>
             <div class="col-xs-9 col-xs-offset-1">
               <h3>Uncertainty in digital humanities</h3>
-              <p>Explore the completeness and evolution of digital research objects <strong>in terms of the degree of uncertainty</strong>, and share perspectives and insights with other stakeholders of society. <span class="label label-primary">Metrics of Uncertainty</span></p>
+              <p>Explore the completeness and evolution of digital research objects <strong>in terms of the metrics of uncertainty</strong>, and share perspectives and insights with other stakeholders of society.</p>
             </div>
           </div>
           <div class="row">
@@ -55,8 +55,8 @@
               <i class="icon"></i>
             </div>
             <div class="col-xs-9 col-xs-offset-1">
-              <h3>Progressive visualizations</h3>
-              <p>Incorporate <strong>visualizations that allow the correct interpretation</strong> of the concepts of accuracy and precision in your data. <span class="label label-primary">Progressive Visual Analysis</span></p>
+              <h3>Progressive visual analysis</h3>
+              <p>Incorporate <strong>progressive visualizations that allow the correct interpretation</strong> of the concepts of accuracy and precision in your data.</p>
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@
             </div>
             <div class="col-xs-9 col-xs-offset-1">
               <h3>Structured projects</h3>
-              <p>Keep all your files and data in <strong>one centralized location.</strong> No more trawling emails to find files or scrambling to recover from lost data. <span class="label label-primary">Secure Cloud</span></p>
+              <p>Keep all your files and data in <strong>one centralized location.</strong> No more trawling emails to find files or scrambling to recover from lost data.</p>
             </div>
           </div>
           <div class="row">
@@ -76,7 +76,7 @@
             </div>
             <div class="col-xs-9 col-xs-offset-1">
               <h3>Control access</h3>
-              <p><strong>You control which parts of your project are public or private</strong> making it easy to collaborate with the worldwide community or just your team. <span class="label label-primary">Project-level Permissions</span></p>
+              <p><strong>You control which parts of your project are public or private</strong> making it easy to collaborate with the worldwide community or just your team.</p>
             </div>
           </div>
         </div>

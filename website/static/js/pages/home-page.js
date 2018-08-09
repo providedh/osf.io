@@ -45,17 +45,6 @@ $(document).ready(function(){
                         ])
                     ]
                 )),
-                // TODO: We hide the institution logos on small screens. Better to make the carousel responsive.
-                m('.institutions-panel.hidden-xs', m('.container',
-                    [
-                        m('.row', [
-                            m(columnSizeClass,  m.component(InstitutionsPanel, {
-                                affiliatedInstitutions: affiliatedInstitutions,
-                                allInstitutions: dashboardInstitutions
-                            }))
-                        ])
-                    ]
-                )),
                 m('.newAndNoteworthy', m('.container',
                     [
                         m('.row', [
@@ -66,7 +55,7 @@ $(document).ready(function(){
                         ])
 
                     ]
-                )),
+                ))
                 /*
                 m('.prereg', m('.container',
                     [
@@ -76,22 +65,6 @@ $(document).ready(function(){
                     ]
                 )),
                 */
-                m('.meetings', m('.container',
-                    [
-                        m('.row', [
-                            m(columnSizeClass,  m.component(MeetingsAndConferences, {}))
-                        ])
-
-                    ]
-                )),
-                m('.preprints', m('.container',
-                    [
-                        m('.row', [
-                            m(columnSizeClass,  m.component(Preprints, {}))
-                        ])
-
-                    ]
-                ))
             ];
         }
     };

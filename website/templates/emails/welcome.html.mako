@@ -29,12 +29,13 @@ GitHub, Dropbox, Google Drive, Box, Dataverse, figshare, Amazon S3, ownCloud, Bi
 Add your collaborators to have a shared environment for maintaining your research materials and data and never lose files again.<br>
 <br>
 <br>
-The <a href="${osf_url}">PROVIDEDH Collaborative Platform</a> is provided as a free, open source service based on the Open Science Framework from the <a href="https://cos.io/">Center for Open Science</a>.
+The <a href="https://providedh.ehum.psnc.pl/">PROVIDEDH Collaborative Platform</a> is provided as a free, open source service based on the Open Science Framework from the <a href="https://cos.io/">Center for Open Science</a>.
+<br>
 Learn more about the Open Science Framework by reading the <a href="http://help.osf.io/">Guides</a>, or email <a href="mailto:${osf_contact_email}">${osf_contact_email}</a> with questions for support.<br>
 <br>
 Sincerely,<br>
 <br>
-The Center for Open Science Team<br>
+The PROVIDEDH Team<br>
 
   </td>
 </tr>

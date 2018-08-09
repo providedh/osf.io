@@ -143,7 +143,7 @@ TEST = Mail('test', subject='A test email to ${name}', categories=['test'])
 # Emails for first-time login through external identity providers.
 EXTERNAL_LOGIN_CONFIRM_EMAIL_CREATE = Mail(
     'external_confirm_create',
-    subject='Open Science Framework Account Verification'
+    subject='PROVIDEDH Collaborative Platform Account Verification'
 )
 
 FORK_COMPLETED = Mail(
@@ -158,21 +158,21 @@ FORK_FAILED = Mail(
 
 EXTERNAL_LOGIN_CONFIRM_EMAIL_LINK = Mail(
     'external_confirm_link',
-    subject='Open Science Framework Account Verification'
+    subject='PROVIDEDH Collaborative Platform Account Verification'
 )
 EXTERNAL_LOGIN_LINK_SUCCESS = Mail(
     'external_confirm_success',
-    subject='Open Science Framework Account Verification Success'
+    subject='PROVIDEDH Collaborative Platform Account Verification Success'
 )
 
 # Sign up confirmation emails for OSF, native campaigns and branded campaigns
 INITIAL_CONFIRM_EMAIL = Mail(
     'initial_confirm',
-    subject='Open Science Framework Account Verification'
+    subject='PROVIDEDH Collaborative Platform Account Verification'
 )
 CONFIRM_EMAIL = Mail(
     'confirm',
-    subject='Add a new email to your OSF account'
+    subject='Add a new email to your PROVIDEDH account'
 )
 CONFIRM_EMAIL_PREREG = Mail(
     'confirm_prereg',
@@ -211,7 +211,7 @@ INVITE_PREPRINT = lambda template, provider: Mail(
 )
 CONTRIBUTOR_ADDED_DEFAULT = Mail(
     'contributor_added_default',
-    subject='You have been added as a contributor to an OSF project.'
+    subject='You have been added as a contributor to a PROVIDEDH project.'
 )
 CONTRIBUTOR_ADDED_PREPRINT = lambda template, provider: Mail(
     'contributor_added_preprints_{}'.format(template),
@@ -237,7 +237,7 @@ PASSWORD_RESET = Mail('password_reset', subject='Your OSF password has been rese
 PENDING_VERIFICATION = Mail('pending_invite', subject='Your account is almost ready!')
 PENDING_VERIFICATION_REGISTERED = Mail('pending_registered', subject='Received request to be a contributor')
 
-REQUEST_EXPORT = Mail('support_request', subject='[via OSF] Export Request')
+REQUEST_EXPORT = Mail('support_request', subject='[via PROVIDEDH] Export Request')
 REQUEST_DEACTIVATION = Mail('support_request', subject='[via OSF] Deactivation Request')
 
 SPAM_USER_BANNED = Mail('spam_user_banned', subject='[OSF] Account flagged as spam')
@@ -367,12 +367,12 @@ ARCHIVE_SUCCESS = Mail(
 
 WELCOME = Mail(
     'welcome',
-    subject='Welcome to the Open Science Framework'
+    subject='Welcome to the PROVIDEDH Collaborative Platform'
 )
 
 WELCOME_OSF4I = Mail(
     'welcome_osf4i',
-    subject='Welcome to the Open Science Framework'
+    subject='Welcome to the PROVIDEDH Collaborative Platform'
 )
 
 PREREG_CHALLENGE_REJECTED = Mail(

@@ -294,7 +294,7 @@
 
 <!-- Metadata tags-->
 <%def name="description_meta()">
-    Hosted on the Open Science Framework
+    Hosted on the PROVIDEDH Collaborative Framework
 </%def>
 
 <%def name="title_meta()">

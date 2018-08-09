@@ -25,7 +25,7 @@
                                         % if context.get('logo', settings.OSF_LOGO) not in settings.OSF_LOGO_LIST:
                                             <img src="https://raw.githubusercontent.com/CenterForOpenScience/osf-assets/master/files/preprints-assets/${context.get('logo')}/wide_white.png" alt="OSF logo" style="border: 0;height: auto;line-height: 100%;outline: none;text-decoration: none;">
                                         %else:
-                                            <img src="https://osf.io/static/img/${context.get('logo', settings.OSF_LOGO)}.png" alt="OSF logo" style="border: 0;height: auto;line-height: 100%;outline: none;text-decoration: none;">
+                                            <img src="https://providedh.ehum.psnc.pl/static/img/${context.get('logo', settings.OSF_LOGO)}.png" alt="OSF logo" style="border: 0;height: auto;line-height: 100%;outline: none;text-decoration: none;">
                                         % endif
                                     </td>
                                 </tr>
@@ -74,7 +74,6 @@
                         <td style="border-collapse: collapse;">
                             <p class="small text-center" style="text-align: center;font-size: 12px;">Copyright &copy; 2018 Center For Open Science, All rights reserved. |
                                     <a href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/PRIVACY_POLICY.md">Privacy Policy</a></p>
-                            <p class="text-smaller text-center" style="text-align: center;font-size: 12px;">210 Ridge McIntire Road, Suite 500, Charlottesville, VA 22903-5083</p>
                         </td>
                     </tr>
                 </tbody>

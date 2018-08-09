@@ -699,7 +699,7 @@ class AbstractNode(DirtyFieldsMixin, TypedModel, AddonModelMixin, IdentifierMixi
                 contributor.csl_name(self._id)  # method in auth/model.py which parses the names of authors
                 for contributor in self.visible_contributors
             ],
-            'publisher': 'Open Science Framework',
+            'publisher': 'PROVIDEDH Collaborative Platform',
             'type': 'webpage',
             'URL': self.display_absolute_url,
         }

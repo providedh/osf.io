@@ -9,7 +9,7 @@ from addons.base.exceptions import HookError
 
 from addons.gitlab.api import GitLabClient
 
-MESSAGE_BASE = 'via the Open Science Framework'
+MESSAGE_BASE = 'via the PROVIDEDH Collaborative Platform'
 MESSAGES = {
     'add': 'Added {0}'.format(MESSAGE_BASE),
     'move': 'Moved {0}'.format(MESSAGE_BASE),

@@ -15,7 +15,7 @@
     <br>
     Sincerely,<br>
     <br>
-    The OSF Team<br>
+    The PROVIDEDH Team<br>
 
 </tr>
 </%def>

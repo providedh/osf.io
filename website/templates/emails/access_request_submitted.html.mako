@@ -16,9 +16,9 @@
     <br>
     Sincerely,<br>
     <br>
-    The OSF Team<br>
+    The PROVIDEDH Team<br>
     <br>
-    Want more information? Visit https://osf.io/ to learn about OSF, or https://cos.io/ for information about its supporting organization, the Center for Open Science.<br>
+    Want more information? Visit https://providedh.ehum.psnc.pl/ to learn about the PROVIDEDH Collaborative Platform, or https://providedh.eu/ for information about the PROVIDEDH CHIST-ERA Project.<br>
     <br>
     Questions? Email ${osf_contact_email}<br>
 

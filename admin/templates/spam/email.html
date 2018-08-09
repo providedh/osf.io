@@ -4,7 +4,7 @@
 </div>
 <div class="modal-body">
     <p>Dear {{ spam.author.fullname }},</p>
-    <p>A comment you made on an Open Science Framework (OSF) project
+    <p>A comment you made on an PROVIDEDH Collaborative Platform project
         [<a href="{{ spam.node.absolute_url }}">{{ spam.node.absolute_url }}</a>]
         has been reported as
         {% if spam.category == 'hate' %}
@@ -24,7 +24,7 @@
         <a href="mailto:{{ spam.osf_support_email }}">{{ spam.osf_support_email }}</a>.
     </p>
     <p>Best,</p>
-    <p>The OSF Team</p>
+    <p>The PROVIDEDH Team</p>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn" data-dismiss="modal" >Close</button>

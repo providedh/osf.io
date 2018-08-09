@@ -1910,7 +1910,7 @@ CUSTOM_CITATIONS = {
 }
 
 #Email templates logo
-OSF_LOGO = 'osf_logo'
+OSF_LOGO = 'providedh_logo'
 OSF_PREPRINTS_LOGO = 'osf_preprints'
 OSF_MEETINGS_LOGO = 'osf_meetings'
 OSF_PREREG_LOGO = 'osf_prereg'

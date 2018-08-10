@@ -153,8 +153,6 @@
                 <div class="form-group m-t-md">
                     <div class="col-md-5 col-sm-12" style="padding-left: 25px">
                         <a href="${non_institution_login_url}" >Already have an account?</a>
-                        <br>
-                        <a href="${institution_login_url}">Login through your institution  <i class="fa fa-arrow-right"></i></a>
                     </div>
                     <div class="col-md-7 col-sm-12">
                         %if recaptcha_site_key:

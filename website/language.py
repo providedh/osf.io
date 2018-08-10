@@ -12,8 +12,8 @@ from website import settings
 # Status message shown at settings page on first login
 # (upon clicking primary email confirmation link)
 WELCOME_MESSAGE = '''
-<h1>Welcome to the OSF!</h1>
-<p>Visit our <a href="http://help.osf.io/" target="_blank" rel="noreferrer">Guides</a> to learn about creating a project, or get inspiration from <a href="https://osf.io/explore/activity/#popularPublicProjects">popular public projects</a>.</p>
+<h1>Welcome to the PROVIDEDH Collaborative Platform!</h1>
+<p>Get inspiration from <a href="https://providedh.ehum.psnc.pl/explore/activity/#popularPublicProjects">popular public projects</a>.</p>
 '''
 
 TERMS_OF_SERVICE = """
@@ -55,9 +55,9 @@ TERMS_OF_SERVICE = """
 
 REGISTRATION_SUCCESS = '''Registration successful. Please check {email} to confirm your email address.'''
 
-EXTERNAL_LOGIN_EMAIL_CREATE_SUCCESS = '''A new OSF account has been created with your {external_id_provider} profile. Please check {email} to confirm your email address.'''
+EXTERNAL_LOGIN_EMAIL_CREATE_SUCCESS = '''A new PROVIDEDH account has been created with your {external_id_provider} profile. Please check {email} to confirm your email address.'''
 
-EXTERNAL_LOGIN_EMAIL_LINK_SUCCESS = '''Your OSF account has been linked with your {external_id_provider}. Please check {email} to confirm this action.'''
+EXTERNAL_LOGIN_EMAIL_LINK_SUCCESS = '''Your PROVIDEDH account has been linked with your {external_id_provider}. Please check {email} to confirm this action.'''
 
 # Shown if registration is turned off in website.settings
 REGISTRATION_UNAVAILABLE = 'Registration currently unavailable.'
@@ -98,7 +98,7 @@ EMAIL_NOT_FOUND = u'''
 
 # Shown after an unregistered user claims an account and is redirected to the
 # settings page
-CLAIMED_CONTRIBUTOR = ('<strong>Welcome to the OSF!</strong> Edit your display name below and then check your '
+CLAIMED_CONTRIBUTOR = ('<strong>Welcome to the PROVIDEDH!</strong> Edit your display name below and then check your '
                        '<a href="/dashboard/">dashboard</a> to see projects to which you have been added as a '
                        'contributor by someone else.')
 

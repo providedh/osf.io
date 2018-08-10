@@ -18,9 +18,7 @@
             <div data-spy="affix" data-offset-bottom="250"  data-offset-top="60" class="panel panel-default m-t-lg hidden-print hidden-xs affix osf-affix" role="complementary">
                 <ul class="nav nav-stacked nav-pills">
                     <li><a href='#newNoteworthyProjects'>New and noteworthy projects</a></li>
-                    <li><a href='#newPublicRegistrations'>Newest public registrations</a></li>
                     <li><a href='#popularPublicProjects'>Popular public projects</a></li>
-                    <li><a href='#popularPublicRegistrations'>Popular public registrations</a></li>
                 </ul>
             </div>
         </div>
@@ -32,22 +30,10 @@
                   ${node_list(new_and_noteworthy_projects, prefix='newest_public', metric='date_created')}
                 </div>
             </section>
-            <section id='newPublicRegistrations' class="m-t-lg">
-                <h3 class='anchor'>Newest public registrations</h3>
-                <div class='project-list'>
-                    ${node_list(recent_public_registrations, prefix='newest_public', metric='registered_date')}
-                </div>
-            </section>
             <section id='popularPublicProjects' class="m-t-lg">
                 <h3 class='anchor'>Popular public projects</h3>
                 <div class='project-list'>
                   ${node_list(popular_public_projects, prefix='most_viewed', metric='date_created')}
-                </div>
-            </section>
-            <section id='popularPublicRegistrations' class="m-t-lg">
-                <h3 class='anchor'>Popular public registrations</h3>
-                <div class='project-list'>
-                    ${node_list(popular_public_registrations, prefix='most_viewed', metric='registered_date')}
                 </div>
             </section>
         </div>

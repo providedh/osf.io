@@ -1,5 +1,7 @@
 # OSF
 
+Adjusted OSF to the PROVIDEDH CHIST-ERA Project.
+
 The code for [https://providedh.ehum.psnc.pl](https://providedh.ehum.psnc.pl).
 
 - Public Repo: https://github.com/providedh/osf.io/

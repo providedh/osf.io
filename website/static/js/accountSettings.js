@@ -355,7 +355,7 @@ var DeactivateAccountViewModel = oop.defclass({
     _requestDeactivation: function() {
         var request = $osf.postJSON(this.urls.update, {});
         request.done(function() {
-            $osf.growl('Success', 'An OSF administrator will contact you shortly to confirm your deactivation request.', 'success');
+            $osf.growl('Success', 'An PROVIDEDH administrator will contact you shortly to confirm your deactivation request.', 'success');
             this.requestPending(true);
         }.bind(this));
         request.fail(function(xhr, status, error) {
@@ -380,7 +380,7 @@ var DeactivateAccountViewModel = oop.defclass({
     _cancelRequestDeactivation: function() {
         var request = $osf.postJSON(this.urls.cancelDeactivate, {});
         request.done(function() {
-            $osf.growl('Success', 'An OSF account is no longer up for review.', 'success');
+            $osf.growl('Success', 'An PROVIDEDH account is no longer up for review.', 'success');
             this.requestPending(false);
         }.bind(this));
         request.fail(function(xhr, status, error) {
@@ -388,7 +388,7 @@ var DeactivateAccountViewModel = oop.defclass({
                 $osf.growl('Error', xhr.responseJSON.message_long, 'danger');
             } else {
                 $osf.growl('Error',
-                    'Deactivation request failed. Please contact <a href="mailto: support@osf.io">support@osf.io</a> if the problem persists.',
+                    'Deactivation request failed. Please contact ' + $osf.osfSupportLink() + ' if the problem persists.',
                     'danger'
                 );
             }
@@ -406,7 +406,7 @@ var DeactivateAccountViewModel = oop.defclass({
         var self = this;
         bootbox.confirm({
             title: 'Request account deactivation?',
-            message: 'Are you sure you want to request account deactivation? An OSF administrator will review your request. If accepted, you ' +
+            message: 'Are you sure you want to request account deactivation? An PROVIDEDH administrator will review your request. If accepted, you ' +
                      'will <strong>NOT</strong> be able to reactivate your account.',
             callback: function(confirmed) {
                 if (confirmed) {
@@ -451,7 +451,7 @@ var ExportAccountViewModel = oop.defclass({
     _requestExport: function() {
         var request = $osf.postJSON(this.urls.update, {});
         request.done(function() {
-            $osf.growl('Success', 'An OSF administrator will contact you shortly to confirm your export request.', 'success');
+            $osf.growl('Success', 'An PROVIDEDH administrator will contact you shortly to confirm your export request.', 'success');
             this.success(true);
         }.bind(this));
         request.fail(function(xhr, status, error) {

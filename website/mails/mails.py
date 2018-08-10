@@ -238,9 +238,9 @@ PENDING_VERIFICATION = Mail('pending_invite', subject='Your account is almost re
 PENDING_VERIFICATION_REGISTERED = Mail('pending_registered', subject='Received request to be a contributor')
 
 REQUEST_EXPORT = Mail('support_request', subject='[via PROVIDEDH] Export Request')
-REQUEST_DEACTIVATION = Mail('support_request', subject='[via OSF] Deactivation Request')
+REQUEST_DEACTIVATION = Mail('support_request', subject='[via PROVIDEDH] Deactivation Request')
 
-SPAM_USER_BANNED = Mail('spam_user_banned', subject='[OSF] Account flagged as spam')
+SPAM_USER_BANNED = Mail('spam_user_banned', subject='[PROVIDEDH] Account flagged as spam')
 
 CONFERENCE_SUBMITTED = Mail(
     'conference_submitted',
@@ -256,7 +256,7 @@ CONFERENCE_FAILED = Mail(
 )
 
 DIGEST = Mail(
-    'digest', subject='OSF Notifications',
+    'digest', subject='PROVIDEDH Notifications',
     categories=['notifications', 'notifications-digest']
 )
 

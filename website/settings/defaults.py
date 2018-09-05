@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+git # -*- coding: utf-8 -*-
 """
 Base settings file, common to all environments.
 These settings can be overridden in local.py.
@@ -287,6 +287,7 @@ ADDON_CATEGORIES = [
     'other',
     'security',
     'citations',
+    'visualizations',
 ]
 
 SYSTEM_ADDED_ADDONS = {

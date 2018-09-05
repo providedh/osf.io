@@ -1,4 +1,4 @@
-git # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Base settings file, common to all environments.
 These settings can be overridden in local.py.

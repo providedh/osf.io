@@ -190,3 +190,19 @@ subscribeViewModel(RequestAccessSettingsViewModel, {
 if ($('#enableRequestAccessForm').length) {
     $osf.applyBindings(RequestAccessSettingsViewModel, '#enableRequestAccessForm');
 }
+
+var TeiStatisticsSettingsViewModel = {
+    enabled: ko.observable(ctx.teistats.isEnabled), // <- this would get set in the mako template, as usual
+    teistatsMessage: ko.observable('')
+};
+
+subscribeViewModel(TeiStatisticsSettingsViewModel, {
+    messageObservable: 'teistatsMessage',
+    name: 'TEI statistics',
+    updateUrl: 'settings/addons/',
+    objectToUpdate:'teistats'
+});
+
+if ($('#selectTeiStatsForm').length) {
+    $osf.applyBindings(TeiStatisticsSettingsViewModel, '#selectTeiStatsForm');
+}

@@ -109,6 +109,7 @@ INSTALLED_APPS = (
     'addons.owncloud',
     'addons.s3',
     'addons.twofactor',
+    'addons.teistats',
     'addons.wiki',
     'addons.zotero',
 )

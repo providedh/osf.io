@@ -92,6 +92,7 @@ class NodeLogParamsSerializer(RestrictedDictSerializer):
     urls = ser.DictField(read_only=True)
     version = ser.CharField(read_only=True)
     wiki = ser.DictField(read_only=True)
+    xpath_expr = ser.CharField(read_only=True)
     citation_name = ser.CharField(read_only=True, source='citation.name')
     institution = NodeLogInstitutionSerializer(read_only=True)
     anonymous_link = ser.BooleanField(read_only=True)

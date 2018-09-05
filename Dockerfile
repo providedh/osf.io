@@ -165,6 +165,7 @@ COPY ./addons/onedrive/static/ /code/addons/onedrive/static/
 COPY ./addons/osfstorage/static/ ./addons/osfstorage/static/
 COPY ./addons/owncloud/static/ ./addons/owncloud/static/
 COPY ./addons/s3/static/ ./addons/s3/static/
+COPY ./addons/teistats/static/ ./addons/teistats/static/
 COPY ./addons/twofactor/static/ ./addons/twofactor/static/
 COPY ./addons/wiki/static/ ./addons/wiki/static/
 COPY ./addons/zotero/static/ ./addons/zotero/static/

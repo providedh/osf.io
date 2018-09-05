@@ -135,13 +135,31 @@
                     </div>
                 % endif
 
+                % if addon_name == 'teistats':
+                    <script type="text/javascript">
+                        window.contextVars = $.extend(true, {}, window.contextVars, {
+                        });
+                    </script>
+                    <div id="${addon_data['short_name']}Widget" class="teistats-widget">
+                        <div class="spinner-loading-wrapper">
+                            <div class="ball-scale ball-scale-blue">
+                                <div></div>
+                            </div>
+                            <p class="m-t-sm fg-load-message"> Loading TEI statistics... (TODO) </p>
+                        </div>
+                    </div>
+                % endif
 
                 </div>
             % else:
                 <div class='addon-config-error p-sm'>
                     ${addon_data['full_name']} add-on is not configured properly.
                     % if user['is_contributor']:
-                        Configure this add-on on the <a href="${node['url']}addons/">add-ons</a> page.
+                        % if addon_name == 'forward' or addon_name == 'teistats':
+                            Configure this add-on on the <a href="${node['url']}settings/">settings</a> page.
+                        % else:
+                            Configure this add-on on the <a href="${node['url']}addons/">add-ons</a> page.
+                        % endif
                     % endif
                 </div>
 

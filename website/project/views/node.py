@@ -51,6 +51,7 @@ from addons.zotero.provider import ZoteroCitationsProvider
 from addons.wiki.utils import serialize_wiki_widget
 from addons.dataverse.utils import serialize_dataverse_widget
 from addons.forward.utils import serialize_forward_widget
+from addons.teistats.utils import serialize_teistats_widget
 
 r_strip_html = lambda collection: rapply(collection, strip_html)
 logger = logging.getLogger(__name__)
@@ -272,19 +273,20 @@ def node_setting(auth, node, **kwargs):
 
     ret['include_wiki_settings'] = node.include_wiki_settings(auth.user)
     ret['wiki_enabled'] = 'wiki' in node.get_addon_names()
+    ret['teistats_enabled'] = 'teistats' in node.get_addon_names()
 
     ret['comments'] = {
         'level': node.comment_level,
     }
 
     addon_settings = {}
-    for addon in ['forward']:
+    for addon in ['teistats', 'forward']:
         addon_config = apps.get_app_config('addons_{}'.format(addon))
         config = addon_config.to_json()
         config['template_lookup'] = addon_config.template_lookup
         config['addon_icon_url'] = addon_config.icon_url
         config['node_settings_template'] = os.path.basename(addon_config.node_settings_template)
-        addon_settings['forward'] = config
+        addon_settings[addon] = config
 
     ret['addon_settings'] = addon_settings
 
@@ -324,7 +326,7 @@ def serialize_addons(node, auth):
     addon_settings = []
     addons_available = [addon for addon in settings.ADDONS_AVAILABLE
                         if addon not in settings.SYSTEM_ADDED_ADDONS['node']
-                        and addon.short_name not in ('wiki', 'forward', 'twofactor')]
+                        and addon.short_name not in ('wiki', 'forward', 'twofactor', 'teistats')]
 
     for addon in addons_available:
         addon_config = apps.get_app_config('addons_{}'.format(addon.short_name))
@@ -468,6 +470,9 @@ def view_project(auth, node, **kwargs):
         node_addon = node.get_addon('mendeley')
         mendeley_widget_data = MendeleyCitationsProvider().widget(node_addon)
         addons_widget_data['mendeley'] = mendeley_widget_data
+
+    if 'teistats' in ret['addons']:
+        addons_widget_data['teistats'] = serialize_teistats_widget(node)
 
     ret.update({'addons_widget_data': addons_widget_data})
     return ret

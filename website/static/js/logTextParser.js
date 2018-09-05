@@ -757,6 +757,13 @@ var LogPieces = {
             return m('span', '');
         }
     },
+
+    xpath_expr: {
+        view: function(ctrl, logObject) {
+            return returnTextParams('xpath_expr', '', logObject);
+        }
+    },
+
 };
 
 module.exports = {

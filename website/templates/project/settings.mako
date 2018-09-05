@@ -30,6 +30,8 @@
 
                         <li><a href="#configureNotificationsAnchor">Email Notifications</a></li>
 
+                        <li><a href="#teiStatistics">TEI Statistics</a></li>
+
                         <li><a href="#redirectLink">Redirect Link</a></li>
 
                     % endif
@@ -309,6 +311,44 @@
 
         % endif ## End Configure Email Notifications
 
+        % if 'write' in user['permissions']:  ## Begin TEI Statistics Config
+            % if not node['is_registration']:
+                <div class="panel panel-default">
+                    <span id="configureTeiStatsAnchor" class="anchor"></span>
+                    <div class="panel-heading clearfix">
+                        <h3 class="panel-title">TEI Statistics</h3>
+                    </div>
+
+                    <div class="panel-body">
+                        <form id="selectTeiStatsForm">
+                            <div>
+                                <label class="break-word">
+                                    <input
+                                            type="checkbox"
+                                            name="teistats"
+                                            class="teistats-select"
+                                            data-bind="checked: enabled"
+                                    />
+                                    Enable TEI statistics in <b>${node['title']}</b>.
+                                </label>
+
+                                <div data-bind="visible: enabled()" class="text-success" style="padding-left: 15px">
+                                    <p data-bind="text: teistatsMessage"></p>
+                                </div>
+                                <div data-bind="visible: !enabled()" class="text-danger" style="padding-left: 15px">
+                                    <p data-bind="text: teistatsMessage"></p>
+                                </div>
+                            </div>
+                        </form>
+
+                        %if teistats_enabled:
+                            ${ render_node_settings(addon_settings['teistats']) }
+                        %endif
+                    </div>
+                </div>
+            %endif
+        %endif ## End TEI Statistics Config
+
         % if 'write' in user['permissions']:  ## Begin Redirect Link Config
             % if not node['is_registration']:
 
@@ -488,6 +528,8 @@
       window.contextVars.nodeCategories = ${ categories | sjson, n };
       window.contextVars.wiki = window.contextVars.wiki || {};
       window.contextVars.wiki.isEnabled = ${wiki_enabled | sjson, n };
+      window.contextVars.teistats = window.contextVars.teistats || {};
+      window.contextVars.teistats.isEnabled = ${teistats_enabled | sjson, n };
       window.contextVars.currentUser = window.contextVars.currentUser || {};
       window.contextVars.currentUser.institutions = ${ user['institutions'] | sjson, n };
       window.contextVars.currentUser.permissions = ${ user['permissions'] | sjson, n } ;
@@ -504,6 +546,9 @@
 
     % if not node['is_registration']:
         <script type="text/javascript" src=${"/static/public/js/forward/node-cfg.js" | webpack_asset}></script>
+        %if teistats_enabled:
+            <script type="text/javascript" src=${"/static/public/js/teistats/node-cfg.js" | webpack_asset}></script>
+        % endif
     % endif
 
 

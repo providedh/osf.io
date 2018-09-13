@@ -144,6 +144,23 @@ Ubuntu: Skip install of docker-sync. instead...
   - `$ docker-compose up -d worker web api admin`
 7. View the OSF at [http://localhost:5000](http://localhost:5000).
 
+8. In order to use the environment you need to register an account. As in development mode there is no email service configured, you need to extract the verification link from the logs:
+  - First run `$ docker-compose logs -f --tail 1000 web`
+  - Sign up for an account using the corresponding button on the home page.
+  - Check the logs and try to find the following:
+    `web_1 | [website.mails.mails] DEBUG: Sending email...
+    web_1 | [website.mails.mails] DEBUG: To: your@email.address`
+
+  - Below you will find:
+
+    `web_1 | Please verify your email address by visiting this link:`
+
+    `web_1 | `
+
+    `web_1 | http://localhost:5000/confirm/erpgv/682R6Dsmp1E7aOYOZ96TcqmBaTox0t/`
+
+  - Copy-paste this URL on your browser. Your account is registered and ready to be used. 
+
 
 ## Quickstart: Running all OSF services in the background
 

@@ -1,5 +1,6 @@
 from .defaults import *  # noqa
 from website import settings as osf_settings
+from urlparse import urlparse
 
 
 DEBUG = osf_settings.DEBUG_MODE
@@ -19,6 +20,7 @@ if DEBUG:
         'SHOW_TOOLBAR_CALLBACK': lambda(_): True
     }
     ALLOWED_HOSTS.append('localhost')
+    ALLOWED_HOSTS.append(urlparse(osf_settings.API_INTERNAL_DOMAIN).hostname)
 
     # django-silk
     INSTALLED_APPS += ('silk',)

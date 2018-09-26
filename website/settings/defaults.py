@@ -83,6 +83,7 @@ PROTOCOL = 'https://' if SECURE_MODE else 'http://'
 DOMAIN = PROTOCOL + 'localhost:5000/'
 INTERNAL_DOMAIN = DOMAIN
 API_DOMAIN = PROTOCOL + 'localhost:8000/'
+API_INTERNAL_DOMAIN = API_DOMAIN
 
 PREPRINT_PROVIDER_DOMAINS = {
     'enabled': False,

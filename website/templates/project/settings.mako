@@ -314,7 +314,7 @@
         % if 'write' in user['permissions']:  ## Begin TEI Statistics Config
             % if not node['is_registration']:
                 <div class="panel panel-default">
-                    <span id="configureTeiStatsAnchor" class="anchor"></span>
+                    <span id="teiStatistics" class="anchor"></span>
                     <div class="panel-heading clearfix">
                         <h3 class="panel-title">TEI Statistics</h3>
                     </div>

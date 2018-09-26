@@ -195,6 +195,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                 if not tei_statistics.calculations['statistics']:
                     # there is no current provider, get the first one
                     provider = providers[0]
+                    logger.debug('Setting new provider {} for calculating TEI statistics for node {}'.format(provider, node))
                 else:
                     # statistics are already calculated - return them
                     return tei_statistics.calculations
@@ -202,6 +203,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                 if providers.index(tei_statistics.current_provider) + 1 < len(providers):
                     # get the next one
                     provider = providers[providers.index(tei_statistics.current_provider) + 1]
+                    logger.debug('Setting next provider {} for calculating TEI statistics for node {}'.format(provider, node))
                 else:
                     # no next provider, return calculated statistics - that's end
                     tei_statistics.current_provider = None
@@ -303,6 +305,7 @@ def api_url_for(node_id, provider, path='/', _internal=True, **kwargs):
 
 
 def call_api(url, cookies, auth_header):
+    logger.debug('Calling API function: {}'.format(url))
     api_response = requests.get(
         url,
         cookies=cookies,
@@ -322,6 +325,7 @@ def call_api(url, cookies, auth_header):
 
 
 def call_waterbutler_quietly(url, cookies, auth_header):
+    logger.debug('Calling WaterButler: {}'.format(url))
     download_response = requests.get(
         url,
         cookies=cookies,

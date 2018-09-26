@@ -145,7 +145,7 @@
                             <div class="ball-scale ball-scale-blue">
                                 <div></div>
                             </div>
-                            <p class="m-t-sm fg-load-message"> Loading TEI statistics... (TODO) </p>
+                            <p class="m-t-sm fg-load-message">Loading TEI statistics...</p>
                         </div>
                     </div>
                 % endif

@@ -1,0 +1,12 @@
+
+.tei-statistics-item {
+    font-size: 13px;
+    padding: 5px 10px;
+    background: #FFF;
+    margin-bottom: 3px;
+    border-bottom: 1px solid #eee;
+}
+
+.tei-statistics-item > .text-right {
+    float: right;
+}

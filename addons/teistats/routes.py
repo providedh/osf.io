@@ -49,7 +49,15 @@ api_routes = {
         ),
               
         # Widget
-
+        Rule(
+            [
+                '/project/<pid>/teistats/statistics/',
+                '/project/<pid>/node/<nid>/teistats/statistics/',
+            ],
+            'get',
+            views.teistats_statistics_get,
+            json_renderer,
+        ),
     ],
 
     'prefix': '/api/v1',

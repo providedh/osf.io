@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.db import models
 
 from addons.base.models import BaseNodeSettings
 from addons.teistats.validators import validate_xpath, validate_name
-
 from osf.exceptions import ValidationError, reraise_django_validation_errors
-
-from osf.utils.datetime_aware_jsonfield import JSONField
+from osf.models.base import BaseModel
+from osf.utils.datetime_aware_jsonfield import DateTimeAwareJSONField, JSONField
 
 
 class NodeSettings(BaseNodeSettings):
@@ -94,3 +94,40 @@ class NodeSettings(BaseNodeSettings):
             return True
 
         return False
+
+
+class TeiStatistics(BaseModel):
+
+    empty_calculations = {
+            'meta': {
+                'finished': False,
+                'totalFiles': 0,
+                'teiFiles': 0
+            },
+            'statistics': []
+        }
+
+    node = models.OneToOneField('osf.AbstractNode', blank=True, null=True, related_name='+', on_delete=models.CASCADE)
+    calculations = DateTimeAwareJSONField(blank=True, default=empty_calculations)
+
+    current_todos = JSONField(blank=True, default=list)
+    current_provider = models.CharField(max_length=31, blank=True, null=True)
+
+    in_progress = models.BooleanField(default=False)
+
+    def reset(self):
+        self.calculations = self.empty_calculations
+        self.current_todos = []
+        self.current_provider = None
+        self.in_progress = False
+
+    def set_finished(self):
+        self.calculations['meta'].update({'finished': True})
+
+    def inc_total_files(self):
+        totalFiles = self.calculations['meta']['totalFiles']
+        self.calculations['meta'].update({'totalFiles': totalFiles + 1})
+
+    def inc_tei_files(self):
+        teiFiles = self.calculations['meta']['teiFiles']
+        self.calculations['meta'].update({'teiFiles': teiFiles + 1})

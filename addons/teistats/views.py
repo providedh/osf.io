@@ -169,6 +169,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
     :raises: HTTPError if API does not respond as desired
 
     """
+    logger.debug('Calculation TEI statistics for node {} by user {} called'.format(node, auth.user))
     auth_redirect = check_contributor_auth(node, auth, include_public=True, include_view_only_anon=True)
     if auth_redirect:  # redirection to CAS, but we can't do that in backend
         raise HTTPError(
@@ -180,7 +181,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
         # another thread is calculating statistics - return the current one
         return TeiStatistics.objects.get(node=node).calculations
 
-    tei_statistics = TeiStatistics.objects.get(node=node)
+    logger.debug('Calculation TEI statistics for node {} by user {} has started'.format(node, auth.user))
     try:
         if tei_statistics.calculations['statistics'] and node.last_logged > tei_statistics.modified:
             # if node has changed since last calculation
@@ -238,8 +239,8 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                                     tree = etree.parse(tei)
                                     tei_statistics.inc_tei_files()
                                     for xpath_expr in node_addon.xpath_exprs:
-                                        xpath = xpath_expr.get('xpath')
-                                        name = xpath_expr.get('name') if 'name' in xpath_expr else xpath_expr.get('xpath')
+                                        xpath = xpath_expr['xpath']
+                                        name = xpath_expr['name'] if 'name' in xpath_expr and xpath_expr['name'] else xpath
                                         statistic = get_or_create_statistic(name, tei_statistics)
                                         n = statistic.get('n')
                                         try:
@@ -273,8 +274,8 @@ def lock_node(node):
             tei_statistics.in_progress = True
             tei_statistics.save(update_modified=False)
             return tei_statistics
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug('Another thread has already a lock: {}'.format(e))
 
 
 def unlock_node(node):
@@ -283,8 +284,8 @@ def unlock_node(node):
             tei_statistics = TeiStatistics.objects.filter(node=node, in_progress=True).select_for_update(True).get()
             tei_statistics.in_progress = False
             tei_statistics.save(update_modified=False)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error('Error while releasing a lock: {}'.format(e))
 
 
 def node_storage_providers(node):

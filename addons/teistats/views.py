@@ -198,6 +198,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                     logger.debug('Setting new provider {} for calculating TEI statistics for node {}'.format(provider, node))
                 else:
                     # statistics are already calculated - return them
+                    logger.debug('TEI statistics are already calculated for node {}'.format(node))
                     return tei_statistics.calculations
             else:
                 if providers.index(tei_statistics.current_provider) + 1 < len(providers):
@@ -206,6 +207,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                     logger.debug('Setting next provider {} for calculating TEI statistics for node {}'.format(provider, node))
                 else:
                     # no next provider, return calculated statistics - that's end
+                    logger.debug('There is no next provider for calculating TEI statistics for node {}'.format(node))
                     tei_statistics.current_provider = None
                     tei_statistics.set_finished()
                     tei_statistics.save(update_modified=True)
@@ -258,11 +260,11 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                     elif d['attributes']['kind'] == 'folder':
                         tei_statistics.current_todos.append(d['relationships']['files']['links']['related']['href'])
 
+            tei_statistics.save(update_modified=True)
         except KeyError:
             # unexpected json from API -> omit data from this call
             pass
 
-        tei_statistics.save(update_modified=True)
     finally:
         unlock_node(node)
 
@@ -272,10 +274,23 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
 def lock_node(node):
     try:
         with transaction.atomic():
-            tei_statistics = TeiStatistics.objects.filter(node=node, in_progress=False).select_for_update(True).get()
+            tei_statistics = TeiStatistics.objects.select_for_update(True).get(node_id=node.id, in_progress=False)
             tei_statistics.in_progress = True
             tei_statistics.save(update_modified=False)
+            logger.debug('TEI statistics for node {} locked {}'.format(node, tei_statistics.calculations))
             return tei_statistics
+    except TeiStatistics.DoesNotExist as e:
+        logger.debug('TEI statistics does not exits yet')
+        TeiStatistics.objects.create(node=node)
+        try:
+            with transaction.atomic():
+                tei_statistics = TeiStatistics.objects.select_for_update(True).get(node_id=node.id, in_progress=False)
+                tei_statistics.in_progress = True
+                tei_statistics.save(update_modified=False)
+                logger.debug('TEI statistics for node {} locked {}'.format(node, tei_statistics.calculations))
+                return tei_statistics
+        except Exception as e:
+            logger.debug('Another thread has already a lock: {}'.format(e))
     except Exception as e:
         logger.debug('Another thread has already a lock: {}'.format(e))
 
@@ -283,9 +298,10 @@ def lock_node(node):
 def unlock_node(node):
     try:
         with transaction.atomic():
-            tei_statistics = TeiStatistics.objects.filter(node=node, in_progress=True).select_for_update(True).get()
+            tei_statistics = TeiStatistics.objects.select_for_update(True).get(node_id=node.id, in_progress=True)
             tei_statistics.in_progress = False
             tei_statistics.save(update_modified=False)
+            logger.debug('TEI statistics for node {} unlocked {}'.format(node, tei_statistics.calculations))
     except Exception as e:
         logger.error('Error while releasing a lock: {}'.format(e))
 

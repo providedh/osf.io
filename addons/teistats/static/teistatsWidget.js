@@ -13,9 +13,9 @@ var TeiStatsWidget = {
     controller: function(options) {
         var self = this;
         self.node = options.node;
-        self.loadNext = m.prop(false);
-        self.totalFiles = m.prop('0');
-        self.teiFiles = m.prop('0');
+        self.loadNext = m.prop(true);
+        self.totalFiles = m.prop('-');
+        self.teiFiles = m.prop('-');
         self.statistics = m.prop([]);
         self.requestPending = m.prop(false);
         self.firstRequest = true;
@@ -51,7 +51,6 @@ var TeiStatsWidget = {
             }
         };
 
-        self.getStatistics();
         setInterval(self.getStatistics, 1000 * 30); // every 30 seconds
     },
 
@@ -82,7 +81,7 @@ var TeiStatsWidget = {
                 }) : ''],
                 ctrl.loadNext() ? m('.spinner-loading-wrapper', [
                     m('.ball-scale.ball-scale-blue', [m('div')]),
-                    m('p.m-t-sm.fg-load-message', 'Loading further TEI statistics...')
+                    m('p.m-t-sm.fg-load-message', 'Calculating TEI statistics...')
                 ]) : ''
             ]
         ]);

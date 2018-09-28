@@ -98,7 +98,7 @@ class NodeSettings(BaseNodeSettings):
 
 class TeiStatistics(BaseModel):
 
-    empty_calculations = {
+    EMPTY_CALCULATIONS = {
             'meta': {
                 'finished': False,
                 'totalFiles': 0,
@@ -108,7 +108,7 @@ class TeiStatistics(BaseModel):
         }
 
     node = models.OneToOneField('osf.AbstractNode', blank=True, null=True, related_name='+', on_delete=models.CASCADE)
-    calculations = DateTimeAwareJSONField(blank=True, default=empty_calculations)
+    calculations = DateTimeAwareJSONField(blank=True, default=dict(EMPTY_CALCULATIONS))
 
     current_todos = JSONField(blank=True, default=list)
     current_provider = models.CharField(max_length=31, blank=True, null=True)
@@ -116,10 +116,16 @@ class TeiStatistics(BaseModel):
     in_progress = models.BooleanField(default=False)
 
     def reset(self):
-        self.calculations = self.empty_calculations
+        self.calculations = {
+            'meta': {
+                'finished': False,
+                'totalFiles': 0,
+                'teiFiles': 0
+            },
+            'statistics': []
+        } # dict(TeiStatistics.EMPTY_CALCULATIONS) doesn't work - EMPTY_CALCULATIONS is concurrently changed !!!
         self.current_todos = []
         self.current_provider = None
-        self.in_progress = False
 
     def set_finished(self):
         self.calculations['meta'].update({'finished': True})
@@ -131,3 +137,4 @@ class TeiStatistics(BaseModel):
     def inc_tei_files(self):
         teiFiles = self.calculations['meta']['teiFiles']
         self.calculations['meta'].update({'teiFiles': teiFiles + 1})
+

@@ -185,6 +185,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
     try:
         if tei_statistics.calculations['statistics'] and node.last_logged > tei_statistics.modified:
             # if node has changed since last calculation
+            logger.debug('Clearing TEI statistics for node {}'.format(node))
             tei_statistics.reset()
             tei_statistics.save(update_modified=True)
 

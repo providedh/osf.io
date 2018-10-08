@@ -8,6 +8,7 @@ import requests
 from django.db import transaction
 from django.utils.http import urlquote
 from flask import request
+from framework.flask import redirect
 from lxml import etree
 
 from addons.teistats.models import TeiStatistics
@@ -25,6 +26,12 @@ from website.project.decorators import (
 
 logger = logging.getLogger(__name__)
 
+
+@must_be_valid_project
+@must_have_addon('teistats', 'node')
+def teistats_get_main_vis(**kwargs):
+    # node = kwargs['node'] or kwargs['project']
+    return {}
 
 @must_have_permission('write')
 @must_not_be_registration

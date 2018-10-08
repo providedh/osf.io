@@ -17,7 +17,7 @@ class TeiStatsAddonConfig(BaseAddonAppConfig):
     short_name = 'teistats'
     owners = ['node']
     configs = ['node']
-    views = ['widget']
+    views = ['widget', 'page']
     categories = ['visualizations']
     has_hgrid_files = False
     node_settings_template = NODE_SETTINGS_TEMPLATE
@@ -30,8 +30,8 @@ class TeiStatsAddonConfig(BaseAddonAppConfig):
 
     @property
     def routes(self):
-        from .routes import api_routes
-        return [api_routes]
+        from .routes import page_routes, api_routes
+        return [page_routes, api_routes]
 
     @property
     def node_settings(self):

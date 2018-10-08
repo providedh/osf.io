@@ -3,6 +3,28 @@
 from addons.teistats import views
 from framework.routing import Rule, json_renderer
 
+from website.routes import OsfWebRenderer
+
+TEMPLATE_DIR = './addons/teistats/templates/'
+
+# NOTE: <wname> refers to a wiki page's key, e.g. 'Home'
+page_routes = {
+
+    'rules': [
+
+        # Home (Base) | GET
+        Rule(
+            [
+                '/project/<pid>/teistats/',
+                '/project/<pid>/node/<nid>/teistats/',
+            ],
+            'get',
+            views.teistats_get_main_vis,
+            OsfWebRenderer('teistats_vis_main.mako', trust=False, template_dir=TEMPLATE_DIR)
+        ),
+    ]
+}
+
 api_routes = {
 
     'rules': [

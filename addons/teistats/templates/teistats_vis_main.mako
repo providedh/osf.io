@@ -1,5 +1,5 @@
-## <%inherit file="project/project_base.mako"/>
-## <%def name="title()">${node['title']} Visualization</%def>
+<%inherit file="project/project_base.mako"/>
+<%def name="title()">${node['title']} Visualization</%def>
 
 ## Use full page width
 <%def name="container_class()">container-xxl</%def>

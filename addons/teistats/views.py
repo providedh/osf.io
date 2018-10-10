@@ -8,7 +8,6 @@ import requests
 from django.db import transaction
 from django.utils.http import urlquote
 from flask import request
-from framework.flask import redirect
 from lxml import etree
 
 from addons.teistats.models import TeiStatistics
@@ -17,21 +16,34 @@ from framework.exceptions import HTTPError
 from osf.exceptions import ValidationError
 from osf.models import BaseFileNode
 from website import settings as website_settings
+from website.profile.utils import get_profile_image_url
 from website.project.decorators import check_contributor_auth
 from website.project.decorators import (
     must_have_addon,
     must_have_permission,
     must_not_be_registration,
     must_be_valid_project)
+from website.project.views.node import _view_project
 
 logger = logging.getLogger(__name__)
 
 
 @must_be_valid_project
 @must_have_addon('teistats', 'node')
-def teistats_get_main_vis(**kwargs):
-    # node = kwargs['node'] or kwargs['project']
-    return {}
+def teistats_get_main_vis(auth, node_addon, **kwargs):
+    node = kwargs['node'] or kwargs['project']
+
+    ret = {
+        'category': node.category,
+        'urls': {
+            'api': '',
+            'web': '',
+            'profile_image': get_profile_image_url(auth.user, 25),
+        },
+    }
+    ret.update(_view_project(node, auth, primary=True))
+    return ret
+
 
 @must_have_permission('write')
 @must_not_be_registration

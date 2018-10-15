@@ -172,7 +172,6 @@ var resolve = {
         'TweenLite' : nodePath('gsap/src/minified/TweenLite.min.js'),
         'EasePack' : nodePath('gsap/src/minified/easing/EasePack.min.js'),
         'keen-dataset' : nodePath('keen-dataviz/lib/dataset/'),
-        'visContainer': addonsPath('teistats/static/visContainer.js'),
     }
 };
 

@@ -256,21 +256,34 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                         file = get_file(d['id'])
                         if file:
                             waterbutler_url = waterbutler_api_url_for(node._id, tei_statistics.current_provider, file.path, True)
-                            tei = call_waterbutler_quietly(waterbutler_url, request.cookies, request.headers.get('HTTP_AUTHORIZATION'))
-                            if tei:
+                            file_response = call_waterbutler_quietly(waterbutler_url, request.cookies, request.headers.get('HTTP_AUTHORIZATION'))
+                            if file_response:
                                 tei_statistics.inc_total_files()
                                 try:
-                                    tree = etree.parse(tei)
+                                    tree = etree.parse(StringIO(file_response.content)) 
                                     tei_statistics.inc_tei_files()
+                                    lines = len(file_response.text.split('\n'))
+                                    tei_statistics.update_max_lines(lines)
                                     for xpath_expr in node_addon.xpath_exprs:
                                         xpath = xpath_expr['xpath']
                                         name = xpath_expr['name'] if 'name' in xpath_expr and xpath_expr['name'] else xpath
                                         statistic = get_or_create_statistic(name, tei_statistics)
                                         n = statistic.get('n')
+                                        lines = statistic.get('lines')
                                         try:
                                             prefixed_xpath = prefix_xpath(xpath)
                                             nodeset = tree.xpath(prefixed_xpath, namespaces=namespaces)
-                                            statistic.update({'n': n + len(nodeset)})
+                                            if len(nodeset) > 0:
+                                                sourcelines = {}
+                                                for match_node in nodeset:
+                                                    sourceline_str = str(match_node.sourceline).decode('utf-8')
+                                                    sourcelines[sourceline_str] = sourcelines.setdefault(sourceline_str, 0) + 1
+                                                for k, v in sourcelines.items():
+                                                    if k in lines:
+                                                        lines[k] += v
+                                                    else:
+                                                        lines[k] = v
+                                            statistic.update({'n': n + len(nodeset), 'lines': lines})
                                         except etree.XPathEvalError:
                                             # XML -> incorrect XPath
                                             pass
@@ -370,7 +383,7 @@ def call_waterbutler_quietly(url, cookies, auth_header):
 
     if download_response.status_code == 200:
         try:
-            return StringIO(download_response.content)
+            return download_response
         except (IOError, UnicodeError) as e:
             logger.warn('Error while reading content from WaterButler: {}'.format(e))
             pass
@@ -389,6 +402,7 @@ def get_or_create_statistic(name, tei_statistics):
     statistic = {
          'element': name,
         'n': 0,
+        'lines': {}
     }
     tei_statistics.calculations['statistics'].append(statistic)
     return statistic

@@ -67,8 +67,7 @@ var TeiStatsWidget = {
             // Show OSF spinner while there is a pending TEI statistics request
             ctrl.firstRequest && ctrl.requestPending() ?  m('.spinner-loading-wrapper', [
                 m('.ball-scale.ball-scale-blue', [m('div')]),
-                // m('p.m-t-sm.fg-load-message', 'Loading TEI statistics...')
-                m('p.m-t-sm.fg-load-message', 'Widget disabled. Check TEI Stats page.')
+                m('p.m-t-sm.fg-load-message', 'Loading TEI statistics...')
             ]) :
             // Display each statistics item (element name or xpath and number of occurrences)
             [
@@ -82,7 +81,7 @@ var TeiStatsWidget = {
                 }) : ''],
                 ctrl.loadNext() ? m('.spinner-loading-wrapper', [
                     m('.ball-scale.ball-scale-blue', [m('div')]),
-                    m('p.m-t-sm.fg-load-message', 'Calculating TEI statistics...')
+                    m('p.m-t-sm.fg-load-message', 'Widget disabled. Check TEI Stats page.')
                 ]) : ''
             ]
         ]);

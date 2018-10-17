@@ -62,6 +62,16 @@ api_routes = {
 
         Rule(
              [
+                '/project/<pid>/teistats/config/reset-statistics/',
+                '/project/<pid>/node/<nid>/teistats/config/reset-statistics/'
+             ],
+             'delete',
+             views.teistats_config_reset_statistics,
+             json_renderer
+        ),
+
+        Rule(
+             [
                 '/project/<pid>/teistats/config/',
                 '/project/<pid>/node/<nid>/teistats/config/'
              ],

@@ -153,6 +153,27 @@ def teistats_config_remove_xpath(auth, node_addon, **kwargs):
     return {}
 
 
+@must_have_permission('write')
+@must_not_be_registration
+@must_have_addon('teistats', 'node')
+def teistats_config_reset_statistics(auth, node_addon, **kwargs):
+
+    clear_statistics(node_addon.owner)
+
+    # Add a log
+    node_addon.owner.add_log(
+         action='teistats_statistics_reset',
+         params=dict(
+             node=node_addon.owner._id,
+             project=node_addon.owner.parent_id
+         ),
+         auth=auth,
+         save=True,
+    )
+
+    return {}
+
+
 def clear_statistics(node):
     """Clear current statistics for a given node
 

@@ -51,7 +51,7 @@ var TeiStatsWidget = {
             }
         };
 
-        setInterval(self.getStatistics, 1000 * 30); // every 30 seconds
+        // setInterval(self.getStatistics, 1000 * 30); // every 30 seconds
     },
 
     view : function(ctrl) {
@@ -67,7 +67,8 @@ var TeiStatsWidget = {
             // Show OSF spinner while there is a pending TEI statistics request
             ctrl.firstRequest && ctrl.requestPending() ?  m('.spinner-loading-wrapper', [
                 m('.ball-scale.ball-scale-blue', [m('div')]),
-                m('p.m-t-sm.fg-load-message', 'Loading TEI statistics...')
+                // m('p.m-t-sm.fg-load-message', 'Loading TEI statistics...')
+                m('p.m-t-sm.fg-load-message', 'Widget disabled. Check TEI Stats page.')
             ]) :
             // Display each statistics item (element name or xpath and number of occurrences)
             [

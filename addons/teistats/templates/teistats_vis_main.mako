@@ -9,6 +9,8 @@
 ## Use full page width
 <%def name="container_class()">container-xxl</%def>
 
+<button id="startstop-button" class="btn btn-default btn-sm m-l-md"><i class="fa fa-play"></i> Start</button>
+<button id="reset-button" class="btn btn-default btn-sm m-l-md"><i class="fa fa-times"></i> Reset</button>
 <svg id="vis-svg-container"></svg>
 
 

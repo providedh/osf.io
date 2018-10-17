@@ -39,4 +39,6 @@ var VisContainer = require('visContainer');
 //     metadata: ctx.metadata
 // };
 
-var visContainer = new VisContainer('#visContainer', {});
+var visContainerOptions = {node: window.contextVars.node}
+
+var visContainer = new VisContainer('#visContainer', visContainerOptions);

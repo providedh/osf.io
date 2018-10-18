@@ -9,6 +9,7 @@ from django.db import transaction
 from django.utils.http import urlquote
 from flask import request
 from lxml import etree
+import re
 
 from addons.teistats.models import TeiStatistics
 from api.base.utils import waterbutler_api_url_for
@@ -290,21 +291,32 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                                         name = xpath_expr['name'] if 'name' in xpath_expr and xpath_expr['name'] else xpath
                                         statistic = get_or_create_statistic(name, tei_statistics)
                                         n = statistic.get('n')
-                                        lines = statistic.get('lines')
+                                        percentages = statistic.get('percentages')
                                         try:
                                             prefixed_xpath = prefix_xpath(xpath)
                                             nodeset = tree.xpath(prefixed_xpath, namespaces=namespaces)
                                             if len(nodeset) > 0:
-                                                sourcelines = {}
-                                                for match_node in nodeset:
-                                                    sourceline_str = str(match_node.sourceline).decode('utf-8')
-                                                    sourcelines[sourceline_str] = sourcelines.setdefault(sourceline_str, 0) + 1
-                                                for k, v in sourcelines.items():
-                                                    if k in lines:
-                                                        lines[k] += v
+                                                parent_string = stringify_children(nodeset[0].getparent()).encode('utf-8')
+                                                k = nodeset[0].tag.rfind('}')
+                                                bare_stripped = nodeset[0].tag[k+1: ] + ' '
+                                                logger.debug('Text is {}'.format(parent_string))
+                                                logger.debug(bare_stripped)
+
+                                                p = re.compile(bare_stripped)
+                                                positions = []
+                                                result_percentages = []
+                                                for m in p.finditer(parent_string):
+                                                    result_percentages.append(str(int(100 * float(m.start())/float(len(parent_string)))))
+                                                logger.debug('{} found at percentages {}'.format(bare_stripped, ', '.join(result_percentages)))
+
+                                                for item in result_percentages:
+                                                    if item in percentages:
+                                                        percentages[item] += 1
                                                     else:
-                                                        lines[k] = v
-                                            statistic.update({'n': n + len(nodeset), 'lines': lines})
+                                                        percentages[item] = 1
+                                            logger.debug(percentages)
+                                            statistic.update({'n': n + len(nodeset), 'percentages': percentages})
+
                                         except etree.XPathEvalError:
                                             # XML -> incorrect XPath
                                             pass
@@ -324,6 +336,14 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
 
     return TeiStatistics.objects.get(node=node).calculations
 
+def stringify_children(node):
+    from lxml.etree import tostring
+    from itertools import chain
+    parts = ([node.text] +
+            list(chain(*([c.text, tostring(c), c.tail] for c in node.getchildren()))) +
+            [node.tail])
+    # filter removes possible Nones in texts and tails
+    return ''.join(filter(None, parts))
 
 def lock_node(node):
     try:
@@ -423,7 +443,7 @@ def get_or_create_statistic(name, tei_statistics):
     statistic = {
          'element': name,
         'n': 0,
-        'lines': {}
+        'percentages': {}
     }
     tei_statistics.calculations['statistics'].append(statistic)
     return statistic

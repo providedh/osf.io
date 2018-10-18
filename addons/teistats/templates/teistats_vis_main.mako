@@ -18,7 +18,7 @@
 ${parent.javascript_bottom()}
 <script>
 
-    console.log('Hello from JS');
+    //console.log('Hello from JS');
 
 </script>
 <script src=${"/static/public/js/vis-container-page.js" | webpack_asset}></script>

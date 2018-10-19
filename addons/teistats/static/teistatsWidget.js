@@ -51,6 +51,7 @@ var TeiStatsWidget = {
             }
         };
 
+        self.getStatistics()
         setInterval(self.getStatistics, 1000 * 30); // every 30 seconds
     },
 

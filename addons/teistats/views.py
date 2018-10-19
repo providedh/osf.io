@@ -2,6 +2,7 @@
 import httplib as http
 import logging
 from StringIO import StringIO
+from threading import Thread
 
 import furl
 import requests
@@ -181,7 +182,6 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
         # another thread is calculating statistics - return the current one
         return TeiStatistics.objects.get(node=node).calculations
 
-    logger.debug('Calculation TEI statistics for node {} by user {} has started'.format(node, auth.user))
     try:
         if tei_statistics.calculations['statistics'] and node.last_logged > tei_statistics.modified:
             # if node has changed since last calculation
@@ -189,6 +189,20 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
             tei_statistics.reset()
             tei_statistics.save(update_modified=True)
 
+        logger.debug('Running a thread calculating TEI statistics for node {} by user {}'.format(node, auth.user))
+        thread = Thread(target = calculate_tei_statistics, args = (auth, node, node_addon, tei_statistics, request.cookies, request.headers.get('HTTP_AUTHORIZATION')))
+        thread.start()
+    except Exception as e:
+        logger.error('Error while starting a thread calculating TEI statistics for node {}'.format(node), e)
+        unlock_node(node)
+
+    # return current statistics
+    return TeiStatistics.objects.get(node=node).calculations
+
+
+def calculate_tei_statistics(auth, node, node_addon, tei_statistics, cookies, auth_header):
+    logger.debug('Calculation TEI statistics for node {} by user {} has started'.format(node, auth.user))
+    try:
         if not tei_statistics.current_todos:
             # there is no next step
             providers = node_storage_providers(node)
@@ -200,7 +214,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                 else:
                     # statistics are already calculated - return them
                     logger.debug('TEI statistics are already calculated for node {}'.format(node))
-                    return tei_statistics.calculations
+                    return ## tei_statistics.calculations
             else:
                 if providers.index(tei_statistics.current_provider) + 1 < len(providers):
                     # get the next one
@@ -212,7 +226,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                     tei_statistics.current_provider = None
                     tei_statistics.set_finished()
                     tei_statistics.save(update_modified=True)
-                    return tei_statistics.calculations
+                    return ## tei_statistics.calculations
             # call API for the root of the provider
             api_url = api_url_for(node._id, provider)
             # change current provider
@@ -223,7 +237,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
             # remove current call
             tei_statistics.current_todos.pop(0)
 
-        api_json = call_api(api_url, request.cookies, request.headers.get('HTTP_AUTHORIZATION'))
+        api_json = call_api(api_url, cookies, auth_header)
 
         try:
             links = api_json['links']
@@ -237,7 +251,7 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
                         file = get_file(d['id'])
                         if file:
                             waterbutler_url = waterbutler_api_url_for(node._id, tei_statistics.current_provider, file.path, True)
-                            tei = call_waterbutler_quietly(waterbutler_url, request.cookies, request.headers.get('HTTP_AUTHORIZATION'))
+                            tei = call_waterbutler_quietly(waterbutler_url, cookies, auth_header)
                             if tei:
                                 tei_statistics.inc_total_files()
                                 try:
@@ -267,9 +281,8 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
             pass
 
     finally:
+        logger.debug('Calculation TEI statistics for node {} by user {} has finished'.format(node, auth.user))
         unlock_node(node)
-
-    return TeiStatistics.objects.get(node=node).calculations
 
 
 def lock_node(node):
@@ -280,18 +293,6 @@ def lock_node(node):
             tei_statistics.save(update_modified=False)
             logger.debug('TEI statistics for node {} locked {}'.format(node, tei_statistics.calculations))
             return tei_statistics
-    except TeiStatistics.DoesNotExist as e:
-        logger.debug('TEI statistics does not exits yet')
-        TeiStatistics.objects.create(node=node)
-        try:
-            with transaction.atomic():
-                tei_statistics = TeiStatistics.objects.select_for_update(True).get(node_id=node.id, in_progress=False)
-                tei_statistics.in_progress = True
-                tei_statistics.save(update_modified=False)
-                logger.debug('TEI statistics for node {} locked {}'.format(node, tei_statistics.calculations))
-                return tei_statistics
-        except Exception as e:
-            logger.debug('Another thread has already a lock: {}'.format(e))
     except Exception as e:
         logger.debug('Another thread has already a lock: {}'.format(e))
 

@@ -102,7 +102,8 @@ class TeiStatistics(BaseModel):
             'meta': {
                 'finished': False,
                 'totalFiles': 0,
-                'teiFiles': 0
+                'teiFiles': 0,
+                'maxLines': 0
             },
             'statistics': []
         }
@@ -120,7 +121,8 @@ class TeiStatistics(BaseModel):
             'meta': {
                 'finished': False,
                 'totalFiles': 0,
-                'teiFiles': 0
+                'teiFiles': 0,
+                'maxLines': 0
             },
             'statistics': []
         } # dict(TeiStatistics.EMPTY_CALCULATIONS) doesn't work - EMPTY_CALCULATIONS is concurrently changed !!!
@@ -137,4 +139,10 @@ class TeiStatistics(BaseModel):
     def inc_tei_files(self):
         teiFiles = self.calculations['meta']['teiFiles']
         self.calculations['meta'].update({'teiFiles': teiFiles + 1})
+
+    def update_max_lines(self, number_of_lines):
+        prev_number_of_lines = self.calculations['meta']['maxLines']
+        if prev_number_of_lines < number_of_lines:
+            self.calculations['meta'].update({'maxLines': number_of_lines})
+
 

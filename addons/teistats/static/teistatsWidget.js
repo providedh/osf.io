@@ -51,8 +51,8 @@ var TeiStatsWidget = {
             }
         };
 
-        self.getStatistics()
-        setInterval(self.getStatistics, 1000 * 30); // every 30 seconds
+        //self.getStatistics()
+        // setInterval(self.getStatistics, 1000 * 30); // every 30 seconds
     },
 
     view : function(ctrl) {
@@ -82,7 +82,7 @@ var TeiStatsWidget = {
                 }) : ''],
                 ctrl.loadNext() ? m('.spinner-loading-wrapper', [
                     m('.ball-scale.ball-scale-blue', [m('div')]),
-                    m('p.m-t-sm.fg-load-message', 'Calculating TEI statistics...')
+                    m('p.m-t-sm.fg-load-message', 'Widget disabled. Check TEI Stats page.')
                 ]) : ''
             ]
         ]);

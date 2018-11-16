@@ -10,6 +10,7 @@ from django.db import transaction
 from django.utils.http import urlquote
 from flask import request
 from lxml import etree
+import re
 
 from addons.teistats.models import TeiStatistics
 from api.base.utils import waterbutler_api_url_for
@@ -17,14 +18,33 @@ from framework.exceptions import HTTPError
 from osf.exceptions import ValidationError
 from osf.models import BaseFileNode
 from website import settings as website_settings
+from website.profile.utils import get_profile_image_url
 from website.project.decorators import check_contributor_auth
 from website.project.decorators import (
     must_have_addon,
     must_have_permission,
     must_not_be_registration,
     must_be_valid_project)
+from website.project.views.node import _view_project
 
 logger = logging.getLogger(__name__)
+
+
+@must_be_valid_project
+@must_have_addon('teistats', 'node')
+def teistats_get_main_vis(auth, node_addon, **kwargs):
+    node = kwargs['node'] or kwargs['project']
+
+    ret = {
+        'category': node.category,
+        'urls': {
+            'api': '',
+            'web': '',
+            'profile_image': get_profile_image_url(auth.user, 25),
+        },
+    }
+    ret.update(_view_project(node, auth, primary=True))
+    return ret
 
 
 @must_have_permission('write')
@@ -127,6 +147,27 @@ def teistats_config_remove_xpath(auth, node_addon, **kwargs):
              node=node_addon.owner._id,
              project=node_addon.owner.parent_id,
              xpath_expr=request.json.get('xpath')
+         ),
+         auth=auth,
+         save=True,
+    )
+
+    return {}
+
+
+@must_have_permission('write')
+@must_not_be_registration
+@must_have_addon('teistats', 'node')
+def teistats_config_reset_statistics(auth, node_addon, **kwargs):
+
+    clear_statistics(node_addon.owner)
+
+    # Add a log
+    node_addon.owner.add_log(
+         action='teistats_statistics_reset',
+         params=dict(
+             node=node_addon.owner._id,
+             project=node_addon.owner.parent_id
          ),
          auth=auth,
          save=True,
@@ -251,21 +292,45 @@ def calculate_tei_statistics(auth, node, node_addon, tei_statistics, cookies, au
                         file = get_file(d['id'])
                         if file:
                             waterbutler_url = waterbutler_api_url_for(node._id, tei_statistics.current_provider, file.path, True)
-                            tei = call_waterbutler_quietly(waterbutler_url, cookies, auth_header)
-                            if tei:
+                            file_response = call_waterbutler_quietly(waterbutler_url, cookies, auth_header)
+                            if file_response:
                                 tei_statistics.inc_total_files()
                                 try:
-                                    tree = etree.parse(tei)
+                                    tree = etree.parse(StringIO(file_response.content)) 
                                     tei_statistics.inc_tei_files()
+                                    lines = len(file_response.text.split('\n'))
+                                    tei_statistics.update_max_lines(lines)
                                     for xpath_expr in node_addon.xpath_exprs:
                                         xpath = xpath_expr['xpath']
                                         name = xpath_expr['name'] if 'name' in xpath_expr and xpath_expr['name'] else xpath
                                         statistic = get_or_create_statistic(name, tei_statistics)
                                         n = statistic.get('n')
+                                        percentages = statistic.get('percentages')
                                         try:
                                             prefixed_xpath = prefix_xpath(xpath)
                                             nodeset = tree.xpath(prefixed_xpath, namespaces=namespaces)
-                                            statistic.update({'n': n + len(nodeset)})
+                                            if len(nodeset) > 0:
+                                                parent_string = stringify_children(nodeset[0].getparent()).encode('utf-8')
+                                                k = nodeset[0].tag.rfind('}')
+                                                bare_stripped = nodeset[0].tag[k+1: ] + ' '
+                                                logger.debug('Text is {}'.format(parent_string))
+                                                logger.debug(bare_stripped)
+
+                                                p = re.compile(bare_stripped)
+                                                positions = []
+                                                result_percentages = []
+                                                for m in p.finditer(parent_string):
+                                                    result_percentages.append(str(int(100 * float(m.start())/float(len(parent_string)))))
+                                                logger.debug('{} found at percentages {}'.format(bare_stripped, ', '.join(result_percentages)))
+
+                                                for item in result_percentages:
+                                                    if item in percentages:
+                                                        percentages[item] += 1
+                                                    else:
+                                                        percentages[item] = 1
+                                            logger.debug(percentages)
+                                            statistic.update({'n': n + len(nodeset), 'percentages': percentages})
+
                                         except etree.XPathEvalError:
                                             # XML -> incorrect XPath
                                             pass
@@ -283,6 +348,18 @@ def calculate_tei_statistics(auth, node, node_addon, tei_statistics, cookies, au
     finally:
         logger.debug('Calculation TEI statistics for node {} by user {} has finished'.format(node, auth.user))
         unlock_node(node)
+
+    return TeiStatistics.objects.get(node=node).calculations
+
+
+def stringify_children(node):
+    from lxml.etree import tostring
+    from itertools import chain
+    parts = ([node.text] +
+            list(chain(*([c.text, tostring(c), c.tail] for c in node.getchildren()))) +
+            [node.tail])
+    # filter removes possible Nones in texts and tails
+    return ''.join(filter(None, parts))
 
 
 def lock_node(node):
@@ -352,7 +429,7 @@ def call_waterbutler_quietly(url, cookies, auth_header):
 
     if download_response.status_code == 200:
         try:
-            return StringIO(download_response.content)
+            return download_response
         except (IOError, UnicodeError) as e:
             logger.warn('Error while reading content from WaterButler: {}'.format(e))
             pass
@@ -371,6 +448,7 @@ def get_or_create_statistic(name, tei_statistics):
     statistic = {
          'element': name,
         'n': 0,
+        'percentages': {}
     }
     tei_statistics.calculations['statistics'].append(statistic)
     return statistic

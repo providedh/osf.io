@@ -9,8 +9,8 @@ NODE_SETTINGS_TEMPLATE = os.path.join(
     'teistats_node_settings.mako',
 )
 
-class TeiStatsAddonConfig(BaseAddonAppConfig):
 
+class TeiStatsAddonConfig(BaseAddonAppConfig):
     name = 'addons.teistats'
     label = 'addons_teistats'
     full_name = 'TEI Statistics'
@@ -25,8 +25,12 @@ class TeiStatsAddonConfig(BaseAddonAppConfig):
     XPATH_EXPRESSION_ADDED = 'teistats_xpath_expression_added'
     XPATH_EXPRESSION_CHANGED = 'teistats_xpath_expression_changed'
     XPATH_EXPRESSION_REMOVED = 'teistats_xpath_expression_removed'
+    TEI_STATISTICS_START = 'teistats_statistics_start'
+    TEI_STATISTICS_STOP = 'teistats_statistics_stop'
+    TEI_STATISTICS_RESET = 'teistats_statistics_reset'
 
-    actions = (XPATH_EXPRESSION_ADDED, XPATH_EXPRESSION_CHANGED, XPATH_EXPRESSION_REMOVED)
+    actions = (XPATH_EXPRESSION_ADDED, XPATH_EXPRESSION_CHANGED, XPATH_EXPRESSION_REMOVED, TEI_STATISTICS_START,
+               TEI_STATISTICS_STOP, TEI_STATISTICS_RESET)
 
     @property
     def routes(self):
@@ -36,4 +40,3 @@ class TeiStatsAddonConfig(BaseAddonAppConfig):
     @property
     def node_settings(self):
         return self.get_model('NodeSettings')
-    

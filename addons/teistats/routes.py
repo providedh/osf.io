@@ -7,7 +7,6 @@ from website.routes import OsfWebRenderer
 
 TEMPLATE_DIR = './addons/teistats/templates/'
 
-# NOTE: <wname> refers to a wiki page's key, e.g. 'Home'
 page_routes = {
 
     'rules': [
@@ -61,30 +60,50 @@ api_routes = {
         ),
 
         Rule(
-             [
-                '/project/<pid>/teistats/config/reset-statistics/',
-                '/project/<pid>/node/<nid>/teistats/config/reset-statistics/'
-             ],
-             'delete',
-             views.teistats_config_reset_statistics,
-             json_renderer
+            [
+                '/project/<pid>/teistats/config/',
+                '/project/<pid>/node/<nid>/teistats/config/'
+            ],
+            'get',
+            views.teistats_config_get,
+            json_renderer
+        ),
+
+        # Calculations
+        Rule(
+            [
+                '/project/<pid>/teistats/start-statistics/',
+                '/project/<pid>/node/<nid>/teistats/start-statistics/'
+            ],
+            'get',
+            views.teistats_statistics_start,
+            json_renderer
+        ),
+
+        Rule(
+            [
+                '/project/<pid>/teistats/stop-statistics/',
+                '/project/<pid>/node/<nid>/teistats/stop-statistics/'
+            ],
+            'get',
+            views.teistats_statistics_stop,
+            json_renderer
         ),
 
         Rule(
              [
-                '/project/<pid>/teistats/config/',
-                '/project/<pid>/node/<nid>/teistats/config/'
+                '/project/<pid>/teistats/reset-statistics/',
+                '/project/<pid>/node/<nid>/teistats/reset-statistics/'
              ],
-             'get',
-             views.teistats_config_get,
+             'delete',
+             views.teistats_statistics_reset,
              json_renderer
         ),
-              
-        # Widget
+
         Rule(
             [
-                '/project/<pid>/teistats/statistics/',
-                '/project/<pid>/node/<nid>/teistats/statistics/',
+                '/project/<pid>/teistats/get-statistics/',
+                '/project/<pid>/node/<nid>/teistats/get-statistics/',
             ],
             'get',
             views.teistats_statistics_get,

@@ -1,5 +1,8 @@
 {
     "teistats_xpath_expression_added" : "A user added an XPath expression to the TEI statistics add-on in a project",
     "teistats_xpath_expression_changed" : "A user changed an XPath expression of the TEI statistics add-on in a project",
-    "teistats_xpath_expression_removed" : "A user removed an XPath expression from the TEI statistics add-on in a project"
+    "teistats_xpath_expression_removed" : "A user removed an XPath expression from the TEI statistics add-on in a project",
+    "teistats_statistics_start" : "A user started TEI Statistics calculations for a project",
+    "teistats_statistics_stop" : "A user stopped TEI Statistics calculations for a project",
+    "teistats_statistics_reset" : "A user reset TEI Statistics calculations for a project"
 }

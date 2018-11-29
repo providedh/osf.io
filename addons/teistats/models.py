@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
+
 from addons.base.models import BaseNodeSettings
 from addons.teistats.validators import validate_xpath, validate_name
 from osf.exceptions import ValidationError, reraise_django_validation_errors
 from osf.models.base import BaseModel
+from osf.models.node import AbstractNode
+from osf.models.user import OSFUser
 from osf.utils.datetime_aware_jsonfield import DateTimeAwareJSONField, JSONField
 
 
@@ -108,13 +111,18 @@ class TeiStatistics(BaseModel):
             'statistics': []
         }
 
-    node = models.OneToOneField('osf.AbstractNode', blank=True, null=True, related_name='+', on_delete=models.CASCADE)
+    node = models.ForeignKey('osf.AbstractNode', blank=True, null=True, related_name='+', on_delete=models.CASCADE)
+    owner = models.ForeignKey(OSFUser, blank=True, null=True, related_name='+', on_delete=models.CASCADE)
     calculations = DateTimeAwareJSONField(blank=True, default=dict(EMPTY_CALCULATIONS))
 
     current_todos = JSONField(blank=True, default=list)
     current_provider = models.CharField(max_length=31, blank=True, null=True)
 
     in_progress = models.BooleanField(default=False)
+    mark_to_stop = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('node', 'owner',)
 
     def reset(self):
         self.calculations = {

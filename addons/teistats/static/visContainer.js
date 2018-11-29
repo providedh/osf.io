@@ -10,7 +10,7 @@ var VisContainer = function(selector, options) {
     var self = this;
     console.log(options.node);
     self.node = options.node
-    var url = self.node.urls.api + 'teistats/statistics/';
+    var url = self.node.urls.api + 'teistats/get-statistics/';
     self.axisAdded = false;
     
     self.mixButton = document.getElementById("startstop-button");
@@ -24,12 +24,19 @@ var VisContainer = function(selector, options) {
     	self.mixButton.removeEventListener("click", startAction);
     	self.mixButton.addEventListener("click", stopAction);
     	self.mixButton.innerHTML = '<i class="fa fa-stop"></i> Stop';
+  	   	fetch(options.node.urls.api + 'teistats/start-statistics/', {
+    		method: "GET"
+    	});
     	self.fetchStatisticsPeriodically(10);
     };
 
     var stopAction = function() {
     	clearInterval(self.timerId);
-    	console.log("Stopped");
+    	fetch(options.node.urls.api + 'teistats/stop-statistics/', {
+    		method: "GET"
+    	});
+    	console.log("Signaled to stop calculating");
+    	// TODO change stop to start, when the thread stops
     	self.mixButton.removeEventListener("click", stopAction);
     	self.mixButton.addEventListener("click", startAction);
     	self.mixButton.innerHTML = '<i class="fa fa-play"></i> Start';
@@ -41,8 +48,7 @@ var VisContainer = function(selector, options) {
 	            message: 'Are you sure you want to reset statistics for this node?',
 	            callback: function(result) {
 	                if(result) {
-	                	stopAction();
-	                	fetch(options.node.urls.api + 'teistats/config/reset-statistics/', {
+	                	fetch(options.node.urls.api + 'teistats/reset-statistics/', {
 	                		method: "DELETE"
 	                	}).then(function(response) {
 	                		if (response.ok) console.log('Statistics were reset');
@@ -80,7 +86,6 @@ var VisContainer = function(selector, options) {
     		});
     	};
     	
-    	fetchStatistics();
     	self.timerId = setInterval(fetchStatistics, 1000 * seconds);
     };
 

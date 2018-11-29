@@ -1,5 +1,8 @@
 {
     "teistats_xpath_expression_added" : "${user} added the XPath expression '${xpath_expr}' to the TEI statistics add-on in ${node}",
     "teistats_xpath_expression_changed" : "${user} changed the XPath expression '${xpath_expr}' of the TEI statistics add-on in ${node}",
-    "teistats_xpath_expression_removed" : "${user} removed the XPath expression '${xpath_expr}' from the TEI statistics add-on in ${node}"
+    "teistats_xpath_expression_removed" : "${user} removed the XPath expression '${xpath_expr}' from the TEI statistics add-on in ${node}",
+    "teistats_statistics_start" : "${user} started TEI Statistics calculations for ${node}",
+    "teistats_statistics_stop" : "${user} stopped TEI Statistics calculations for ${node}",
+    "teistats_statistics_reset" : "${user} reset TEI Statistics calculations for ${node}"
 }

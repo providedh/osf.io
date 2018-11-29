@@ -13,16 +13,13 @@ var TeiStatsWidget = {
     controller: function(options) {
         var self = this;
         self.node = options.node;
-        self.loadNext = m.prop(true);
         self.totalFiles = m.prop('-');
         self.teiFiles = m.prop('-');
         self.statistics = m.prop([]);
         self.requestPending = m.prop(false);
-        self.firstRequest = true;
         self.failed = false;
 
         self.updateStatistics = function (result) {
-            self.loadNext(!result.meta.finished);
             self.totalFiles(result.meta.totalFiles);
             self.teiFiles(result.meta.teiFiles);
             self.statistics(result.statistics);
@@ -31,14 +28,13 @@ var TeiStatsWidget = {
         self.getStatistics = function() {
             if(!self.requestPending()) {
                 self.requestPending(true);
-                var url = self.node.urls.api + 'teistats/statistics/';
+                var url = self.node.urls.api + 'teistats/get-statistics/';
                 var promise = m.request({
                     method : 'GET',
                     url : url
                 });
                 promise.then(
                     function(result) {
-                        self.firstRequest = false;
                         self.updateStatistics(result);
                         self.requestPending(false);
                         return promise;
@@ -51,8 +47,9 @@ var TeiStatsWidget = {
             }
         };
 
-        //self.getStatistics()
-        // setInterval(self.getStatistics, 1000 * 30); // every 30 seconds
+        console.log(self.node.urls.web)
+
+        self.getStatistics()
     },
 
     view : function(ctrl) {
@@ -66,7 +63,7 @@ var TeiStatsWidget = {
                 m('a', {'href': 'mailto:' + OSF_SUPPORT_EMAIL}, OSF_SUPPORT_EMAIL), ' if the problem persists.'
             ]) :
             // Show OSF spinner while there is a pending TEI statistics request
-            ctrl.firstRequest && ctrl.requestPending() ?  m('.spinner-loading-wrapper', [
+            ctrl.requestPending() ?  m('.spinner-loading-wrapper', [
                 m('.ball-scale.ball-scale-blue', [m('div')]),
                 m('p.m-t-sm.fg-load-message', 'Loading TEI statistics...')
             ]) :
@@ -80,10 +77,10 @@ var TeiStatsWidget = {
                         m('span.text-right', item.n)
                     ]);
                 }) : ''],
-                ctrl.loadNext() ? m('.spinner-loading-wrapper', [
-                    m('.ball-scale.ball-scale-blue', [m('div')]),
-                    m('p.m-t-sm.fg-load-message', 'Widget disabled. Check TEI Stats page.')
-                ]) : ''
+                m('br'),
+                m('p.f-w-xl.pull-right', ['Check the TEI Statistics page to run calculations and visualizations ',
+                    m('a', {'href': ctrl.node.urls.web + 'teistats/'}, m('i.fa.fa-external-link'))
+                ])
             ]
         ]);
 

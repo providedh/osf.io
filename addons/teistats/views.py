@@ -1,23 +1,14 @@
 # -*- coding: utf-8 -*-
 import httplib as http
 import logging
-from StringIO import StringIO
-from threading import Thread
 
-import furl
-import requests
-from django.db import transaction
-from django.utils.http import urlquote
 from flask import request
-from lxml import etree
-import re
 
 from addons.teistats.models import TeiStatistics
-from api.base.utils import waterbutler_api_url_for
+from addons.teistats.tasks import calculate_tei_statistics
+from framework.celery_tasks import app as celery_app
 from framework.exceptions import HTTPError
 from osf.exceptions import ValidationError
-from osf.models import BaseFileNode
-from website import settings as website_settings
 from website.profile.utils import get_profile_image_url
 from website.project.decorators import check_contributor_auth
 from website.project.decorators import (
@@ -65,18 +56,18 @@ def teistats_config_add_xpath(auth, node_addon, **kwargs):
             data=dict(message_long=str(e.message))
         )
 
-    clear_node_statistics(node_addon.owner, update_modified=True)
+    clear_node_statistics(node_addon.owner)
 
     # Add a log
     node_addon.owner.add_log(
-         action='teistats_xpath_expression_added',
-         params=dict(
-             node=node_addon.owner._id,
-             project=node_addon.owner.parent_id,
-             xpath_expr=request.json.get('xpath')
-         ),
-         auth=auth,
-         save=True,
+        action='teistats_xpath_expression_added',
+        params=dict(
+            node=node_addon.owner._id,
+            project=node_addon.owner.parent_id,
+            xpath_expr=request.json.get('xpath')
+        ),
+        auth=auth,
+        save=True,
     )
 
     return {}
@@ -104,7 +95,7 @@ def teistats_config_edit_xpath(auth, node_addon, **kwargs):
             data=dict(message_long=str(e.message))
         )
 
-    clear_node_statistics(node_addon.owner, update_modified=True)
+    clear_node_statistics(node_addon.owner)
 
     # Add a log
     if changed:
@@ -138,31 +129,35 @@ def teistats_config_remove_xpath(auth, node_addon, **kwargs):
             http.BAD_REQUEST,
         )
 
-    clear_node_statistics(node_addon.owner, update_modified=True)
+    clear_node_statistics(node_addon.owner)
 
     # Add a log
     node_addon.owner.add_log(
-         action='teistats_xpath_expression_removed',
-         params=dict(
-             node=node_addon.owner._id,
-             project=node_addon.owner.parent_id,
-             xpath_expr=request.json.get('xpath')
-         ),
-         auth=auth,
-         save=True,
+        action='teistats_xpath_expression_removed',
+        params=dict(
+            node=node_addon.owner._id,
+            project=node_addon.owner.parent_id,
+            xpath_expr=request.json.get('xpath')
+        ),
+        auth=auth,
+        save=True,
     )
 
     return {}
 
 
-def clear_node_statistics(node, update_modified=True):
-    """Clear current statistics of all users for a given node
+def clear_node_statistics(node):
+    """Clear current statistics of all users for a given node and stops all tasks that are currently counting those statistocs.
 
     """
 
     for tei_statistics in TeiStatistics.objects.filter(node=node):
+        task_id = tei_statistics.task_id
+        if task_id:
+            celery_app.control.revoke(task_id, terminate=True)
         tei_statistics.reset()
-        tei_statistics.save(update_modified=update_modified)
+        tei_statistics.task_id = None
+        tei_statistics.save()
 
 
 @must_be_valid_project
@@ -182,24 +177,29 @@ def teistats_config_get(node, node_addon, **kwargs):
 @must_be_valid_project
 @must_have_addon('teistats', 'node')
 def teistats_statistics_start(auth, node, node_addon, **kwargs):
-    logger.debug('Calculation TEI statistics for node {} by user {} called'.format(node, auth.user))
+    logger.debug(
+        'Starting calculation TEI statistics for node {} (node_id = {}) by user {} (user_id = {}) called'.format(
+            node.title, node.id, auth.user.username, auth.user.id))
+
     auth_redirect = check_contributor_auth(node, auth, include_public=True, include_view_only_anon=True)
     if auth_redirect:  # redirection to CAS, but we can't do that in backend
         raise HTTPError(
             http.UNAUTHORIZED,
         )
 
-    tei_statistics = lock_statistics(node, auth.user)
-    if not tei_statistics:
-        # another thread is calculating statistics - return the current one
-        return TeiStatistics.objects.get(node=node, owner=auth.user).calculations
-
     try:
-        if tei_statistics.calculations['statistics'] and node.last_logged > tei_statistics.modified:
-            # if node has changed since last calculation
-            logger.debug('Clearing TEI statistics of all users for node {}'.format(node))
-            clear_node_statistics(node, update_modified=True)
-        logger.debug('Running a thread calculating TEI statistics for node {} by user {}'.format(node, auth.user))
+        tei_statistics = TeiStatistics.objects.get(node=node, owner=auth.user)
+    except TeiStatistics.DoesNotExist:
+        tei_statistics = TeiStatistics.objects.create(node=node, owner=auth.user)
+
+    if tei_statistics.calculations['statistics'] and node.last_logged > tei_statistics.modified:
+        # node has changed since last calculation
+        logger.debug('Clearing TEI statistics of all users for node {}'.format(node))
+        clear_node_statistics(node)
+
+    if not tei_statistics.task_id:
+        logger.debug('Running a celery task calculating TEI statistics for node_id {} by user_id {}'.format(node.id,
+                                                                                                            auth.user.id))
         node_addon.owner.add_log(
             action='teistats_statistics_start',
             params=dict(
@@ -209,29 +209,33 @@ def teistats_statistics_start(auth, node, node_addon, **kwargs):
             auth=auth,
             save=True,
         )
-        thread = Thread(target = calculate_tei_statistics, args = (auth, node, node_addon, tei_statistics,
-                                                                   request.cookies, request.headers.get('HTTP_AUTHORIZATION')))
-        thread.start()
-    except Exception as e:
-        logger.error('Error while starting a thread calculating TEI statistics for node {}'.format(node), e)
-        unlock_statistics(node, auth.user)
 
-    # return current statistics
-    return TeiStatistics.objects.get(node=node, owner=auth.user).calculations
+        async_result = calculate_tei_statistics.delay(auth.user.id, node.id, node_addon.xpath_exprs, tei_statistics.id,
+                                                      False, request.cookies, request.headers.get('HTTP_AUTHORIZATION'))
+        tei_statistics.task_id = async_result.task_id
+        tei_statistics.save(update_modified=False)
+
+    return {}
 
 
 @must_have_permission('read')
 @must_be_valid_project
 @must_have_addon('teistats', 'node')
 def teistats_statistics_stop(auth, node, node_addon, **kwargs):
+    logger.debug(
+        'Stopping calculation TEI statistics for node {} (node_id = {}) by user {} (user_id = {}) called'.format(
+            node.title, node.id, auth.user.username, auth.user.id))
 
     try:
         tei_statistics = TeiStatistics.objects.get(node=node, owner=auth.user)
-        tei_statistics.mark_to_stop = True
+        task_id = tei_statistics.task_id
+        if task_id:
+            celery_app.control.revoke(task_id, terminate=True)
+        tei_statistics.task_id = None
         tei_statistics.save(update_modified=False)
-        logger.debug('Attribute that controls the running thread for node {} and user {} was set'.format(node, auth.user))
-    except TeiStatistics.DoesNotExist:
-        logger.debug('Attribute that controls the running thread for node {} and user {} does not already exist'.format(node, auth.user))
+        logger.debug('Celery task for node_id {} and user_id {} stopped'.format(node.id, auth.user.id))
+    except Exception as e:
+        logger.debug('Error while stopping celery task for node_id {} and user_id {}: {}'.format(node, auth.user, e))
         return {}
 
     # Add a log
@@ -252,7 +256,6 @@ def teistats_statistics_stop(auth, node, node_addon, **kwargs):
 @must_be_valid_project
 @must_have_addon('teistats', 'node')
 def teistats_statistics_reset(auth, node, node_addon, **kwargs):
-
     try:
         tei_statistics = TeiStatistics.objects.get(node=node, owner=auth.user)
         tei_statistics.reset()
@@ -283,251 +286,3 @@ def teistats_statistics_get(auth, node, node_addon, **kwargs):
         return TeiStatistics.objects.get(node=node, owner=auth.user).calculations
     except TeiStatistics.DoesNotExist:
         return TeiStatistics.EMPTY_CALCULATIONS
-
-
-def calculate_tei_statistics(auth, node, node_addon, tei_statistics, cookies, auth_header):
-    logger.debug('Calculation TEI statistics for node {} by user {} has started'.format(node, auth.user))
-    mark_to_stop = TeiStatistics.objects.get(node=node, owner=auth.user).mark_to_stop
-    while not mark_to_stop:
-        try:
-            if not tei_statistics.current_todos:
-                # there is no next step
-                providers = node_storage_providers(node)
-                if not tei_statistics.current_provider:
-                    if not tei_statistics.calculations['statistics']:
-                        # there is no current provider, get the first one
-                        provider = providers[0]
-                        logger.debug('Setting new provider {} for calculating TEI statistics for node {} and user {}'.format(provider, node, auth.user))
-                    else:
-                        # statistics are already calculated - return them
-                        logger.debug('TEI statistics are already calculated for node {} and user {}'.format(node, auth.user))
-                        tei_statistics.mark_to_stop = False
-                        tei_statistics.save(update_modified=False)
-                        return ## tei_statistics.calculations
-                else:
-                    if providers.index(tei_statistics.current_provider) + 1 < len(providers):
-                        # get the next one
-                        provider = providers[providers.index(tei_statistics.current_provider) + 1]
-                        logger.debug('Setting next provider {} for calculating TEI statistics for node {} and user {}'.format(provider, node, auth.user))
-                    else:
-                        # no next provider, return calculated statistics - that's end
-                        logger.debug('There is no next provider for calculating TEI statistics for node {} and user {}'.format(node, auth.user))
-                        tei_statistics.current_provider = None
-                        tei_statistics.set_finished()
-                        tei_statistics.mark_to_stop = False
-                        tei_statistics.save(update_modified=True)
-                        return ## tei_statistics.calculations
-                # call API for the root of the provider
-                api_url = api_url_for(node._id, provider)
-                # change current provider
-                tei_statistics.current_provider = provider
-            elif tei_statistics.current_todos:
-                # call the next step of API
-                api_url = tei_statistics.current_todos[0].replace(website_settings.API_DOMAIN, website_settings.API_INTERNAL_DOMAIN, 1)
-                # remove current call
-                tei_statistics.current_todos.pop(0)
-
-            api_json = call_api(api_url, cookies, auth_header)
-
-            try:
-                links = api_json['links']
-                if 'next' in links and links['next']:
-                    tei_statistics.current_todos.append(links['next'])
-
-                namespaces = {'tei': 'http://www.tei-c.org/ns/1.0'}
-                for d in api_json['data']:
-                    if d['type'] == 'files':
-                        if d['attributes']['kind'] == 'file':
-                            file = get_file(d['id'])
-                            if file:
-                                waterbutler_url = waterbutler_api_url_for(node._id, tei_statistics.current_provider, file.path, True)
-                                file_response = call_waterbutler_quietly(waterbutler_url, cookies, auth_header)
-                                if file_response:
-                                    tei_statistics.inc_total_files()
-                                    try:
-                                        tree = etree.parse(StringIO(file_response.content))
-                                        tei_statistics.inc_tei_files()
-                                        lines = len(file_response.text.split('\n'))
-                                        tei_statistics.update_max_lines(lines)
-                                        for xpath_expr in node_addon.xpath_exprs:
-                                            xpath = xpath_expr['xpath']
-                                            name = xpath_expr['name'] if 'name' in xpath_expr and xpath_expr['name'] else xpath
-                                            statistic = get_or_create_statistic(name, tei_statistics)
-                                            n = statistic.get('n')
-                                            percentages = statistic.get('percentages')
-                                            try:
-                                                prefixed_xpath = prefix_xpath(xpath)
-                                                nodeset = tree.xpath(prefixed_xpath, namespaces=namespaces)
-                                                if len(nodeset) > 0:
-                                                    parent_string = stringify_children(nodeset[0].getparent()).encode('utf-8')
-                                                    k = nodeset[0].tag.rfind('}')
-                                                    bare_stripped = nodeset[0].tag[k+1: ] + ' '
-                                                    logger.debug('Text is {}'.format(parent_string))
-                                                    logger.debug(bare_stripped)
-
-                                                    p = re.compile(bare_stripped)
-
-                                                    result_percentages = []
-                                                    for m in p.finditer(parent_string):
-                                                        result_percentages.append(str(int(100 * float(m.start())/float(len(parent_string)))))
-                                                    logger.debug('{} found at percentages {}'.format(bare_stripped, ', '.join(result_percentages)))
-
-                                                    for item in result_percentages:
-                                                        if item in percentages:
-                                                            percentages[item] += 1
-                                                        else:
-                                                            percentages[item] = 1
-                                                logger.debug(percentages)
-                                                statistic.update({'n': n + len(nodeset), 'percentages': percentages})
-
-                                            except etree.XPathEvalError:
-                                                # XML -> incorrect XPath
-                                                pass
-                                    except etree.XMLSyntaxError:
-                                        # not XML -> not TEI
-                                        pass
-                        elif d['attributes']['kind'] == 'folder':
-                            tei_statistics.current_todos.append(d['relationships']['files']['links']['related']['href'])
-
-                tei_statistics.save(update_modified=True)
-            except KeyError:
-                # unexpected json from API -> omit data from this call
-                pass
-
-        finally:
-            logger.debug('Calculation TEI statistics for node {} by user {} has finished'.format(node, auth.user))
-            unlock_statistics(node, auth.user)
-
-        mark_to_stop = TeiStatistics.objects.get(node=node, owner=auth.user).mark_to_stop
-
-    return ##TeiStatistics.objects.get(node=node, owner=auth.user).calculations
-
-
-def stringify_children(node):
-    from lxml.etree import tostring
-    from itertools import chain
-    parts = ([node.text] +
-            list(chain(*([c.text, tostring(c), c.tail] for c in node.getchildren()))) +
-            [node.tail])
-    # filter removes possible Nones in texts and tails
-    return ''.join(filter(None, parts))
-
-
-def lock_statistics(node, user):
-    try:
-        with transaction.atomic():
-            TeiStatistics.objects.create(node=node, owner=user)
-    except:
-        pass
-    try:
-        with transaction.atomic():
-            tei_statistics = TeiStatistics.objects.select_for_update(True).get(node=node, owner=user, in_progress=False)
-            tei_statistics.in_progress = True
-            tei_statistics.save(update_modified=False)
-            logger.debug('TEI statistics for node {} and user {} locked {}'.format(node, user, tei_statistics.calculations))
-            return tei_statistics
-    except Exception as e:
-        logger.debug('Another thread has already a lock: {}'.format(e))
-
-
-def unlock_statistics(node, user):
-    try:
-        with transaction.atomic():
-            tei_statistics = TeiStatistics.objects.select_for_update(True).get(node=node, owner=user, in_progress=True)
-            tei_statistics.in_progress = False
-            tei_statistics.save(update_modified=False)
-            logger.debug('TEI statistics for node {} unlocked {}'.format(node, tei_statistics.calculations))
-    except Exception as e:
-        logger.error('Error while releasing a lock: {}'.format(e))
-
-
-def node_storage_providers(node):
-    return [addon.config.short_name for addon in node.get_addons() if
-                 addon.config.has_hgrid_files and addon.configured]
-
-
-def api_url_for(node_id, provider, path='/', _internal=True, **kwargs):
-    assert path.startswith('/'), 'Path must always start with /'
-    url = furl.furl((website_settings.API_INTERNAL_DOMAIN if _internal else website_settings.API_DOMAIN) + 'v2')
-    segments = ['nodes', node_id, 'files', provider] + path.split('/')[1:]
-    url.path.segments.extend([urlquote(x) for x in segments])
-    url.args.update(kwargs)
-    return url.url
-
-
-def call_api(url, cookies, auth_header):
-    logger.debug('Calling API function: {}'.format(url))
-    api_response = requests.get(
-        url,
-        cookies=cookies,
-        headers={'Authorization': auth_header}
-    )
-
-    if api_response.status_code != 200:
-        raise HTTPError(
-            api_response.status_code,
-        )
-    try:
-        return api_response.json()
-    except ValueError:
-        raise HTTPError(
-            http.SERVICE_UNAVAILABLE,
-        )
-
-
-def call_waterbutler_quietly(url, cookies, auth_header):
-    logger.debug('Calling WaterButler: {}'.format(url))
-    download_response = requests.get(
-        url,
-        cookies=cookies,
-        headers={'Authorization': auth_header}
-    )
-
-    if download_response.status_code == 200:
-        try:
-            return download_response
-        except (IOError, UnicodeError) as e:
-            logger.warn('Error while reading content from WaterButler: {}'.format(e))
-            pass
-
-
-def get_file(file_id):
-    file = BaseFileNode.active.filter(_id=file_id).first()
-    if file and file.is_file:
-        return file
-
-
-def get_or_create_statistic(name, tei_statistics):
-    for statistic in tei_statistics.calculations['statistics']:
-        if statistic.get('element') == name:
-            return statistic
-    statistic = {
-         'element': name,
-        'n': 0,
-        'percentages': {}
-    }
-    tei_statistics.calculations['statistics'].append(statistic)
-    return statistic
-
-
-def prefix_xpath(xpath):
-    """For a given XPath expression that hasn't got any namespaces returns the 'tei' prefixed one.
-
-    :param xpath: node for which statistic will be calculated
-    :return: prefixed XPath expression
-
-    """
-    prefixed_xpath = ''
-    empty = False
-    for part in xpath.split('/'):
-        if not part:
-            prefixed_xpath += '/'
-            empty = True
-            continue
-        if not empty:
-            prefixed_xpath += '/'
-        empty = False
-        if not part.startswith('*') and not part.startswith('@'):
-            prefixed_xpath += 'tei:'
-        prefixed_xpath += part
-    return prefixed_xpath

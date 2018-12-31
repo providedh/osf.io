@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 
-
 from addons.base.models import BaseNodeSettings
 from addons.teistats.validators import validate_xpath, validate_name
 from osf.exceptions import ValidationError, reraise_django_validation_errors
 from osf.models.base import BaseModel
-from osf.models.node import AbstractNode
 from osf.models.user import OSFUser
 from osf.utils.datetime_aware_jsonfield import DateTimeAwareJSONField, JSONField
 
 
 class NodeSettings(BaseNodeSettings):
-
     # list of XPath expressions for which statistics will be calculated
     xpath_exprs = JSONField(blank=True, default=list)
 
@@ -29,7 +26,6 @@ class NodeSettings(BaseNodeSettings):
         clone.save()
 
         return clone, None
-
 
     def add_xpath_expr(self, xpath_expr):
         """
@@ -54,7 +50,6 @@ class NodeSettings(BaseNodeSettings):
         self.xpath_exprs.append(xpath_expr)
         self.save()
 
-
     def change_xpath_expr(self, xpath_expr, field, value):
         """
         Change XPath expresssion.
@@ -74,7 +69,7 @@ class NodeSettings(BaseNodeSettings):
             for (i, expr) in enumerate(self.xpath_exprs):
                 if expr == xpath_expr:
                     if value:
-                        self.xpath_exprs[i].update({field:  value})
+                        self.xpath_exprs[i].update({field: value})
                     else:
                         self.xpath_exprs[i].pop(field, None)
                     break
@@ -82,7 +77,6 @@ class NodeSettings(BaseNodeSettings):
             return True
 
         return False
-
 
     def remove_xpath_expr(self, xpath_expr):
         """
@@ -100,16 +94,15 @@ class NodeSettings(BaseNodeSettings):
 
 
 class TeiStatistics(BaseModel):
-
     EMPTY_CALCULATIONS = {
-            'meta': {
-                'finished': False,
-                'totalFiles': 0,
-                'teiFiles': 0,
-                'maxLines': 0
-            },
-            'statistics': []
-        }
+        'meta': {
+            'finished': False,
+            'totalFiles': 0,
+            'teiFiles': 0,
+            'maxLines': 0
+        },
+        'statistics': []
+    }
 
     node = models.ForeignKey('osf.AbstractNode', blank=True, null=True, related_name='+', on_delete=models.CASCADE)
     owner = models.ForeignKey(OSFUser, blank=True, null=True, related_name='+', on_delete=models.CASCADE)
@@ -118,8 +111,7 @@ class TeiStatistics(BaseModel):
     current_todos = JSONField(blank=True, default=list)
     current_provider = models.CharField(max_length=31, blank=True, null=True)
 
-    in_progress = models.BooleanField(default=False)
-    mark_to_stop = models.BooleanField(default=False)
+    task_id = models.CharField(max_length=63, blank=True, null=True)
 
     class Meta:
         unique_together = ('node', 'owner',)
@@ -133,7 +125,7 @@ class TeiStatistics(BaseModel):
                 'maxLines': 0
             },
             'statistics': []
-        } # dict(TeiStatistics.EMPTY_CALCULATIONS) doesn't work - EMPTY_CALCULATIONS is concurrently changed !!!
+        }  # dict(TeiStatistics.EMPTY_CALCULATIONS) doesn't work - EMPTY_CALCULATIONS is concurrently changed !!!
         self.current_todos = []
         self.current_provider = None
 
@@ -152,5 +144,3 @@ class TeiStatistics(BaseModel):
         prev_number_of_lines = self.calculations['meta']['maxLines']
         if prev_number_of_lines < number_of_lines:
             self.calculations['meta'].update({'maxLines': number_of_lines})
-
-

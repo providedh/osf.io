@@ -116,6 +116,10 @@ var FileViewPage = {
         self.editorMeta = self.context.editor;
         self.isLatestVersion = false;
 
+        self.closeReading = {
+            selected: false,
+        };
+
         self.selectLatest = function() {
             self.isLatestVersion = true;
         };
@@ -548,6 +552,13 @@ var FileViewPage = {
                     }
                 }, 'View'), editButton())
             ),
+            m('.btn-group.m-l-xs.m-t-xs', [
+                ctrl.file.isTEIP5Unprefixed ? m('button.btn.btn-sm.btn-default', {
+                    onclick: function () {
+                        return window.open('/' + window.contextVars.node.id + '/teiclose/' +
+                            window.contextVars.file.guid + '/', '_self'); }
+                }, 'Close reading') : null
+            ]),
             m('.btn-group.m-t-xs', [
                 m('button.btn.btn-sm' + (ctrl.revisions.selected ? '.btn-primary': '.btn-default'), {onclick: function(){
                     var editable = ctrl.editor && ctrl.editor.selected;

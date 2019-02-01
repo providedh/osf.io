@@ -823,6 +823,7 @@ def addon_view_file(auth, node, file_node, version):
         'allow_comments': file_node.provider in settings.ADDONS_COMMENTABLE,
         'checkout_user': file_node.checkout._id if file_node.checkout else None,
         'pre_reg_checkout': is_pre_reg_checkout(node, file_node),
+        'is_tei_p5_unprefixed': version.metadata['is_tei_p5_unprefixed'] if ('is_tei_p5_unprefixed' in version.metadata) else False,
     })
 
     ret.update(rubeus.collect_addon_assets(node))

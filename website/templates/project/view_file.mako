@@ -207,6 +207,7 @@
             id: ${file_id | sjson, n},
             checkoutUser: ${checkout_user if checkout_user else None | sjson, n},
             isPreregCheckout: ${pre_reg_checkout if pre_reg_checkout else False | sjson, n},
+            isTEIP5Unprefixed: ${is_tei_p5_unprefixed | sjson, n},
           urls: {
         %if error is None:
               render: ${ urls['render'] | sjson, n },

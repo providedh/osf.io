@@ -3,7 +3,7 @@
 
 <%def name="stylesheets()">
     ${parent.stylesheets()}
-    <link rel="stylesheet" href="/static/css/pages/vis-container-page.css">
+    <link rel="stylesheet" href="/static/css/pages/teistats-page.css">
 </%def>
 
 ## Use full page width
@@ -21,5 +21,5 @@ ${parent.javascript_bottom()}
     //console.log('Hello from JS');
 
 </script>
-<script src=${"/static/public/js/vis-container-page.js" | webpack_asset}></script>
+<script src=${"/static/public/js/teistats-page.js" | webpack_asset}></script>
 </%def>

@@ -416,6 +416,24 @@ def must_have_write_permission_or_public_wiki(func):
     # Return decorated function
     return wrapped
 
+def must_have_read_permission_or_be_public(func):
+    """ Checks if user has read permission or node is public. """
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        # Ensure `project` and `node` kwargs
+        _inject_nodes(kwargs)
+
+        node = kwargs['node'] or kwargs['project']
+
+        if node.is_public:
+            return func(*args, **kwargs)
+        else:
+            return must_have_permission('read')(func)(*args, **kwargs)
+
+    # Return decorated function
+    return wrapped
+
+
 def http_error_if_disk_saving_mode(func):
 
     @functools.wraps(func)

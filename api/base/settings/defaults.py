@@ -110,6 +110,7 @@ INSTALLED_APPS = (
     'addons.s3',
     'addons.twofactor',
     'addons.teistats',
+    'addons.teiclose',
     'addons.wiki',
     'addons.zotero',
 )

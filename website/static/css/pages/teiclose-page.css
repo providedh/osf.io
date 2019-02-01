@@ -1,0 +1,10 @@
+#close-reading-widget {
+    padding: 10px 10px 10px 10px;
+    width: 100%;
+    height: 700px;
+}
+
+div.file-content {
+    height: 600px;
+    overflow: auto;
+}

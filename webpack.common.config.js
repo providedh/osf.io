@@ -37,7 +37,8 @@ var entry = {
     'registration-edit-page': staticPath('js/pages/registration-edit-page.js'),
     'register-page': staticPath('js/pages/register-page.js'),
     'wiki-edit-page': staticPath('js/pages/wiki-edit-page.js'),
-    'vis-container-page': staticPath('js/pages/vis-container-page.js'),
+    'teistats-page': staticPath('js/pages/teistats-page.js'),
+    'teiclose-page': staticPath('js/pages/teiclose-page.js'),
     'statistics-page': staticPath('js/pages/statistics-page.js'),
     'request-access-page': staticPath('js/pages/request-access-page.js'),
     'file-page': staticPath('js/pages/file-page.js'),
@@ -165,6 +166,8 @@ var resolve = {
         'pikaday-css': nodePath('pikaday/css/pikaday.css'),
         // Teistats 
         'visContainer': addonsPath('teistats/static/visContainer.js'),
+        // Teiclose
+        'closeReading': addonsPath('teiclose/static/closeReading.js'),
         // Also alias some internal libraries for easy access
         'addons': path.resolve(__dirname, 'addons'),
         'tests': staticPath('js/tests'),

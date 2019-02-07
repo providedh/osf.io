@@ -2483,13 +2483,16 @@ function _fangornOver(event, ui) {
  * @private
  */
 function addFileStatus(treebeard, file, success, message, link, op){
+    let uploadResponse = JSON.parse(file.xhr.responseText);
+    let migrationMessage = uploadResponse.data.attributes.extra.migrationMessage;
+
     if (typeof op !== 'undefined'){
         treebeard.moveStates.push(
             {'name': file.data.name, 'success': success, 'link': link, 'op': op}
         );
     } else {
         treebeard.uploadStates.push(
-            {'name': file.name, 'success': success, 'link': link, 'message': message}
+            {'name': file.name, 'success': success, 'link': link, 'message': message, 'migrationMessage': migrationMessage}
         );
     }
 
@@ -2516,7 +2519,8 @@ function _fangornQueueComplete(treebeard) {
                             m('.row', [
                                 m((status.success ? 'a[href="' + status.link + '"]' : '') + '.col-sm-10', status.name),
                                 m('.col-sm-1', m(status.success ? '.fa.fa-check[style="color: green"]' : '.fa.fa-times[style="color: red"]')),
-                                m('.col-sm-1', m(!status.success ? '.fa.fa-info[data-toggle="tooltip"][data-placement="top"][title="'+ status.message +'"]' : ''))
+                                m('.col-sm-1', m(!status.success ? '.fa.fa-info[data-toggle="tooltip"][data-placement="top"][title="'+ status.message +'"]' : '')),
+                                m('.col-sm-1', m(status.migrationMessage ? '.fa.fa-info[data-toggle="tooltip"][data-placement="top"][title="'+ status.migrationMessage +'"]' : ''))
                             ]),
                             m('hr')
                         ]

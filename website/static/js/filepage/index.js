@@ -504,6 +504,8 @@ var FileViewPage = {
                 '%26mode=render' : 'Data not available';
         var height = $('iframe').attr('height') ? $('iframe').attr('height') : '0px';
 
+        let linkCloseReading = '/' + window.contextVars.node.id + '/teiclose/' + window.contextVars.file.guid + '/';
+
         m.render(document.getElementById('toggleBar'), m('.btn-toolbar.m-t-md', [
             ctrl.context.currentUser.canEdit && (!ctrl.canEdit()) && (ctrl.context.currentUser.isAdmin) && (ctrl.file.provider !== 'bitbucket') && (ctrl.file.provider !== 'gitlab') && (ctrl.file.provider !== 'onedrive') && !ctrl.context.file.isPreregCheckout ? m('.btn-group.m-l-xs.m-t-xs', [
                 ctrl.isLatestVersion ? m('.btn.btn-sm.btn-default', {onclick: $(document).trigger.bind($(document), 'fileviewpage:force_checkin')}, 'Force check in') : null
@@ -554,9 +556,11 @@ var FileViewPage = {
             ),
             m('.btn-group.m-l-xs.m-t-xs', [
                 ctrl.file.isTEIP5Unprefixed ? m('button.btn.btn-sm.btn-default', {
+                    href: linkCloseReading,
                     onclick: function () {
-                        return window.open('/' + window.contextVars.node.id + '/teiclose/' +
-                            window.contextVars.file.guid + '/', '_self'); }
+                        window.location = linkCloseReading;
+                        return false;
+                    }
                 }, 'Close reading') : null
             ]),
             m('.btn-group.m-t-xs', [

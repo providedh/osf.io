@@ -3,6 +3,7 @@
 
 from __future__ import division
 
+import base64
 import copy
 import functools
 import logging
@@ -597,6 +598,7 @@ def update_file(file_, index=None, delete=False):
         'is_registration': file_.node.is_registration,
         'is_retracted': file_.node.is_retracted,
         'extra_search_terms': clean_splitters(file_.name),
+        'contents': file_.contents,
     }
 
     client().index(
@@ -712,9 +714,11 @@ def create_index(index=None):
                             # be explicitly mapped as a string to allow date ranges, which break on the inferred type
                             'year': {'type': 'string'},
                         }
-                    }
+                    },
                 }
             }
+            if type_ == 'file':
+                mapping['properties']['contents'] = ENGLISH_ANALYZER_PROPERTY
             if type_ in project_like_types:
                 analyzers = {field: ENGLISH_ANALYZER_PROPERTY
                              for field in analyzed_fields}

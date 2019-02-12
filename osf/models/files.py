@@ -98,6 +98,7 @@ class BaseFileNode(TypedModel, CommentableMixin, OptionalGuidMixin, Taggable, Ob
     copied_from = models.ForeignKey('self', blank=True, null=True, default=None, related_name='copy_of', on_delete=models.CASCADE)
 
     provider = models.CharField(max_length=25, blank=False, null=False, db_index=True)
+    contents = models.TextField(null=True, blank=True)
 
     name = models.TextField(blank=True)
     _path = models.TextField(blank=True, null=True)  # 1950 on prod

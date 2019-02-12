@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 from __future__ import division
@@ -35,7 +34,6 @@ from website.search.util import build_query, clean_splitters
 from website.views import validate_page_num
 
 logger = logging.getLogger(__name__)
-
 
 # These are the doc_types that exist in the search database
 ALIASES = {
@@ -132,6 +130,7 @@ def requires_search(func):
 
         sentry.log_message('Elastic search action failed. Is elasticsearch running?')
         raise exceptions.SearchUnavailableError('Failed to connect to elasticsearch')
+
     return wrapped
 
 
@@ -158,7 +157,7 @@ def get_aggregations(query, doc_type):
 
 
 @requires_search
-def get_counts(count_query, clean=True):
+def get_counts(count_query):
     count_query['aggregations'] = {
         'counts': {
             'terms': {
@@ -237,6 +236,7 @@ def search(query, index=None, doc_type='_all', raw=False):
     }
     return return_value
 
+
 def format_results(results):
     ret = []
     for result in results:
@@ -256,6 +256,7 @@ def format_results(results):
         ret.append(result)
     return ret
 
+
 def format_result(result, parent_id=None):
     parent_info = load_parent(parent_id)
     formatted_result = {
@@ -269,7 +270,7 @@ def format_result(result, parent_id=None):
         'parent_url': parent_info.get('url') if parent_info is not None else None,
         'tags': result['tags'],
         'is_registration': (result['is_registration'] if parent_info is None
-                                                        else parent_info.get('is_registration')),
+                            else parent_info.get('is_registration')),
         'is_retracted': result['is_retracted'],
         'is_pending_retraction': result['is_pending_retraction'],
         'embargo_end_date': result['embargo_end_date'],
@@ -315,6 +316,7 @@ def get_doctype_from_node(node):
     else:
         return node.category
 
+
 @celery_app.task(bind=True, max_retries=5, default_retry_delay=60)
 def update_node_async(self, node_id, index=None, bulk=False):
     AbstractNode = apps.get_model('osf.AbstractNode')
@@ -324,6 +326,7 @@ def update_node_async(self, node_id, index=None, bulk=False):
     except Exception as exc:
         self.retry(exc=exc)
 
+
 @celery_app.task(bind=True, max_retries=5, default_retry_delay=60)
 def update_user_async(self, user_id, index=None):
     OSFUser = apps.get_model('osf.OSFUser')
@@ -332,6 +335,7 @@ def update_user_async(self, user_id, index=None):
         update_user(user, index)
     except Exception as exc:
         self.retry(exc)
+
 
 def serialize_node(node, category):
     elastic_document = {}
@@ -350,7 +354,7 @@ def serialize_node(node, category):
                 'url': '/{}/'.format(x['guids___id']) if x['is_active'] else None
             }
             for x in node._contributors.filter(contributor__visible=True).order_by('contributor___order')
-            .values('fullname', 'guids___id', 'is_active')
+                .values('fullname', 'guids___id', 'is_active')
         ],
         'title': node.title,
         'normalized_title': normalized_title,
@@ -382,6 +386,7 @@ def serialize_node(node, category):
 
     return elastic_document
 
+
 @requires_search
 def update_node(node, index=None, bulk=False, async=False):
     from addons.osfstorage.models import OsfStorageFile
@@ -389,8 +394,11 @@ def update_node(node, index=None, bulk=False, async=False):
     for file_ in paginated(OsfStorageFile, Q(node=node)):
         update_file(file_, index=index)
 
-    is_qa_node = bool(set(settings.DO_NOT_INDEX_LIST['tags']).intersection(node.tags.all().values_list('name', flat=True))) or any(substring in node.title for substring in settings.DO_NOT_INDEX_LIST['titles'])
-    if node.is_deleted or not node.is_public or node.archiving or (node.is_spammy and settings.SPAM_FLAGGED_REMOVE_FROM_SEARCH) or node.is_quickfiles or is_qa_node:
+    is_qa_node = bool(
+        set(settings.DO_NOT_INDEX_LIST['tags']).intersection(node.tags.all().values_list('name', flat=True))) or any(
+        substring in node.title for substring in settings.DO_NOT_INDEX_LIST['titles'])
+    if node.is_deleted or not node.is_public or node.archiving or (
+            node.is_spammy and settings.SPAM_FLAGGED_REMOVE_FROM_SEARCH) or node.is_quickfiles or is_qa_node:
         delete_doc(node._id, node, index=index)
     else:
         category = get_doctype_from_node(node)
@@ -399,6 +407,7 @@ def update_node(node, index=None, bulk=False, async=False):
             return elastic_document
         else:
             client().index(index=index, doc_type=category, id=node._id, body=elastic_document, refresh=True)
+
 
 def bulk_update_nodes(serialize, nodes, index=None):
     """Updates the list of input projects
@@ -424,17 +433,20 @@ def bulk_update_nodes(serialize, nodes, index=None):
     if actions:
         return helpers.bulk(client(), actions)
 
+
 def serialize_cgm_contributor(contrib):
     return {
         'fullname': contrib['fullname'],
         'url': '/{}/'.format(contrib['guids___id']) if contrib['is_active'] else None
     }
 
+
 def serialize_cgm(cgm):
     obj = cgm.guid.referent
     contributors = []
     if hasattr(obj, '_contributors'):
-        contributors = obj._contributors.filter(contributor__visible=True).order_by('contributor___order').values('fullname', 'guids___id', 'is_active')
+        contributors = obj._contributors.filter(contributor__visible=True).order_by('contributor___order').values(
+            'fullname', 'guids___id', 'is_active')
 
     return {
         'id': cgm._id,
@@ -448,6 +460,7 @@ def serialize_cgm(cgm):
         'url': getattr(obj, 'url', ''),
         'category': 'collectionSubmission',
     }
+
 
 @requires_search
 def bulk_update_cgm(cgms, actions=None, op='update', index=None):
@@ -467,6 +480,7 @@ def bulk_update_cgm(cgms, actions=None, op='update', index=None):
     except helpers.BulkIndexError as e:
         raise exceptions.BulkUpdateError(e.errors)
 
+
 def serialize_contributors(node):
     return {
         'contributors': [
@@ -474,7 +488,8 @@ def serialize_contributors(node):
                 'fullname': x['user__fullname'],
                 'url': '/{}/'.format(x['user__guids___id'])
             } for x in
-            node.contributor_set.filter(visible=True, user__is_active=True).order_by('_order').values('user__fullname', 'user__guids___id')
+            node.contributor_set.filter(visible=True, user__is_active=True).order_by('_order').values('user__fullname',
+                                                                                                      'user__guids___id')
         ]
     }
 
@@ -490,9 +505,9 @@ def update_contributors_async(self, user_id):
     for page_num in p.page_range:
         bulk_update_contributors(p.page(page_num).object_list)
 
+
 @requires_search
 def update_user(user, index=None):
-
     index = index or INDEX
     if not user.is_active:
         try:
@@ -548,6 +563,7 @@ def update_user(user, index=None):
 
     client().index(index=index, doc_type='user', body=user_doc, id=user._id, refresh=True)
 
+
 @requires_search
 def update_file(file_, index=None, delete=False):
     index = index or INDEX
@@ -575,15 +591,11 @@ def update_file(file_, index=None, delete=False):
         provider=file_.provider,
         path=file_.path,
     )
-    if file_.node.is_quickfiles:
-        node_url = '/{user_id}/quickfiles/'.format(user_id=file_.node.creator._id)
-    else:
-        node_url = '/{node_id}/'.format(node_id=file_.node._id)
+    node_url = '/{user_id}/quickfiles/'.format(
+        user_id=file_.node.creator._id) if file_.node.is_quickfiles else '/{node_id}/'.format(node_id=file_.node._id)
 
-    guid_url = None
     file_guid = file_.get_guid(create=False)
-    if file_guid:
-        guid_url = '/{file_guid}/'.format(file_guid=file_guid._id)
+    guid_url = '/{file_guid}/'.format(file_guid=file_guid._id) if file_guid else None
     file_doc = {
         'id': file_._id,
         'deep_url': file_deep_url,
@@ -607,6 +619,7 @@ def update_file(file_, index=None, delete=False):
         id=file_._id,
         refresh=True
     )
+
 
 @requires_search
 def update_institution(institution, index=None):
@@ -659,6 +672,7 @@ def update_cgm_async(self, cgm_id, collection_id=None, op='update', index=None):
             except Exception as exc:
                 self.retry(exc=exc)
 
+
 @requires_search
 def update_cgm(cgm, op='update', index=None):
     index = index or INDEX
@@ -666,7 +680,9 @@ def update_cgm(cgm, op='update', index=None):
         client().delete(index=index, doc_type='collectionSubmission', id=cgm._id, refresh=True, ignore=[404])
         return
     collection_submission_doc = serialize_cgm(cgm)
-    client().index(index=index, doc_type='collectionSubmission', body=collection_submission_doc, id=cgm._id, refresh=True)
+    client().index(index=index, doc_type='collectionSubmission', body=collection_submission_doc, id=cgm._id,
+                   refresh=True)
+
 
 @requires_search
 def delete_all():
@@ -684,7 +700,8 @@ def create_index(index=None):
     all of which are applied to all projects, components, preprints, and registrations.
     '''
     index = index or INDEX
-    document_types = ['project', 'component', 'registration', 'user', 'file', 'institution', 'preprint', 'collectionSubmission']
+    document_types = ['project', 'component', 'registration', 'user', 'file', 'institution', 'preprint',
+                      'collectionSubmission']
     project_like_types = ['project', 'component', 'registration', 'preprint']
     analyzed_fields = ['title', 'description']
 
@@ -744,6 +761,7 @@ def create_index(index=None):
                 }
                 mapping['properties'].update(fields)
         client().indices.put_mapping(index=index, doc_type=type_, body=mapping, ignore=[400, 404])
+
 
 @requires_search
 def delete_doc(elastic_document_id, node, index=None, category=None):

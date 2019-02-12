@@ -12,10 +12,12 @@ else:
     search_engine = None
     logger.warn('Elastic search is not set to load')
 
+
 def requires_search(func):
     def wrapped(*args, **kwargs):
         if search_engine is not None and not settings.RUNNING_MIGRATION:
             return func(*args, **kwargs)
+
     return wrapped
 
 
@@ -24,8 +26,9 @@ def search(query, index=None, doc_type=None, raw=None):
     index = index or settings.ELASTIC_INDEX
     return search_engine.search(query, index=index, doc_type=doc_type, raw=raw)
 
+
 @requires_search
-def update_node(node, index=None, bulk=False, async=True, saved_fields=None):
+def update_node(node, index=None, bulk=False, async=True):
     kwargs = {
         'index': index,
         'bulk': bulk
@@ -41,13 +44,14 @@ def update_node(node, index=None, bulk=False, async=True, saved_fields=None):
         else:
             search_engine.update_node_async(node_id=node_id, **kwargs)
     else:
-        index = index or settings.ELASTIC_INDEX
         return search_engine.update_node(node, **kwargs)
+
 
 @requires_search
 def bulk_update_nodes(serialize, nodes, index=None):
     index = index or settings.ELASTIC_INDEX
     search_engine.bulk_update_nodes(serialize, nodes, index=index)
+
 
 @requires_search
 def delete_node(node, index=None):
@@ -59,6 +63,7 @@ def delete_node(node, index=None):
         doc_type = 'preprint'
     search_engine.delete_doc(node._id, node, index=index, category=doc_type)
 
+
 @requires_search
 def update_contributors_async(user_id):
     """Async version of update_contributors above"""
@@ -66,6 +71,7 @@ def update_contributors_async(user_id):
         enqueue_task(search_engine.update_contributors_async.s(user_id))
     else:
         search_engine.update_contributors_async(user_id)
+
 
 @requires_search
 def update_user(user, index=None, async=True):
@@ -79,15 +85,18 @@ def update_user(user, index=None, async=True):
     else:
         search_engine.update_user(user, index=index)
 
+
 @requires_search
 def update_file(file_, index=None, delete=False):
     index = index or settings.ELASTIC_INDEX
     search_engine.update_file(file_, index=index, delete=delete)
 
+
 @requires_search
 def update_institution(institution, index=None):
     index = index or settings.ELASTIC_INDEX
     search_engine.update_institution(institution, index=index)
+
 
 @requires_search
 def update_collected_metadata(cgm_id, collection_id=None, index=None, op='update'):
@@ -98,18 +107,22 @@ def update_collected_metadata(cgm_id, collection_id=None, index=None, op='update
     else:
         search_engine.update_cgm_async(cgm_id, collection_id=collection_id, op=op, index=index)
 
+
 @requires_search
 def bulk_update_collected_metadata(cgms, op='update', index=None):
     index = index or settings.ELASTIC_INDEX
     search_engine.bulk_update_cgm(cgms, op=op, index=index)
 
+
 @requires_search
 def delete_all():
     search_engine.delete_all()
 
+
 @requires_search
 def delete_index(index):
     search_engine.delete_index(index)
+
 
 @requires_search
 def create_index(index=None):

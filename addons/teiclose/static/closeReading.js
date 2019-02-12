@@ -5,6 +5,8 @@ var Raven = require('raven-js');
 var $osf = require('js/osfHelpers');
 var waterbutler = require('js/waterbutler');
 
+var annotator = require('./teicloseAnnotator.js');
+
 var d3 = require('d3');
 // var d3tip = require('d3-tip');
 var bootbox = require('bootbox');
@@ -49,6 +51,8 @@ var CloseReadingWidget = {
                 self.loaded = true;
                 self.content = response.responseText;
                 m.endComputation();
+
+                annotator.fileChange(self.content);
             });
 
             response.fail(function (xhr, textStatus, error) {
@@ -68,19 +72,7 @@ var CloseReadingWidget = {
         return self;
     },
     view: function(ctrl) {
-        return m('.panel-body', [
-            m('', [
-                m('h3', ctrl.file.filename),
-                !ctrl.loaded ?
-                m('.spinner-loading-wrapper', [
-                    m('.ball-scale.ball-scale-blue', [m('div')]),
-                    m('p.m-t-sm.fg-load-message', ' Loading... ')
-                ]) :
-                m('', {style: {'padding-top': '10px'}}, [
-                    m('div.file-content', ctrl.content)
-                ])
-            ])
-        ]);
+        return null;
     }
 };
 

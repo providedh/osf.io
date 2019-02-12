@@ -3,7 +3,6 @@
 
 from __future__ import division
 
-import base64
 import copy
 import functools
 import logging

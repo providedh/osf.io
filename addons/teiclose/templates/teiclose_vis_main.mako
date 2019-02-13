@@ -79,7 +79,8 @@ ${parent.javascript_bottom()}
             filename: ${ file['filename'] | sjson, n },
             provider: ${ file['provider'] | sjson, n },
             path: ${ file['path'] | sjson, n },
-            addon_url: ${ file['addon_url'] | sjson, n }
+            addon_url: ${ file['addon_url'] | sjson, n },
+            version: ${file['version'] | sjson, n }
         }
     });
 </script>

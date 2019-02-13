@@ -38,7 +38,7 @@ var CloseReadingWidget = {
         self.node = options.node;
         self.file = options.file;
 
-        self.url = waterbutler.buildDownloadUrl(self.file.path, self.file.provider, self.node.id, {direct: true, mode: 'render'})
+        self.url = waterbutler.buildDownloadUrl(self.file.path, self.file.provider, self.node.id, {direct: true, mode: 'render', version: self.file.version});
         self.loaded = false;
         self.content = '';
 

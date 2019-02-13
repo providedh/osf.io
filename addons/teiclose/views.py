@@ -26,6 +26,7 @@ def teiclose_get_main_vis(**kwargs):
     node = kwargs['node'] or kwargs['project']
     auth = kwargs['auth']
     file_id = kwargs['file_id']
+    file_version = kwargs['file_ver']
 
     try:
         guid = Guid.objects.get(_id=file_id)
@@ -41,7 +42,8 @@ def teiclose_get_main_vis(**kwargs):
             'filename': base_file_node.name,
             'provider': base_file_node.provider,
             'path': base_file_node._id,
-            'addon_url': node.url + 'teiclose/' + file_id + '/',
+            'addon_url': node.url + 'teiclose/' + file_id + '/' + file_version + '/',
+            'version': file_version,
         },
         'category': node.category,
         'urls': {

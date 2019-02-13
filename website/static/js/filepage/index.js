@@ -116,10 +116,6 @@ var FileViewPage = {
         self.editorMeta = self.context.editor;
         self.isLatestVersion = false;
 
-        self.closeReading = {
-            selected: false,
-        };
-
         self.selectLatest = function() {
             self.isLatestVersion = true;
         };
@@ -504,7 +500,7 @@ var FileViewPage = {
                 '%26mode=render' : 'Data not available';
         var height = $('iframe').attr('height') ? $('iframe').attr('height') : '0px';
 
-        let linkCloseReading = '/' + window.contextVars.node.id + '/teiclose/' + window.contextVars.file.guid + '/';
+        let linkCloseReading = '/' + window.contextVars.node.id + '/teiclose/' + window.contextVars.file.guid + '/' + window.contextVars.file.version + '/';
 
         m.render(document.getElementById('toggleBar'), m('.btn-toolbar.m-t-md', [
             ctrl.context.currentUser.canEdit && (!ctrl.canEdit()) && (ctrl.context.currentUser.isAdmin) && (ctrl.file.provider !== 'bitbucket') && (ctrl.file.provider !== 'gitlab') && (ctrl.file.provider !== 'onedrive') && !ctrl.context.file.isPreregCheckout ? m('.btn-group.m-l-xs.m-t-xs', [

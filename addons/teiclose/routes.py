@@ -14,7 +14,7 @@ page_routes = {
         # Home (Base) | GET
         Rule(
             [
-                '/project/<pid>/teiclose/<file_id>/',
+                '/project/<pid>/teiclose/<file_id>/<file_ver>/',
                 '/project/<pid>/node/<nid>/teiclose/<file_id>/',
             ],
             'get',

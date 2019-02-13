@@ -1,5 +1,5 @@
 <%inherit file="project/project_base.mako"/>
-<%def name="title()">${node['title']} Close Reading</%def>
+<%def name="title()">Close reading | ${file['filename']}</%def>
 
 <%def name="stylesheets()">
     ${parent.stylesheets()}
@@ -8,6 +8,23 @@
 
 ## Use full page width
 <%def name="container_class()">container-xxl</%def>
+
+<div class="row" id="fileName">
+  <div class="col-sm-5">
+    <h2 class="break-word">
+      ## Split file name into two parts: with and without extension
+      <span id="fileTitleEditable">${ file['filename'] | h}</span>
+      <a id='versionLink'  class='scripted'>(Version: ${ file['version'] | h})</a>
+      % if file_revision:
+        <small>&nbsp;${file_revision | h}</small>
+      % endif
+    </h2>
+  </div>
+  <div class="col-sm-7">
+    <div id="toggleBar" class="pull-right"></div>
+  </div>
+</div>
+<hr>
 
 <div>
       <section id="toolbar">

@@ -557,7 +557,7 @@ var FileViewPage = {
                         window.location = linkCloseReading;
                         return false;
                     }
-                }, 'Close reading') : null
+                }, 'Close Reading') : null
             ]),
             m('.btn-group.m-t-xs', [
                 m('button.btn.btn-sm' + (ctrl.revisions.selected ? '.btn-primary': '.btn-default'), {onclick: function(){

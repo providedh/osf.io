@@ -67,6 +67,22 @@ var CloseReadingWidget = {
             });
         };
 
+        let linkVersions = '/' + self.file.id + '/?show=revision&version=' + self.file.version;
+
+        if(self.file.provider === 'osfstorage'){
+            changeVersionHeader();
+        }
+
+        function changeVersionHeader(){
+            document.getElementById('versionLink').style.display = 'inline';
+            m.render(document.getElementById('versionLink'), m('a', {onclick: redirectToVersions}, document.getElementById('versionLink').innerHTML));
+        }
+
+        function redirectToVersions (){
+            window.location = linkVersions;
+            return false;
+        }
+
         self.loadFile(false);
 
         return self;

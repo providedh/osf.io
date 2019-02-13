@@ -167,7 +167,7 @@ def get_counts(count_query, index=None):
         }
     }
 
-    res = client().search(index=INDEX, doc_type=None, search_type='count', body=count_query)
+    res = client().search(index=index, doc_type=None, search_type='count', body=count_query)
     counts = {x['key']: x['doc_count'] for x in res['aggregations']['counts']['buckets'] if x['key'] in ALIASES.keys()}
 
     counts['total'] = sum([val for val in counts.values()])

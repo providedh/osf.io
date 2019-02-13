@@ -260,11 +260,13 @@ class BaseFileNode(TypedModel, CommentableMixin, OptionalGuidMixin, Taggable, Ob
                 if subclass._provider == self.provider:
                     return subclass
 
-    def get_version(self, revision, required=False):
+    def get_version(self, revision=None, required=False):
         """Find a version with identifier revision
         :returns: FileVersion or None
         :raises: VersionNotFoundError if required is True
         """
+        if revision is None:
+            revision = self.current_version_number
         try:
             return self.versions.get(identifier=revision)
         except ObjectDoesNotExist:

@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 def calculate_tei_statistics(self, user_id, node_id, xpath_exprs, tei_statistics_id, all_providers, cookies, auth_header):
     logger.debug('Calculation TEI statistics for node_id {} by user_id {} has started'.format(node_id, user_id))
     node = AbstractNode.objects.get(id=node_id)
+
     time.sleep(5)
     tei_statistics = TeiStatistics.objects.get(id=tei_statistics_id)
     providers = node_storage_providers(node, all_providers)
@@ -91,14 +92,14 @@ def calculate_tei_statistics(self, user_id, node_id, xpath_exprs, tei_statistics
                 if d['type'] == 'files':
                     if d['attributes']['kind'] == 'file':
                         file = get_file(d['id'])
-                        if file:
+                        if file and file.get_version().metadata['is_tei_p5_unprefixed']:
                             waterbutler_url = waterbutler_api_url_for(node._id, tei_statistics.current_provider,
                                                                       file.path, True)
                             file_response = call_waterbutler_quietly(waterbutler_url, cookies, auth_header)
                             if file_response:
                                 tei_statistics.inc_total_files()
                                 try:
-                                    tree = etree.parse(StringIO(file_response.content))
+                                    tree = etree.fromstring(file_response.content)
                                     tei_statistics.inc_tei_files()
                                     lines = len(file_response.text.split('\n'))
                                     tei_statistics.update_max_lines(lines)
@@ -112,7 +113,7 @@ def calculate_tei_statistics(self, user_id, node_id, xpath_exprs, tei_statistics
                                         try:
                                             prefixed_xpath = prefix_xpath(xpath)
                                             nodeset = tree.xpath(prefixed_xpath, namespaces=namespaces)
-                                            if len(nodeset) > 0:
+                                            if len(nodeset):
                                                 parent_string = stringify_children(nodeset[0].getparent()).encode(
                                                     'utf-8')
                                                 k = nodeset[0].tag.rfind('}')
@@ -121,7 +122,7 @@ def calculate_tei_statistics(self, user_id, node_id, xpath_exprs, tei_statistics
                                                 result_percentages = []
                                                 for m in p.finditer(parent_string):
                                                     result_percentages.append(str(
-                                                        int(100 * float(m.start()) / float(len(parent_string)))))
+                                                        int(100 * float(m.start()) / len(parent_string))))
                                                 logger.debug('{} found at percentages {}'.format(bare_stripped,
                                                                                                  ', '.join(
                                                                                                      result_percentages)))

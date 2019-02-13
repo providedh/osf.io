@@ -157,7 +157,8 @@ def get_aggregations(query, doc_type):
 
 
 @requires_search
-def get_counts(count_query):
+def get_counts(count_query, index=None):
+    index = index or INDEX
     count_query['aggregations'] = {
         'counts': {
             'terms': {

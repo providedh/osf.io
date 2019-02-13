@@ -4,7 +4,7 @@ var m = require('mithril');
 
 var subnav = $("#projectSubnav");
 var navbar = subnav.find('.navbar-nav');
-navbar.append("<li><a href=\"" + window.contextVars.file.addon_url + "\">" + window.contextVars.file.filename + " Close Reading</a></li>");
+navbar.append("<li><a href=\"" + window.contextVars.file.addon_url + "\">Close Reading</a></li>");
 
 var CloseReadingWidget = require('closeReading');
 

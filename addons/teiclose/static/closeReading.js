@@ -38,7 +38,7 @@ var CloseReadingWidget = {
         self.node = options.node;
         self.file = options.file;
 
-        self.url = waterbutler.buildDownloadUrl(self.file.path, self.file.provider, self.node.id, {direct: true, mode: 'render'})
+        self.url = waterbutler.buildDownloadUrl(self.file.path, self.file.provider, self.node.id, {direct: true, mode: 'render', version: self.file.version});
         self.loaded = false;
         self.content = '';
 
@@ -66,6 +66,22 @@ var CloseReadingWidget = {
                 });
             });
         };
+
+        let linkVersions = '/' + self.file.id + '/?show=revision&version=' + self.file.version;
+
+        if(self.file.provider === 'osfstorage'){
+            changeVersionHeader();
+        }
+
+        function changeVersionHeader(){
+            document.getElementById('versionLink').style.display = 'inline';
+            m.render(document.getElementById('versionLink'), m('a', {onclick: redirectToVersions}, document.getElementById('versionLink').innerHTML));
+        }
+
+        function redirectToVersions (){
+            window.location = linkVersions;
+            return false;
+        }
 
         self.loadFile(false);
 

@@ -10,7 +10,7 @@
 
 
 body {
-  background: rgb(248, 249, 250);
+  background: white;
   padding: 0;
   margin: 0;
   font-family: sans-serif;
@@ -42,7 +42,7 @@ section#toolbar, section#top-panel{
 	position: sticky;
 	top: 100px;
 	z-index: 300;
-	background: white;
+	background: #F5F5F5;
 	height: 50px;
 	box-shadow: 0 1px 3px 1px rgba(60,64,67,.15);
 	display: flex;
@@ -101,7 +101,7 @@ div#toolbar-header label span#name{
 
 page {
   padding: 16px 6px;
-  background: white;
+  background: #F5F5F5;
   display: block;
   margin: 0 auto;
   margin-bottom: 0.5cm;
@@ -194,4 +194,8 @@ section#editor[display-annotations="false"] span{
 	input[type="text"]{
 		width:9em;
 	}
+}
+
+#fileName {
+	padding-top: 50px;
 }

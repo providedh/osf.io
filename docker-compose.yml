@@ -350,6 +350,8 @@ services:
 
   requirements:
     image: providedh/osf-io:develop
+    # Need to allocate tty to be able to call invoke for requirements task - for docker version 18.09.1.
+    tty: true
     command:
       - /bin/bash
       - -c

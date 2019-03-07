@@ -98,52 +98,28 @@ class AnnotationHistoryHandler:
             self.__history.append(history_step)
 
     def __get_versions_metadata(self):
-        # TODO: refactor this 3 queries into one
+        versions_metadata = []
+
         with connection.cursor() as cursor:
             query = """
-                SELECT fileversion_id
-                FROM public.osf_basefilenode_versions
-                WHERE basefilenode_id = {0}
-                ORDER BY fileversion_id
+                SELECT F.identifier, F.created, U.username
+                FROM public.osf_osfuser AS U
+                INNER JOIN public.osf_fileversion AS F
+                    ON U.id = F.creator_id
+                    INNER JOIN public.osf_basefilenode_versions AS V
+                        ON F.id = V.fileversion_id
+                WHERE V.basefilenode_id = {0}
+                ORDER BY F.identifier
             """.format(self.__base_file_node.id)
 
             cursor.execute(query)
+            results = cursor.fetchall()
 
-            result = cursor.fetchall()
-
-            versions_metadata = []
-
-            for i, row in enumerate(result):
-                fileversion_id = row[0]
-
-                query = """
-                    SELECT creator_id, created
-                    FROM public.osf_fileversion
-                    WHERE id = {0}
-                """.format(fileversion_id)
-
-                cursor.execute(query)
-
-                result = cursor.fetchone()
-
-                creator_id = result[0]
-                created = result[1]
-
-                query = """
-                    SELECT username
-                    FROM public.osf_osfuser
-                    WHERE id = {0}
-                """.format(creator_id)
-
-                cursor.execute(query)
-
-                result = cursor.fetchone()
-                author = result[0]
-
+            for result in results:
                 metadata = {
-                    'version': i + 1,
-                    'author_email': author,
-                    'created': created
+                    'version': result[0],
+                    'created': result[1],
+                    'author_email': result[2],
                 }
 
                 versions_metadata.append(metadata)

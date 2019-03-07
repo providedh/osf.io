@@ -15,7 +15,7 @@ page_routes = {
         Rule(
             [
                 '/project/<pid>/teiclose/<file_id>/<file_ver>/',
-                '/project/<pid>/node/<nid>/teiclose/<file_id>/',
+                '/project/<pid>/node/<nid>/teiclose/<file_id>/<file_ver>/',
             ],
             'get',
             views.teiclose_get_main_vis,
@@ -36,6 +36,16 @@ api_routes = {
             ],
             'post',
             views.teiclose_annotation_add,
+            json_renderer
+        ),
+
+        Rule(
+            [
+                '/project/<pid>/teiclose/<file_id>/<file_ver>/certhistory/',
+                '/project/<pid>/node/<nid>/teiclose/<file_id>/<file_ver>/certhistory/',
+            ],
+            'get',
+            views.teiclose_get_annotation_history,
             json_renderer
         ),
     ],

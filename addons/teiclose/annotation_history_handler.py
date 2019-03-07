@@ -14,79 +14,90 @@ from addons.teistats.tasks import call_waterbutler_quietly
 
 class AnnotationHistoryHandler:
     def __init__(self, project_guid, file_guid):
-        self.project_guid = project_guid
-        self.file_guid = file_guid
+        self.__project_guid = project_guid
+        self.__file_guid = file_guid
 
-        self.base_file_node = None
+        self.__last_file_version_nr = 0
+        self.__base_file_node = None
 
-        self.authors = []
-        self.history = []
+        self.__history = []
 
-        self.file_versions = 0
+    def get_history(self, version):
+        self.update_history()
 
+        if version > len(self.__history):
+            message = {
+                "message_long": "There is no version {0} for this file. Latest file version is {1}.".format(
+                    version,
+                    self.__last_file_version_nr
+                ),
+                "message_short": "Not found",
+                "code": 404,
+                "referrer": None
+            }
+
+            return message
+
+        else:
+            history = self.__history[:version]
+
+            return history
 
     def update_history(self):
-        # pobranie histrii z bazy
-        try:
-            annotation_history = AnnotationHistory.objects.get(project_guid=self.project_guid, file_guid=self.file_guid)
+        self.__history = self.__get_history_from_db()
+        self.__base_file_node = self.__get_base_file_node_from_db()
+        self.__last_file_version_nr = self.__base_file_node.current_version_number
 
-        except AnnotationHistory.DoesNotExist:
-            self.__create_history(self.project_guid, self.file_guid)
-            annotation_history = AnnotationHistory.objects.get(project_guid=self.project_guid, file_guid=self.file_guid)
-
-        try:
-            guid = Guid.objects.get(_id=self.file_guid)
-            self.base_file_node = BaseFileNode.objects.get(id=guid.object_id)
-
-        except (Guid.DoesNotExist, BaseFileNode.DoesNotExist) as e:
-            raise HTTPError(http.NOT_FOUND)
-
-        self.history = annotation_history.history
-        history_length = len(self.history)
-        self.file_versions = self.base_file_node.current_version_number
-
-        if history_length == self.file_versions:
+        if len(self.__history) == self.__last_file_version_nr:
             return
 
-        elif history_length < self.file_versions:
-            self.authors = self.get_authors_and_dates()
-
-            for version_number in range(history_length + 1, self.file_versions + 1):
-                new_entry = self.generate_analysis(version_number)
-                self.history.append(new_entry)
-
-            self.__save_history()
+        elif len(self.__history) < self.__last_file_version_nr:
+            self.__append_missing_history_steps()
+            self.__save_history_to_db()
             return
 
         else:
-            raise Exception("Number of file versions in annotation history are greater than number of existing file versions.")
+            raise Exception("Number of file versions in annotation history are greater than number of existing "
+                            "file versions.")
 
+    def __get_history_from_db(self):
+        try:
+            annotation_history = AnnotationHistory.objects.get(project_guid=self.__project_guid,
+                                                               file_guid=self.__file_guid)
 
+        except AnnotationHistory.DoesNotExist:
+            self.__create_history_in_db(self.__project_guid, self.__file_guid)
+            annotation_history = AnnotationHistory.objects.get(project_guid=self.__project_guid,
+                                                               file_guid=self.__file_guid)
 
+        return annotation_history.history
 
-
-
-
-        # TEST POBRANIA PLIKU
-
-
-
-    def __create_history(self, project_guid, file_id):
-
+    def __create_history_in_db(self, project_guid, file_id):
         history = AnnotationHistory(project_guid=project_guid, file_guid=file_id, history=[])
         history.save()
 
+    def __get_base_file_node_from_db(self):
+        try:
+            guid = Guid.objects.get(_id=self.__file_guid)
+            base_file_node = BaseFileNode.objects.get(id=guid.object_id)
 
-    def __save_history(self):
-        annotation_history = AnnotationHistory.objects.get(project_guid=self.project_guid, file_guid=self.file_guid)
-        # annotation_history.history = json.dumps(self.history, cls=DjangoJSONEncoder)
-        annotation_history.history = self.history
-        annotation_history.save()
+        except (Guid.DoesNotExist, BaseFileNode.DoesNotExist):
+            raise HTTPError(http.NOT_FOUND)
 
+        return base_file_node
 
+    def __append_missing_history_steps(self):
+        versions_metadata = self.__get_versions_metadata()
 
-    def get_authors_and_dates(self):
-        # wyciągnięcie maili autorów wszystkich wersji z bazy
+        first_missing_version = len(self.__history) + 1
+        last_missing_version = self.__last_file_version_nr
+
+        for version_nr in range(first_missing_version, last_missing_version + 1):
+            version_metadata = versions_metadata[version_nr - 1]
+            history_step = self.__create_history_step(version_nr, version_metadata)
+            self.__history.append(history_step)
+
+    def __get_versions_metadata(self):
         # TODO: refactor this 3 queries into one
         with connection.cursor() as cursor:
             query = """
@@ -94,13 +105,13 @@ class AnnotationHistoryHandler:
                 FROM public.osf_basefilenode_versions
                 WHERE basefilenode_id = {0}
                 ORDER BY fileversion_id
-            """.format(self.base_file_node.id)
+            """.format(self.__base_file_node.id)
 
             cursor.execute(query)
 
             result = cursor.fetchall()
 
-            authors = []
+            versions_metadata = []
 
             for i, row in enumerate(result):
                 fileversion_id = row[0]
@@ -129,28 +140,38 @@ class AnnotationHistoryHandler:
                 result = cursor.fetchone()
                 author = result[0]
 
-                entry = {
+                metadata = {
                     'version': i + 1,
                     'author_email': author,
                     'created': created
                 }
 
-                authors.append(entry)
+                versions_metadata.append(metadata)
 
-        return authors
+        return versions_metadata
 
+    def __create_history_step(self, version, version_metadata):
+        text = self.__get_file_text(version)
+        uncertainties = self.__count_uncertainties(text)
 
-
-
-    def generate_analysis(self, version):
-        kwargs_1 = {
-            'version': version
+        history_step = {
+            'version': version,
+            'url': '/' + self.__project_guid + '/' + 'teiclose/' + self.__file_guid + '/' + str(version) + '/',
+            'timestamp': str(version_metadata['created']),
+            'contributor': version_metadata['author_email'],
+            'imprecision': uncertainties['imprecision'],
+            'ignorance': uncertainties['ignorance'],
+            'credibility': uncertainties['credibility'],
+            'completeness': uncertainties['completeness']
         }
 
-        provider = self.base_file_node.provider
-        file_path = '/' + self.base_file_node._id
+        return history_step
 
-        waterbutler_url = waterbutler_api_url_for(self.project_guid, provider, file_path, True, **kwargs_1)
+    def __get_file_text(self, version):
+        provider = self.__base_file_node.provider
+        file_path = '/' + self.__base_file_node._id
+
+        waterbutler_url = waterbutler_api_url_for(self.__project_guid, provider, file_path, True, version=version)
 
         cookies = request.cookies
         auth_header = request.headers.get('HTTP_AUTHORIZATION')
@@ -158,40 +179,13 @@ class AnnotationHistoryHandler:
 
         text = file_response.content
 
-        uncertainties = self.count_uncertainties(text)
+        return text
 
-        print(self.authors[version - 1]['created'])
+    def __count_uncertainties(self, text):
+        text = self.__remove_encoding_line(text)
+        tree = etree.fromstring(text)
 
-        entry = {
-            'version': version,
-            'url': '/' + self.project_guid + '/' + 'teiclose/' + self.file_guid + '/' + str(version) + '/',
-            'timestamp': str(self.authors[version - 1]['created']),
-            'contributor': self.authors[version - 1]['author_email'],
-            'imprecision': uncertainties['imprecision'],
-            'ignorance': uncertainties['ignorance'],
-            'credibility': uncertainties['credibility'],
-            'completeness': uncertainties['completeness']
-        }
-
-        return entry
-
-
-
-    def count_uncertainties(self, text):
-
-        text_in_lines = text.splitlines()
-
-        first_line = text_in_lines[0]
-
-        if "encoding=" in first_line:
-            text_to_parse = text_in_lines[1:]
-            text_to_parse = "\n".join(text_to_parse)
-
-        else:
-            text_to_parse = text
-
-        tree = etree.fromstring(text_to_parse)
-
+        # TODO: extract all namespaces from text and put them to "namespaces" dict
         namespaces = {
             'default': "http://www.tei-c.org/ns/1.0",
             'xi': "http://www.w3.org/2001/XInclude",
@@ -204,32 +198,31 @@ class AnnotationHistoryHandler:
             'imprecision': 0,
         }
 
-        for key, value in uncertainties.items():
-            number_of_uncertainties = len(
-                tree.xpath("//default:certainty[@source='" + key + "']", namespaces=namespaces))
+        for un_key, un_value in uncertainties.items():
+            number_of_uncertainties = 0
 
-            uncertainties[key] = number_of_uncertainties
+            for ns_key, ns_value in namespaces.items():
+                number_of_uncertainties += len(
+                    tree.xpath("//" + ns_key + ":certainty[@source='" + un_key + "']", namespaces=namespaces))
+
+            uncertainties[un_key] = number_of_uncertainties
 
         return uncertainties
 
+    def __remove_encoding_line(self, text):
+        text_in_lines = text.splitlines()
+        first_line = text_in_lines[0]
 
-    def get_history(self, version):
-        self.update_history()
-
-        if version > len(self.history):
-            message = {
-                "message_long": "There is no version {0} for this file. Latest file version is {1}.".format(version, self.file_versions),
-                "message_short": "Not found",
-                "code": 404,
-                "referrer": None
-            }
-
-            return message
+        if "encoding=" in first_line:
+            text_to_parse = text_in_lines[1:]
+            text_to_parse = "\n".join(text_to_parse)
 
         else:
-            history = self.history[:version]
+            text_to_parse = text
 
-            return history
+        return text_to_parse
 
-
-
+    def __save_history_to_db(self):
+        annotation_history = AnnotationHistory.objects.get(project_guid=self.__project_guid, file_guid=self.__file_guid)
+        annotation_history.history = self.__history
+        annotation_history.save()

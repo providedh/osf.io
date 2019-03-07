@@ -75,8 +75,8 @@ def teiclose_annotation_add(**kwargs):
 
 def teiclose_get_annotation_history(**kwargs):
     file_id = kwargs['file_id']
-    file_version = int(kwargs['file_ver'])
     project_guid = kwargs['pid']
+    file_version = int(kwargs['file_ver'])
 
     annotation_history_handler = AnnotationHistoryHandler(project_guid, file_id)
     history = annotation_history_handler.get_history(file_version)

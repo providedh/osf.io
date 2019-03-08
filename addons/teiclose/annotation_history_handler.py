@@ -161,10 +161,8 @@ class AnnotationHistoryHandler:
         text = self.__remove_encoding_line(text)
         tree = etree.fromstring(text)
 
-        # TODO: extract all namespaces from text and put them to "namespaces" dict
         namespaces = {
             'default': "http://www.tei-c.org/ns/1.0",
-            'xi': "http://www.w3.org/2001/XInclude",
         }
 
         uncertainties = {
@@ -174,14 +172,11 @@ class AnnotationHistoryHandler:
             'imprecision': 0,
         }
 
-        for un_key, un_value in uncertainties.items():
-            number_of_uncertainties = 0
+        for key, value in uncertainties.items():
+            number_of_uncertainties = len(
+                tree.xpath("//default:certainty[@source='" + key + "']", namespaces=namespaces))
 
-            for ns_key, ns_value in namespaces.items():
-                number_of_uncertainties += len(
-                    tree.xpath("//" + ns_key + ":certainty[@source='" + un_key + "']", namespaces=namespaces))
-
-            uncertainties[un_key] = number_of_uncertainties
+            uncertainties[key] = number_of_uncertainties
 
         return uncertainties
 

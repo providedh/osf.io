@@ -7,6 +7,7 @@ from framework.exceptions import HTTPError
 from osf.models import (
     Guid,
     BaseFileNode,
+
 )
 from website.profile.utils import get_profile_image_url
 from website.project.decorators import (
@@ -15,6 +16,10 @@ from website.project.decorators import (
     must_be_valid_project,
     must_have_read_permission_or_be_public)
 from website.project.views.node import _view_project
+
+
+from addons.teiclose.annotation_history_handler import AnnotationHistoryHandler
+
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +32,7 @@ def teiclose_get_main_vis(**kwargs):
     auth = kwargs['auth']
     file_id = kwargs['file_id']
     file_version = kwargs['file_ver']
+    project_guid = kwargs['pid']
 
     try:
         guid = Guid.objects.get(_id=file_id)
@@ -35,6 +41,9 @@ def teiclose_get_main_vis(**kwargs):
         raise HTTPError(
             http.NOT_FOUND,
         )
+
+    annotation_history_handler = AnnotationHistoryHandler(project_guid, file_id)
+    annotation_history_handler.update_history()
 
     ret = {
         'file': {
@@ -62,3 +71,14 @@ def teiclose_get_main_vis(**kwargs):
 def teiclose_annotation_add(**kwargs):
 
     return {}
+
+
+def teiclose_get_annotation_history(**kwargs):
+    file_id = kwargs['file_id']
+    project_guid = kwargs['pid']
+    file_version = int(kwargs['file_ver'])
+
+    annotation_history_handler = AnnotationHistoryHandler(project_guid, file_id)
+    history = annotation_history_handler.get_history(file_version)
+
+    return history

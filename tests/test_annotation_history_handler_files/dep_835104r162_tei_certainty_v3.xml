@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude">	
+	<!--<TEI>-->
+	<teiHeader>
+		<fileDesc>
+			<titleStmt>
+				<title>WERSJA 5</title>
+			</titleStmt>
+			<editionStmt>
+				<edition>Transcribed Version of Deposition
+				</edition>
+			<respStmt><resp xmlns="">Edited</resp><include xmlns="" href="responsiblePeople.xml" xpointer="RP1"/></respStmt><respStmt><resp xmlns="">Edited</resp><include xmlns="" href="responsiblePeople.xml" xpointer="RP4"/></respStmt></editionStmt>
+			<publicationStmt>
+				<publisher>Trinity College Dublin</publisher>
+				<pubPlace>Dublin, Ireland</pubPlace>
+			</publicationStmt>
+		<sourceDesc><include href="manuscriptDescription_tei.xml" xpointer="ms835"/></sourceDesc></fileDesc>
+		<encodingDesc>
+			<charDecl>
+			</charDecl>
+            <xi:include href="projectDesc.xml" xpointer="id1641-projectDesc"/>
+			<xi:include href="editorialDecl.xml" xpointer="id1641-editorialDecl"/>
+		</encodingDesc>
+		<profileDesc>
+			<creation>
+				<date when="1642_1_3"/>
+				<placeName>
+					<country>Ireland</country>
+				</placeName>
+			</creation>
+			<!-- Points to keywords in keywords.xml file -->
+			<textClass>
+			<keywords scheme="1641"><list type="deposition_type"><xi:include href="keywords.xml" xpointer="dt4"/></list></keywords><keywords scheme="1641"><list type="nature_of_deposition"><xi:include href="keywords.xml" xpointer="nod8"/><xi:include href="keywords.xml" xpointer="nod101"/><xi:include href="keywords.xml" xpointer="nod5"/><xi:include href="keywords.xml" xpointer="nod14"/><xi:include href="keywords.xml" xpointer="nod17"/></list></keywords></textClass>
+			<langUsage>
+				<language ident="en" usage="100"/>
+			</langUsage>
+		<particDesc><listPerson><person xml:id="person835104r162-1" sex="2"><persName><roleName type="Deponent"/><forename>Margrett</forename><surname>ffarmony</surname></persName><residence><placeName type="Placename">Acrashamey</placeName><region type="County">Fermanagh</region><country key="IRL">Ireland</country></residence><occupation>Widow</occupation></person><person xml:id="person835104r162-2" sex="2"><persName><roleName type="Deponent"/><forename>Margret</forename><surname>Leadly</surname></persName><occupation>Widow</occupation></person><person xml:id="person835104r162-3" sex="1"><persName><roleName type="Rebel"/><forename>Laghlin</forename><surname>duff</surname></persName></person><person xml:id="person835104r162-4" sex="3"><persName><roleName type="Rebel"/><forename>Patrick</forename><surname>McMaghan</surname></persName></person><person xml:id="person835104r162-5" sex="3"><persName><roleName type="Rebel"/><forename>Laghlin</forename><surname>McCarroll</surname></persName></person><person xml:id="person835104r162-6" sex="3"><persName><roleName type="Rebel"/><forename>Phillip Roe Shalie</forename><surname>McCullen</surname></persName></person><person xml:id="person835104r162-7" sex="1"><persName><roleName type="Mentioned"/><forename>the</forename><surname>king</surname></persName></person></listPerson></particDesc><particDesc><listPlace/></particDesc></profileDesc>
+	<revisionDesc><change when="2008-10-22T16:32:53" who="responsiblePeople.xml#RP4"/></revisionDesc></teiHeader>
+	<!-- @corresp on <text> indicates that this transcription corresponds with the msItem identified in the msDesc file with this id. -->
+	<text corresp="outputFiles/manuscriptDescription_tei.xml#p835104r162">
+		<body>
+		<div type="deposition">
+		<closer><signed><roleName type="Commissioner"/><name>William Hitchcock</name></signed><signed><roleName type="Commissioner"/><name>John Sterne</name></signed></closer><pb n="fol. 104r" pagenum="732"/><p>&#13;&#13;732&#13;&#13;&lt;7&gt; Margrett ffarmony &amp; Margret Leadly widowes both of Acrashamey in the parrish of Clownishe and County of ffermanagh sworne say That on the xxiijth day of October 1641 in the &lt;a&gt; morning Laghlin duff and Patrick McMaghan Laghlin Mc &lt;C&gt; Carroll Phillip Roe Shalie McCullen and certaine other of the Rebells within the said Countie to the number of 100 persons rebells or thereabouts robbed theis deponents of cattle worth 50 li. corne &amp; hay 10 li., household stuff &amp; provition iiij li., &amp; deprived them &lt;li.&gt; of a lease worth 20 li., and of ffive pownds in ready money &lt;89 li.&gt; &lt;+&gt; And further say that the said Rebells bound both theis deponents hands behynd them vrging them to confesse money, And that they bonde the husband of the said Margret &amp; draged him vp &amp; downe in a rope, and cutt his throate in her owne sight with a skeane having firste knockd him downe &amp; stript him, And haveing then alsoe murthered <certainty source="imprecision">14</certainty> persons <certainty source="ignorance">more</certainty>, all <certainty source="ignorance">english</certainty> protestants and <certainty source="credibility">neighbours</certainty> to theis deponents: They the said Rebells alledging that they had the kinges broad seale to stripp and starve all the <certainty source="ignorance">English</certainty> And that they were the <certainty source="completeness">kings</certainty> souldiers And as theis <certainty source="completeness">deponents</certainty> came vp to Dublin they were strip by the Irish seven tymes in a day, and came vp <![CDATA[<strike>half</strike>]]>  stark naked to Dublin being aged women of 75 yeres old or thereabouts The said Rebells bidding them to goe and looke for their god &amp; let him give them clothes&#13;&#13;Jur iij° Jan 1641&#13;John Sterne&#13;William Hitchcock&#13;&#13;</p><pb n="fol. 104v" pagenum="733"/><p>&#13;&#13;733&#13;&#13;Margaret Farmeny &amp; Margaret Leadly Com Ferm Jan 3 1641&#13;Intw&#13;Cert &#13;Hand&#13;83&#13;&#13;7 depositions new writt over&#13;&#13;</p></div>
+		<div type="original">
+		<pb n="fol. 104r" pagenum="732" /><p>&#13;&#13;732&#13;&#13;<note type="marginalia">7</note> Margrett ffarmony &amp; Margret Leadly widowes both of Acrashamey in the parrish of Clownishe and County of ffermanagh sworne say That on the xxiijth day of October 1641 in the <note type="marginalia">a</note> morning Laghlin duff and Patrick McMaghan Laghlin Mc <note type="marginalia">C</note> Carroll Phillip Roe Shalie McCullen and certaine other of the Rebells within the said Countie to the number of 100 persons rebells or thereabouts robbed theis deponents of cattle worth 50 li. corne &amp; hay 10 li., household stuff &amp; provition iiij li., &amp; deprived them <note type="marginalia">li.</note> of a lease worth 20 li., and of ffive pownds in ready money <note type="marginalia">89 li.</note> <note type="marginalia">+</note> And further say that the said Rebells bound both theis deponents hands behynd them vrging them to confesse money, And that they bonde the husband of the said Margret &amp; draged him vp &amp; downe in a rope, and cutt his throate in her owne sight with a skeane having firste knockd him downe &amp; stript him, And haveing then alsoe murthered 14 persons more, all english protestants and neighbours to theis deponents: They the said Rebells alledging that they had the kinges broad seale to stripp and starve all the English And that they were the kings souldiers And as theis deponents came vp to Dublin they were strip by the Irish seven tymes in a day, and came vp <del rend="strikethrough">half</del>  <add place="inline">stark</add> naked to Dublin being aged women of 75 yeres old <add place="inline">or thereabouts</add> The said Rebells bidding them to goe and looke for their god &amp; let him give them clothes&#13;&#13;Jur iij° Jan 1641&#13;John Sterne&#13;William Hitchcock&#13;&#13;</p><pb n="fol. 104v" pagenum="733" /><p>&#13;&#13;733&#13;&#13;Margaret Farmeny &amp; Margaret Leadly Com Ferm Jan 3 1641&#13;Intw&#13;Cert &#13;Hand&#13;83&#13;&#13;7 depositions new writt over&#13;&#13;</p><closer><signed><roleName type="Commissioner" /><name>John Sterne</name></signed><signed><roleName type="Commissioner" /><name>William Hitchcock</name></signed></closer></div></body>
+		<back/>
+	</text>
+</TEI>

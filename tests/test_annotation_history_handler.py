@@ -1,6 +1,7 @@
-from addons.teiclose.annotation_history_handler import AnnotationHistoryHandler
-from mock import patch
 import os
+
+from mock import patch
+from addons.teiclose.annotation_history_handler import AnnotationHistoryHandler
 
 
 class FakeBaseFileNode:
@@ -8,19 +9,19 @@ class FakeBaseFileNode:
         self.provider = 'osfstorage'
         self._id = u'5c7fc7bd542d550011fd7603'
 
-    def current_version_number(self):
-        return 3
+        self.current_version_number = 3
+
 
 history_expected = [
     {
         "imprecision": 0,
-         "completeness": 0,
-         "url": "/abcde/teiclose/fghij/1/",
-         "timestamp": "2001-01-01 01:01:01.000001+00:00",
-         "ignorance": 0,
-         "version": 1,
-         "credibility": 0,
-         "contributor": "jan.nowak@zmyslonymail.com"
+        "completeness": 0,
+        "url": "/abcde/teiclose/fghij/1/",
+        "timestamp": "2001-01-01 01:01:01.000001+00:00",
+        "ignorance": 0,
+        "version": 1,
+        "credibility": 0,
+        "contributor": "jan.nowak@zmyslonymail.com"
     },
     {
         "imprecision": 1,
@@ -43,6 +44,13 @@ history_expected = [
         "contributor": "jan.nowak@zmyslonymail.com"
     },
 ]
+
+history_error_expected = {
+    "code": 404,
+    "referrer": None,
+    "message_short": "Not found",
+    "message_long": "There is no version 4 for this file. Latest file version is 3."
+}
 
 fake_versions_metadata = [
     {
@@ -81,51 +89,76 @@ def fake_save_history_to_db():
     pass
 
 
-def test_get_history__no_history_in_db__history_expected():
-    annotation_history_handler = AnnotationHistoryHandler('abcde', 'fghij')
+@patch('addons.teiclose.annotation_history_handler.AnnotationHistoryHandler._AnnotationHistoryHandler__save_history_to_db',
+       side_effect=fake_save_history_to_db)
+@patch('addons.teiclose.annotation_history_handler.AnnotationHistoryHandler._AnnotationHistoryHandler__get_file_text',
+       side_effect=fake_get_file_text)
+@patch('addons.teiclose.annotation_history_handler.AnnotationHistoryHandler._AnnotationHistoryHandler__get_versions_metadata_from_db',
+       return_value=fake_versions_metadata)
+@patch('addons.teiclose.annotation_history_handler.AnnotationHistoryHandler._AnnotationHistoryHandler__get_base_file_node_from_db',
+       return_value=fake_base_file_node)
+@patch('addons.teiclose.annotation_history_handler.AnnotationHistoryHandler._AnnotationHistoryHandler__get_history_from_db',
+       return_value=history_expected)
+class TestAnnotationHistoryHandler:
+    def setup(self):
+        project_guid = 'abcde'
+        file_guid = 'fghij'
 
-    with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__get_history_from_db',
-                       return_value=[])):
-        with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__get_base_file_node_from_db',
-                           return_value=fake_base_file_node)):
-            with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__get_versions_metadata_from_db',
-                               return_value=fake_versions_metadata)):
-                with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__get_file_text',
-                                   side_effect=fake_get_file_text)):
-                    with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__save_history_to_db',
-                                       side_effect=fake_save_history_to_db)):
-                        history = annotation_history_handler.get_history(3)
+        self.annotation_history_handler = AnnotationHistoryHandler(project_guid, file_guid)
 
-                        assert history == history_expected
+    def test_get_history__no_history_in_db__history_expected(self, mock_get_history_from_db,
+                                                                   mock_get_base_file_node_from_db,
+                                                                   mock_get_versions_metadata_from_db,
+                                                                   mock_get_fiel_text,
+                                                                   mock_save_history_to_db):
+        history_in_db = []
 
+        with (patch.object(self.annotation_history_handler, '_AnnotationHistoryHandler__get_history_from_db',
+                           return_value=history_in_db)):
+            history = self.annotation_history_handler.get_history(3)
 
-def test_get_history__part_of_history_in_db__history_expected():
-    annotation_history_handler = AnnotationHistoryHandler('abcde', 'fghij')
+            assert history == history_expected
 
-    with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__get_history_from_db',
-                       return_value=history_expected[:1])):
-        with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__get_base_file_node_from_db',
-                           return_value=fake_base_file_node)):
-            with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__get_versions_metadata_from_db',
-                               return_value=fake_versions_metadata)):
-                with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__get_file_text',
-                                   side_effect=fake_get_file_text)):
-                    with (patch.object(annotation_history_handler, '_AnnotationHistoryHandler__save_history_to_db',
-                                       side_effect=fake_save_history_to_db)):
-                        history = annotation_history_handler.get_history(3)
+    def test_get_history__part_of_history_in_db__history_expected(self, mock_get_history_from_db,
+                                                                  mock_get_base_file_node_from_db,
+                                                                  mock_get_versions_metadata_from_db,
+                                                                  mock_get_fiel_text,
+                                                                  mock_save_history_to_db):
+        history_in_db = history_expected[:1]
 
-                        assert history == history_expected
+        with (patch.object(self.annotation_history_handler, '_AnnotationHistoryHandler__get_history_from_db',
+                           return_value=history_in_db)):
+            history = self.annotation_history_handler.get_history(3)
 
+            assert history == history_expected
 
+    def test_get_history__full_history_in_db__history_expected(self, mock_get_history_from_db,
+                                                               mock_get_base_file_node_from_db,
+                                                               mock_get_versions_metadata_from_db,
+                                                               mock_get_fiel_text,
+                                                               mock_save_history_to_db):
+        history_in_db = history_expected
 
+        with (patch.object(self.annotation_history_handler, '_AnnotationHistoryHandler__get_history_from_db',
+                           return_value=history_in_db)):
+            history = self.annotation_history_handler.get_history(3)
 
+            assert history == history_expected
 
+    def test_get_history__get_history_for_older_version__history_expected(self, mock_get_history_from_db,
+                                                                          mock_get_base_file_node_from_db,
+                                                                          mock_get_versions_metadata_from_db,
+                                                                          mock_get_fiel_text,
+                                                                          mock_save_history_to_db):
+        history = self.annotation_history_handler.get_history(2)
 
+        assert history == history_expected[:2]
 
+    def test_get_history__get_history_for_not_created_version__history_expected(self, mock_get_history_from_db,
+                                                                                mock_get_base_file_node_from_db,
+                                                                                mock_get_versions_metadata_from_db,
+                                                                                mock_get_fiel_text,
+                                                                                mock_save_history_to_db):
+        history = self.annotation_history_handler.get_history(4)
 
-
-
-
-
-
-
+        assert history == history_error_expected

@@ -46,7 +46,7 @@ class AnnotationHistoryHandler:
     def update_history(self):
         self.__history = self.__get_history_from_db()
         self.__base_file_node = self.__get_base_file_node_from_db()
-        self.__last_file_version_nr = self.__base_file_node.current_version_number()
+        self.__last_file_version_nr = self.__base_file_node.current_version_number
 
         if len(self.__history) == self.__last_file_version_nr:
             return

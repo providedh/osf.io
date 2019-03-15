@@ -121,6 +121,11 @@ Ubuntu: Skip install of docker-sync. instead...
 
 1. Application Environment
 
+  - `$ docker pull providedh/waterbutler:develop`
+  - `$ docker pull providedh/modular-file-renderer:develop`
+
+    _NOTE: You should only need to pull these images when code of these modules has chenged._
+
   - `$ docker-compose up requirements mfr_requirements wb_requirements`
 
     _NOTE: When the various requirements installations are complete these containers will exit. You should only need to run these containers after pulling code that changes python requirements or if you update the python requirements._

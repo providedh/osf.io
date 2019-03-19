@@ -117,6 +117,7 @@ ELASTIC_KWARGS = {
     # 'client_cert': None,
     # 'client_key': None
 }
+ELASTIC_ENTITES_INDEX = 'entities'
 
 # Sessions
 COOKIE_NAME = 'osf'

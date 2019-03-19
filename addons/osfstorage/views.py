@@ -287,25 +287,25 @@ def osfstorage_create_child(file_node, payload, node_addon, **kwargs):
         # the parent record
         with transaction.atomic():
             if is_folder:
-                created, file_node = True, parent.append_folder(name)
+                created, child_node = True, parent.append_folder(name)
             else:
-                created, file_node = True, parent.append_file(name)
+                created, child_node = True, parent.append_file(name)
     except (ValidationError, IntegrityError):
-        created, file_node = False, parent.find_child_by_name(name, kind=int(not is_folder))
+        created, child_node = False, parent.find_child_by_name(name, kind=int(not is_folder))
 
     if not created and is_folder:
         raise HTTPError(httplib.CONFLICT, data={
             'message_long': 'Cannot create folder "{name}" because a file or folder already exists at path "{path}"'.format(
-                name=file_node.name,
-                path=file_node.materialized_path,
+                name=child_node.name,
+                path=child_node.materialized_path,
             )
         })
 
-    if not is_folder:
+    if not is_folder:  # is usual file
         try:
-            file_node.contents = payload['contents']
-            if file_node.checkout is None or file_node.checkout._id == user._id:
-                version = file_node.create_version(
+            child_node.contents = payload['contents']
+            if child_node.checkout is None or child_node.checkout._id == user._id:
+                version = child_node.create_version(
                     user,
                     dict(payload['settings'], **dict(
                         payload['worker'], **{
@@ -330,7 +330,7 @@ def osfstorage_create_child(file_node, payload, node_addon, **kwargs):
     return {
         'status': 'success',
         'archive': not archive_exists,  # Should waterbutler also archive this file
-        'data': file_node.serialize(),
+               'data': child_node.serialize(),
         'version': version_id,
     }, httplib.CREATED if created else httplib.OK
 

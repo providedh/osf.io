@@ -106,6 +106,7 @@ var FileEditor = {
                 $(document).trigger('fileviewpage:reload');
                 self.initialText = model.editor.getValue();
                 m.redraw();
+
             }).fail(function(xhr, textStatus, err) {
                 var message;
                 if (xhr.status === 507) {

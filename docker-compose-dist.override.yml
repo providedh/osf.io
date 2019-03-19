@@ -33,17 +33,17 @@ services:
 #    image: providedh/fakecas:master
 #    command: fakecas -host=0.0.0.0:8080 -osfhost=localhost:5000 -dbaddress=postgres://postgres@postgres:5432/osf?sslmode=disable
 
-#  wb:
-#    volumes:
-#      - wb-sync:/code:nocopy
+  wb:
+    volumes:
+      - wb-sync:/code:nocopy
 
-#  wb_worker:
-#    volumes:
-#      - wb-sync:/code:nocopy
+  wb_worker:
+    volumes:
+      - wb-sync:/code:nocopy
 
-#  wb_requirements:
-#    volumes:
-#      - wb-sync:/code:nocopy
+  wb_requirements:
+    volumes:
+      - wb-sync:/code:nocopy
 
 #  mfr:
 #    volumes:

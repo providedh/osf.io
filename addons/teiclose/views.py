@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import httplib as http
 import logging
+import json
 
 from framework.auth.decorators import collect_auth
 from framework.exceptions import HTTPError
 from osf.models import (
     Guid,
     BaseFileNode,
-
 )
 from website.profile.utils import get_profile_image_url
 from website.project.decorators import (
@@ -19,6 +19,12 @@ from website.project.views.node import _view_project
 
 
 from addons.teiclose.annotation_history_handler import AnnotationHistoryHandler
+from addons.teiclose.annotator import Annotator
+
+from flask import request
+from framework.sessions import get_session
+
+from .file_loader import load_text, save_text
 
 
 logger = logging.getLogger(__name__)
@@ -66,11 +72,61 @@ def teiclose_get_main_vis(**kwargs):
 
 
 
-@must_have_permission('write')
-@must_not_be_registration
+# @must_have_permission('write')
+# @must_not_be_registration
 def teiclose_annotation_add(**kwargs):
+    file_id = kwargs['file_guid']
+    project_guid = kwargs['project_guid']
 
-    return {}
+    current_session = get_session()
+    user_guid = current_session.data['auth_user_id']
+
+    request_json = json.loads(request.data)
+
+    file_key = '_'.join(('xml_text', project_guid, file_id))
+
+    if file_key not in current_session.data:
+        xml_text = load_text(project_guid, file_id)
+        current_session.data[file_key] = xml_text
+
+    xml_text = load_text(project_guid, file_id)     #   TYLKO DO TESTÓW
+    current_session.data[file_key] = xml_text     #
+
+    xml_text = current_session.data[file_key]
+
+    annotator = Annotator()
+    xml_text = annotator.add_annotation(xml_text, request_json, user_guid)
+    current_session.data[file_key] = xml_text
+    current_session.save()
+
+    return current_session.data[file_key]
+
+
+def teiclose_annotation_save(**kwargs):
+    file_id = kwargs['file_guid']
+    project_guid = kwargs['project_guid']
+
+    current_session = get_session()
+
+    file_key = '_'.join(('xml_text', project_guid, file_id))
+
+    if file_key not in current_session.data:
+        return {'message': 'Nothing to save.'}
+
+    else:
+        xml_text = current_session.data[file_key]
+
+
+        xml_text = xml_text.encode('utf-8')
+        # tu będzie upload pliku
+        save_text(project_guid, file_id, xml_text)
+
+
+        # usunięcie pliku z sesji
+        # current_session.data.pop(file_key, None)
+        return {'message': 'File saved.'}
+
+
 
 
 def teiclose_get_annotation_history(**kwargs):
@@ -82,3 +138,7 @@ def teiclose_get_annotation_history(**kwargs):
     history = annotation_history_handler.get_history(file_version)
 
     return history
+
+
+
+

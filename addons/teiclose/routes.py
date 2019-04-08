@@ -5,6 +5,8 @@ from framework.routing import Rule, json_renderer
 
 from website.routes import OsfWebRenderer
 
+
+
 TEMPLATE_DIR = './addons/teiclose/templates/'
 
 page_routes = {
@@ -27,18 +29,6 @@ page_routes = {
 api_routes = {
 
     'rules': [
-
-        # changes
-        Rule(
-            [
-                '/project/<pid>/teiclose/add-annotation/',
-                '/project/<pid>/node/<nid>/teiclose/add-annotation/'
-            ],
-            'post',
-            views.teiclose_annotation_add,
-            json_renderer
-        ),
-
         Rule(
             [
                 '/project/<pid>/teiclose/<file_id>/<file_ver>/certhistory/',
@@ -48,6 +38,24 @@ api_routes = {
             views.teiclose_get_annotation_history,
             json_renderer
         ),
+        Rule(
+            [
+                '/project/<project_guid>/teiclose/<file_guid>/annotate/',
+                '/project/<project_guid>/node/<node_guid>/teiclose/<file_guid>/annotate/',
+            ],
+            'put',
+            views.teiclose_annotation_add,
+            json_renderer,
+        ),
+        Rule(
+            [
+                '/project/<project_guid>/teiclose/<file_guid>/save/',
+                '/project/<project_guid>/node/<node_guid>/teiclose/<file_guid>/save/',
+            ],
+            'put',
+            views.teiclose_annotation_save,
+            json_renderer
+        )
     ],
 
     'prefix': '/api/v1',

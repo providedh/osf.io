@@ -368,8 +368,8 @@ class Annotator:
                 <forename>{1}</forename>
                 <surname>{2}</surname>
                 <email>{3}</email>
-                <profile>{4}</profile>
               </persName>
+              <profile>{4}</profile>
             </person>
         """.format(user_xml_id, annotator_data['forename'], annotator_data['surname'], annotator_data['email'],
                    annotator_data['profile'])

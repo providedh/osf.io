@@ -132,13 +132,14 @@ class AnnotationHistoryHandler:
 
         history_step = {
             'version': version,
-            'url': '/' + self.__project_guid + '/' + 'teiclose/' + self.__file_guid + '/' + str(version) + '/',
-            'timestamp': str(version_metadata['created']),
             'contributor': version_metadata['author_email'],
-            'imprecision': uncertainties['imprecision'],
-            'ignorance': uncertainties['ignorance'],
+            'timestamp': str(version_metadata['created']),
+            'url': '/' + self.__project_guid + '/' + 'teiclose/' + self.__file_guid + '/' + str(version) + '/',
             'credibility': uncertainties['credibility'],
-            'completeness': uncertainties['completeness']
+            'ignorance': uncertainties['ignorance'],
+            'imprecision': uncertainties['imprecision'],
+            'incompleteness': uncertainties['incompleteness'],
+            'variation': uncertainties['variation'],
         }
 
         return history_step
@@ -166,15 +167,17 @@ class AnnotationHistoryHandler:
         }
 
         uncertainties = {
-            'completeness': 0,
             'credibility': 0,
             'ignorance': 0,
             'imprecision': 0,
+            'incompleteness': 0,
+            'variation': 0,
         }
 
         for key, value in uncertainties.items():
             number_of_uncertainties = len(
-                tree.xpath("//default:certainty[@source='" + key + "']", namespaces=namespaces))
+                tree.xpath("//default:classCode[@scheme=\"http://providedh.eu/uncertainty/ns/1.0\"]/"
+                           "default:certainty[@source='" + key + "']", namespaces=namespaces))
 
             uncertainties[key] = number_of_uncertainties
 

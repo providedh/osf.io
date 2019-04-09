@@ -5,34 +5,37 @@ from addons.teiclose.annotation_history_handler import AnnotationHistoryHandler
 
 history_expected = [
     {
-        "imprecision": 0,
-        "completeness": 0,
-        "url": "/abcde/teiclose/fghij/1/",
-        "timestamp": "2001-01-01 01:01:01.000001+00:00",
-        "ignorance": 0,
         "version": 1,
+        "contributor": "jan.nowak@zmyslonymail.com",
+        "timestamp": "2001-01-01 01:01:01.000001+00:00",
+        "url": "/abcde/teiclose/fghij/1/",
         "credibility": 0,
-        "contributor": "jan.nowak@zmyslonymail.com"
+        "ignorance": 0,
+        "imprecision": 0,
+        "incompleteness": 0,
+        "variation": 0
     },
     {
-        "imprecision": 1,
-        "completeness": 1,
-        "url": "/abcde/teiclose/fghij/2/",
-        "timestamp": "2002-02-02 02:02:02.000002+00:00",
-        "ignorance": 1,
         "version": 2,
+        "contributor": "jan.nowak@zmyslonymail.com",
+        "timestamp": "2002-02-02 02:02:02.000002+00:00",
+        "url": "/abcde/teiclose/fghij/2/",
         "credibility": 1,
-        "contributor": "jan.nowak@zmyslonymail.com"
+        "ignorance": 1,
+        "imprecision": 1,
+        "incompleteness": 1,
+        "variation": 2
     },
     {
-        "imprecision": 1,
-        "completeness": 2,
-        "url": "/abcde/teiclose/fghij/3/",
-        "timestamp": "2003-03-03 03:03:03.000003+00:00",
-        "ignorance": 3,
         "version": 3,
+        "contributor": "jan.nowak@zmyslonymail.com",
+        "timestamp": "2003-03-03 03:03:03.000003+00:00",
+        "url": "/abcde/teiclose/fghij/3/",
         "credibility": 1,
-        "contributor": "jan.nowak@zmyslonymail.com"
+        "ignorance": 3,
+        "imprecision": 1,
+        "incompleteness": 2,
+        "variation": 3
     },
 ]
 

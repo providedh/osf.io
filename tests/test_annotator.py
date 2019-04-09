@@ -41,8 +41,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_tag_to_text__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_to_text__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -69,8 +69,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_certainty_to_text__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -97,8 +97,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_tag_and_certainty_to_text__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_and_certainty_to_text__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -125,8 +125,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_tag_to_text_with_tag__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_to_text_with_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -153,8 +153,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_tag_to_text_with_same_tag__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_to_text_with_same_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -181,8 +181,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_certainty_to_text_with_same_tag__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text_with_same_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -209,8 +209,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_certainty_to_text_with_tag__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text_with_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -237,8 +237,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_tag_and_certainty_to_text_with_other_tag__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_and_certainty_to_text_with_other_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -265,8 +265,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_tag_to_text_with_tag_and_certainty__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_to_text_with_tag_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -293,8 +293,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_tag_and_certainty_to_text_with_same_tag_and_certainty__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_and_certainty_to_text_with_same_tag_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -321,8 +321,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_certainty_to_text_with_tag_and_certainty__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text_with_tag_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -349,8 +349,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_tag_and_certainty_to_text_with_other_tag_and_certainty__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_and_certainty_to_text_with_other_tag_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -377,8 +377,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_certainty_to_text_with_same_tag_separated__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text_with_same_tag_separated__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -405,8 +405,8 @@ class TestAnnotator:
         }
 
         dirname = os.path.dirname(__file__)
-        input_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "source_files", "source_file_without_annotators_and_certainties.xml")
-        expected_file_path = os.path.join(dirname, "test_annotating_uncertainty_files", "result_files", "add_first_annotator_and_certainty__result.xml")
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file_without_annotators_and_certainties.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_first_annotator_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)

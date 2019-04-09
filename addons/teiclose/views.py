@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import httplib as http
-import logging
 import json
+import httplib as http
+from flask import request
 
 from framework.auth.decorators import collect_auth
 from framework.exceptions import HTTPError
@@ -9,6 +9,8 @@ from osf.models import (
     Guid,
     BaseFileNode,
 )
+from framework.sessions import get_session
+
 from website.profile.utils import get_profile_image_url
 from website.project.decorators import (
     must_have_permission,
@@ -17,17 +19,9 @@ from website.project.decorators import (
     must_have_read_permission_or_be_public)
 from website.project.views.node import _view_project
 
-
 from addons.teiclose.annotation_history_handler import AnnotationHistoryHandler
 from addons.teiclose.annotator import Annotator
-
-from flask import request
-from framework.sessions import get_session
-
-from .file_loader import load_text, save_text
-
-
-logger = logging.getLogger(__name__)
+from addons.teiclose.file_loader import load_text, save_text
 
 
 @must_be_valid_project
@@ -71,11 +65,10 @@ def teiclose_get_main_vis(**kwargs):
     return ret
 
 
-
 # @must_have_permission('write')
 # @must_not_be_registration
-def teiclose_annotation_add(**kwargs):
-    file_id = kwargs['file_guid']
+def teiclose_add_annotation(**kwargs):
+    file_guid = kwargs['file_guid']
     project_guid = kwargs['project_guid']
 
     current_session = get_session()
@@ -83,14 +76,14 @@ def teiclose_annotation_add(**kwargs):
 
     request_json = json.loads(request.data)
 
-    file_key = '_'.join(('xml_text', project_guid, file_id))
+    file_key = '_'.join(('xml_text', project_guid, file_guid))
 
     if file_key not in current_session.data:
-        xml_text = load_text(project_guid, file_id)
+        xml_text = load_text(project_guid, file_guid)
         current_session.data[file_key] = xml_text
 
-    xml_text = load_text(project_guid, file_id)     #   TYLKO DO TESTÓW
-    current_session.data[file_key] = xml_text     #
+    xml_text = load_text(project_guid, file_guid)   # ONLY FOR TESTS - RELOAD DEFAULT FILE TO current_session.data
+    current_session.data[file_key] = xml_text       # ONLY FOR TESTS - RELOAD DEFAULT FILE TO current_session.data
 
     xml_text = current_session.data[file_key]
 
@@ -102,43 +95,34 @@ def teiclose_annotation_add(**kwargs):
     return current_session.data[file_key]
 
 
-def teiclose_annotation_save(**kwargs):
-    file_id = kwargs['file_guid']
+def teiclose_save_annotations(**kwargs):
+    file_guid = kwargs['file_guid']
     project_guid = kwargs['project_guid']
 
     current_session = get_session()
 
-    file_key = '_'.join(('xml_text', project_guid, file_id))
+    file_key = '_'.join(('xml_text', project_guid, file_guid))
 
     if file_key not in current_session.data:
-        return {'message': 'Nothing to save.'}
+        return '', 404
 
     else:
         xml_text = current_session.data[file_key]
-
-
         xml_text = xml_text.encode('utf-8')
-        # tu będzie upload pliku
-        save_text(project_guid, file_id, xml_text)
 
+        save_text(project_guid, file_guid, xml_text)
 
-        # usunięcie pliku z sesji
-        # current_session.data.pop(file_key, None)
-        return {'message': 'File saved.'}
+        current_session.data.pop(file_key, None)
 
-
+        return '', 200
 
 
 def teiclose_get_annotation_history(**kwargs):
-    file_id = kwargs['file_id']
-    project_guid = kwargs['pid']
+    file_guid = kwargs['file_guid']
+    project_guid = kwargs['project_guid']
     file_version = int(kwargs['file_ver'])
 
-    annotation_history_handler = AnnotationHistoryHandler(project_guid, file_id)
+    annotation_history_handler = AnnotationHistoryHandler(project_guid, file_guid)
     history = annotation_history_handler.get_history(file_version)
 
     return history
-
-
-
-

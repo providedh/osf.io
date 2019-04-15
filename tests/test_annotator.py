@@ -21,17 +21,13 @@ def fake_get_user_data_from_db(guid):
     return data
 
 
-@mock.patch('addons.teiclose.annotator.Annotator.get_user_data_from_db',
+@mock.patch('addons.teiclose.annotator.Annotator._Annotator__get_user_data_from_db',
             side_effect=fake_get_user_data_from_db)
-# @mock.patch('addons.teiclose.annotator.Annotator.get_user_guid',
-#             return_value='abcde')
 class TestAnnotator:
     def test_add_annotation__add_tag_to_text__string(self, mock_get_user_data_from_db):
         json = {
-            "start_row": 217,
-            "start_col": 7,
-            "end_row": 217,
-            "end_col": 11,
+            "start_pos": 8440,
+            "end_pos": 8445,
             "source": "",
             "locus": "",
             "certainty": "",
@@ -42,7 +38,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_to_text__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_tag_to_text__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -70,7 +67,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_certainty_to_text__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -98,7 +96,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_and_certainty_to_text__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_tag_and_certainty_to_text__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -126,7 +125,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_to_text_with_tag__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_tag_to_text_with_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -154,7 +154,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_to_text_with_same_tag__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_tag_to_text_with_same_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -182,7 +183,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text_with_same_tag__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_certainty_to_text_with_same_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -210,7 +212,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text_with_tag__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_certainty_to_text_with_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -238,7 +241,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_and_certainty_to_text_with_other_tag__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_tag_and_certainty_to_text_with_other_tag__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -266,7 +270,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_to_text_with_tag_and_certainty__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_tag_to_text_with_tag_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -278,7 +283,7 @@ class TestAnnotator:
 
         assert result == expected_text
 
-    def test_add_annotation__add_tag_and_certainty_to_text_with_same_tag_and_certainty__string(self, mock_get_user_data_from_db):
+    def test_add_annotation__add_certainty_to_text_with_same_tag_and_certainty__string(self, mock_get_user_data_from_db):
         json = {
             "start_row": 218,
             "start_col": 115,
@@ -294,7 +299,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_and_certainty_to_text_with_same_tag_and_certainty__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_certainty_to_text_with_same_tag_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -322,7 +328,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text_with_tag_and_certainty__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_certainty_to_text_with_tag_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -350,7 +357,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_tag_and_certainty_to_text_with_other_tag_and_certainty__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_tag_and_certainty_to_text_with_other_tag_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -378,7 +386,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_certainty_to_text_with_same_tag_separated__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_certainty_to_text_with_same_tag_separated__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -406,7 +415,8 @@ class TestAnnotator:
 
         dirname = os.path.dirname(__file__)
         input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file_without_annotators_and_certainties.xml")
-        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files", "add_first_annotator_and_certainty__result.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "add_first_annotator_and_certainty__result.xml")
 
         input_text = read_file(input_file_path)
         expected_text = read_file(expected_file_path)
@@ -417,8 +427,3 @@ class TestAnnotator:
         result = annotator.add_annotation(input_text, json, user_guid)
 
         assert result == expected_text
-
-
-
-
-

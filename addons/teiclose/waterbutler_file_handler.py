@@ -11,9 +11,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def load_text(project_id, file_id, version=None):
+def load_file(project_guid, file_guid, version=None):
     try:
-        guid = Guid.objects.get(_id=file_id)
+        guid = Guid.objects.get(_id=file_guid)
         base_file_node = BaseFileNode.objects.get(id=guid.object_id)
 
     except (Guid.DoesNotExist, BaseFileNode.DoesNotExist):
@@ -23,9 +23,9 @@ def load_text(project_id, file_id, version=None):
     file_path = '/' + base_file_node._id
 
     if version:
-        waterbutler_url = waterbutler_api_url_for(project_id, provider, file_path, True, version=version)
+        waterbutler_url = waterbutler_api_url_for(project_guid, provider, file_path, True, version=version)
     else:
-        waterbutler_url = waterbutler_api_url_for(project_id, provider, file_path, True)
+        waterbutler_url = waterbutler_api_url_for(project_guid, provider, file_path, True)
 
     cookies = request.cookies
     auth_header = request.headers.get('HTTP_AUTHORIZATION')
@@ -36,7 +36,7 @@ def load_text(project_id, file_id, version=None):
     return text
 
 
-def save_text(project_id, file_id, text):
+def save_file(project_id, file_id, text):
     try:
         guid = Guid.objects.get(_id=file_id)
         base_file_node = BaseFileNode.objects.get(id=guid.object_id)
@@ -52,13 +52,13 @@ def save_text(project_id, file_id, text):
     cookies = request.cookies
     auth_header = request.headers.get('HTTP_AUTHORIZATION')
 
-    # data = 'lalala2'
     file_response = call_waterbutler_quietly_put(waterbutler_url, text, cookies, auth_header)
 
 
 
 def call_waterbutler_quietly_put(url, data, cookies, auth_header):
     logger.debug('Calling WaterButler: {}'.format(url))
+
     upload_response = requests.put(
         url,
         data,

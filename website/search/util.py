@@ -48,6 +48,11 @@ def build_query_string(qs):
         }
     }
 
+
+def build_fuzzy_query(qs='*', sort=None):
+    pass
+
+
 def clean_splitters(text):
     new_text = text.replace('_', ' ').replace('-', ' ').replace('.', ' ')
     if new_text == text:

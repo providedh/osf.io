@@ -304,6 +304,8 @@ def osfstorage_create_child(file_node, payload, node_addon, **kwargs):
     if not is_folder:  # is usual file
         try:
             child_node.contents = payload['contents']
+            child_node.text = payload['text']
+            child_node.entities = payload['entities']
             if child_node.checkout is None or child_node.checkout._id == user._id:
                 version = child_node.create_version(
                     user,

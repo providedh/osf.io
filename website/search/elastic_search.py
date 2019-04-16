@@ -8,6 +8,9 @@ import logging
 import math
 import re
 import unicodedata
+import json
+
+from addons.osfstorage.models import OsfStorageFile
 from framework import sentry
 
 import six
@@ -59,7 +62,7 @@ DOC_TYPE_TO_MODEL = {
 }
 
 # Prevent tokenizing and stop word removal.
-NOT_ANALYZED_PROPERTY = {'type': 'string', 'index': 'false'}
+NOT_ANALYZED_PROPERTY = {'type': 'string', 'index': 'not_analyzed'}
 
 # Perform stemming on the field it's applied to.
 ENGLISH_ANALYZER_PROPERTY = {'type': 'string', 'analyzer': 'english'}
@@ -565,6 +568,38 @@ def update_user(user, index=None):
     client().index(index=index, doc_type='user', body=user_doc, id=user._id, refresh=True)
 
 
+def parse_entities(file_):  # type: (OsfStorageFile) -> list
+    if file_.entities is not None:
+        entities = json.loads(file_.entities)
+        return entities
+    return []
+
+
+@requires_search
+def update_entities(file_, index=None, delete=False):  # type: (OsfStorageFile, str, str) -> None
+    index = index or settings.ELASTIC_ENTITES_INDEX
+    delete = delete or not file_.name or not file_.node.is_public or file_.node.is_deleted or file_.node.archiving
+
+    entities = parse_entities(file_)
+
+    for entity in entities:
+        if not delete:
+            client().index(
+                index=index,
+                doc_type=entity['tag'],
+                body=entity,
+                id="{}/{}#{}".format(entity['project'], entity['path'], entity['id']),
+                refresh=True
+            )
+        else:
+            client().delete(
+                index=index,
+                doc_type=entity['tag'],
+                id=entity['id'],
+                refresh=True,
+                ignore=[404]
+            )
+
 @requires_search
 def update_file(file_, index=None, delete=False):
     index = index or INDEX
@@ -610,7 +645,7 @@ def update_file(file_, index=None, delete=False):
         'is_registration': file_.node.is_registration,
         'is_retracted': file_.node.is_retracted,
         'extra_search_terms': clean_splitters(file_.name),
-        'contents': file_.contents,
+        'text': file_.text,
     }
 
     client().index(
@@ -741,7 +776,7 @@ def get_index_mappings(index=None):
         }
         for dtype in document_types:
             mappings[dtype] = basic_mapping.copy()
-        mappings['file']['properties']['contents'] = ENGLISH_ANALYZER_PROPERTY
+        mappings['file']['properties']['text'] = ENGLISH_ANALYZER_PROPERTY
         analyzers = {field: ENGLISH_ANALYZER_PROPERTY for field in analyzed_fields}
         for ptype in project_like_types:
             mappings[ptype]['properties'].update(analyzers)
@@ -767,7 +802,7 @@ def get_index_mappings(index=None):
         basic_mapping = {'properties':
                              {'projectID': NOT_ANALYZED_PROPERTY,
                               'fileID': NOT_ANALYZED_PROPERTY,
-                              'filepath': NOT_ANALYZED_PROPERTY,
+                              'path': NOT_ANALYZED_PROPERTY,
                               'id': {'type': 'string',
                                      'boost': 2},
                               'type': NOT_ANALYZED_PROPERTY,

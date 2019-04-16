@@ -90,6 +90,7 @@ def update_user(user, index=None, async=True):
 def update_file(file_, index=None, delete=False):
     index = index or settings.ELASTIC_INDEX
     search_engine.update_file(file_, index=index, delete=delete)
+    search_engine.update_entities(file_)
 
 
 @requires_search

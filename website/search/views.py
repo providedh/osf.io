@@ -15,6 +15,7 @@ from framework import sentry
 from website import language
 from osf.models import OSFUser, AbstractNode
 from website import settings
+from website.project.decorators import must_have_read_permission_or_be_public, must_be_valid_project
 from website.project.views.contributor import get_node_contributors_abbrev
 from website.ember_osf_web.decorators import ember_flag_is_active
 from website.search import exceptions
@@ -203,3 +204,11 @@ def search_contributor(auth):
     size = int(bleach.clean(request.args.get('size', '5'), tags=[], strip=True))
     return search.search_contributor(query=query, page=page, size=size,
                                      exclude=exclude, current_user=user)
+
+
+@must_have_read_permission_or_be_public
+@must_be_valid_project
+@must_be_logged_in
+def search_entities(**kwargs):
+    r = request
+    return {"Ale": "beka"}

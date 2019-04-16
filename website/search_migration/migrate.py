@@ -194,6 +194,7 @@ def migrate(delete, remove=False, index=None, app=None):
 
     ctx.pop()
 
+
 def set_up_index(idx):
     alias = es_client().indices.get_aliases(index=idx)
 
@@ -226,7 +227,7 @@ def set_up_alias(old_index, index):
 
 
 def remove_old_index(index):
-    old_version = int(index.split('_v')[1]) - 1
+    old_version = int(index.split('_v')[-1]) - 1
     if old_version < 1:
         logger.info('No index before {} to delete'.format(index))
         pass

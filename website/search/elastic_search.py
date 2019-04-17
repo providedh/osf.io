@@ -8,6 +8,9 @@ import logging
 import math
 import re
 import unicodedata
+import json
+
+from addons.osfstorage.models import OsfStorageFile
 from framework import sentry
 
 import six
@@ -186,6 +189,12 @@ def get_tags(query, index):
     tags = results['aggregations']['tag_cloud']['buckets']
 
     return tags
+
+
+@requires_search
+def entities_search(query, entity, index=None):
+    index = index or settings.ELASTIC_ENTITES_INDEX
+    return client().search(index=index, doc_type=entity, body=query)['hits']['hits']
 
 
 @requires_search
@@ -565,6 +574,38 @@ def update_user(user, index=None):
     client().index(index=index, doc_type='user', body=user_doc, id=user._id, refresh=True)
 
 
+def parse_entities(file_):  # type: (OsfStorageFile) -> list
+    if file_.entities is not None:
+        entities = json.loads(file_.entities)
+        return entities
+    return []
+
+
+@requires_search
+def update_entities(file_, index=None, delete=False):  # type: (OsfStorageFile, str, str) -> None
+    index = index or settings.ELASTIC_ENTITES_INDEX
+    delete = delete or not file_.name or not file_.node.is_public or file_.node.is_deleted or file_.node.archiving
+
+    entities = parse_entities(file_)
+
+    for entity in entities:
+        if not delete:
+            client().index(
+                index=index,
+                doc_type=entity['tag'],
+                body=entity,
+                id="{}/{}#{}".format(entity['project'], entity['path'], entity['id']),
+                refresh=True
+            )
+        else:
+            client().delete(
+                index=index,
+                doc_type=entity['tag'],
+                id=entity['id'],
+                refresh=True,
+                ignore=[404]
+            )
+
 @requires_search
 def update_file(file_, index=None, delete=False):
     index = index or INDEX
@@ -610,7 +651,7 @@ def update_file(file_, index=None, delete=False):
         'is_registration': file_.node.is_registration,
         'is_retracted': file_.node.is_retracted,
         'extra_search_terms': clean_splitters(file_.name),
-        'contents': file_.contents,
+        'text': file_.text,
     }
 
     client().index(
@@ -701,67 +742,87 @@ def create_index(index=None):
     all of which are applied to all projects, components, preprints, and registrations.
     '''
     index = index or INDEX
-    document_types = ['project', 'component', 'registration', 'user', 'file', 'institution', 'preprint',
-                      'collectionSubmission']
-    project_like_types = ['project', 'component', 'registration', 'preprint']
-    analyzed_fields = ['title', 'description']
-
     client().indices.create(index, ignore=[400])  # HTTP 400 if index already exists
-    for type_ in document_types:
-        if type_ == 'collectionSubmission':
-            mapping = {
-                'properties': {
-                    'collectedType': NOT_ANALYZED_PROPERTY,
-                    'subjects': NOT_ANALYZED_PROPERTY,
-                    'status': NOT_ANALYZED_PROPERTY,
-                    'provider': NOT_ANALYZED_PROPERTY,
-                    'title': ENGLISH_ANALYZER_PROPERTY,
-                    'abstract': ENGLISH_ANALYZER_PROPERTY
-                }
-            }
-        else:
-            mapping = {
-                'properties': {
-                    'tags': NOT_ANALYZED_PROPERTY,
-                    'license': {
-                        'properties': {
-                            'id': NOT_ANALYZED_PROPERTY,
-                            'name': NOT_ANALYZED_PROPERTY,
-                            # Elasticsearch automatically infers mappings from content-type. `year` needs to
-                            # be explicitly mapped as a string to allow date ranges, which break on the inferred type
-                            'year': {'type': 'string'},
-                        }
-                    },
-                }
-            }
-            if type_ == 'file':
-                mapping['properties']['contents'] = ENGLISH_ANALYZER_PROPERTY
-            if type_ in project_like_types:
-                analyzers = {field: ENGLISH_ANALYZER_PROPERTY
-                             for field in analyzed_fields}
-                mapping['properties'].update(analyzers)
 
-            if type_ == 'user':
-                fields = {
-                    'job': {
-                        'type': 'string',
-                        'boost': '1',
-                    },
-                    'all_jobs': {
-                        'type': 'string',
-                        'boost': '0.01',
-                    },
-                    'school': {
-                        'type': 'string',
-                        'boost': '1',
-                    },
-                    'all_schools': {
-                        'type': 'string',
-                        'boost': '0.01'
-                    },
-                }
-                mapping['properties'].update(fields)
-        client().indices.put_mapping(index=index, doc_type=type_, body=mapping, ignore=[400, 404])
+    mappings = get_index_mappings(index)
+
+    for dtype in mappings:
+        client().indices.put_mapping(index=index, doc_type=dtype, body=mappings[dtype], ignore=[400, 404])
+
+
+def get_index_mappings(index=None):
+    if index.startswith(settings.ELASTIC_INDEX):
+        document_types = ('project', 'component', 'registration', 'user', 'file', 'institution', 'preprint')
+        project_like_types = ('project', 'component', 'registration', 'preprint')
+        analyzed_fields = ('title', 'description')
+        mappings = {'collectionSubmission': {
+            'properties': {
+                'collectedType': NOT_ANALYZED_PROPERTY,
+                'subjects': NOT_ANALYZED_PROPERTY,
+                'status': NOT_ANALYZED_PROPERTY,
+                'provider': NOT_ANALYZED_PROPERTY,
+                'title': ENGLISH_ANALYZER_PROPERTY,
+                'abstract': ENGLISH_ANALYZER_PROPERTY
+            }
+        }
+        }
+        basic_mapping = {
+            'properties': {
+                'tags': NOT_ANALYZED_PROPERTY,
+                'license': {
+                    'properties': {
+                        'id': NOT_ANALYZED_PROPERTY,
+                        'name': NOT_ANALYZED_PROPERTY,
+                        # Elasticsearch automatically infers mappings from content-type. `year` needs to
+                        # be explicitly mapped as a string to allow date ranges, which break on the inferred type
+                        'year': {'type': 'string'},
+                    }
+                },
+            }
+        }
+        for dtype in document_types:
+            mappings[dtype] = basic_mapping.copy()
+        mappings['file']['properties']['text'] = ENGLISH_ANALYZER_PROPERTY
+        analyzers = {field: ENGLISH_ANALYZER_PROPERTY for field in analyzed_fields}
+        for ptype in project_like_types:
+            mappings[ptype]['properties'].update(analyzers)
+        mappings['user']['properties'].update({
+            'job': {
+                'type': 'string',
+                'boost': '1',
+            },
+            'all_jobs': {
+                'type': 'string',
+                'boost': '0.01',
+            },
+            'school': {
+                'type': 'string',
+                'boost': '1',
+            },
+            'all_schools': {
+                'type': 'string',
+                'boost': '0.01'
+            },
+        })
+    elif index.startswith(settings.ELASTIC_ENTITES_INDEX):
+        basic_mapping = {'properties':
+                             {'projectID': NOT_ANALYZED_PROPERTY,
+                              'fileID': NOT_ANALYZED_PROPERTY,
+                              'path': NOT_ANALYZED_PROPERTY,
+                              'id': {'type': 'string',
+                                     'boost': 2},
+                              'type': NOT_ANALYZED_PROPERTY,
+                              'name': {'type': 'string',
+                                       'boost': 3}
+                              }
+                         }
+        mappings = {'event': basic_mapping, 'organization': basic_mapping, 'place': basic_mapping,
+                    'person': basic_mapping.copy()}
+        mappings['person']['properties'].update({'forename': {'type': 'string'}, 'surname': {'type': 'string'}})
+    else:
+        raise NotImplementedError("Unknown index")
+
+    return mappings
 
 
 @requires_search

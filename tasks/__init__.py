@@ -195,18 +195,19 @@ def rebuild_search(ctx):
         protocol = 'http://' if settings.DEBUG_MODE else 'https://'
     else:
         protocol = ''
-    url = '{protocol}{uri}/{index}'.format(
-        protocol=protocol,
-        uri=settings.ELASTIC_URI.rstrip('/'),
-        index=settings.ELASTIC_INDEX,
-    )
-    print('Deleting index {}'.format(settings.ELASTIC_INDEX))
-    print('----- DELETE {}*'.format(url))
-    requests.delete(url + '*')
-    print('Creating index {}'.format(settings.ELASTIC_INDEX))
-    print('----- PUT {}'.format(url))
-    requests.put(url)
-    migrate_search(ctx, delete=False)
+    for index in (settings.ELASTIC_INDEX, settings.ELASTIC_ENTITES_INDEX):
+        url = '{protocol}{uri}/{index}'.format(
+            protocol=protocol,
+            uri=settings.ELASTIC_URI.rstrip('/'),
+            index=index,
+        )
+        print('Deleting index {}'.format(index))
+        print('----- DELETE {}*'.format(url))
+        requests.delete(url + '*')
+        print('Creating index {}'.format(index))
+        print('----- PUT {}'.format(url))
+        requests.put(url)
+        migrate_search(ctx, delete=False, index=index)
 
 
 @task

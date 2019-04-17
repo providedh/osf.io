@@ -15,11 +15,12 @@ from framework import sentry
 from website import language
 from osf.models import OSFUser, AbstractNode
 from website import settings
+from website.project.decorators import must_have_read_permission_or_be_public, must_be_valid_project
 from website.project.views.contributor import get_node_contributors_abbrev
 from website.ember_osf_web.decorators import ember_flag_is_active
 from website.search import exceptions
 import website.search.search as search
-from website.search.util import build_query
+from website.search.util import build_query, build_fuzzy_query
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,7 @@ def handle_search_errors(func):
                 'message_short': 'Could not perform search query',
                 'message_long': language.SEARCH_QUERY_HELP,
             })
+
     return wrapped
 
 
@@ -73,9 +75,11 @@ def search_search(**kwargs):
     results['time'] = round(time.time() - tick, 2)
     return results
 
+
 @ember_flag_is_active('ember_search_page')
 def search_view():
     return {'shareUrl': settings.SHARE_URL},
+
 
 def conditionally_add_query_item(query, item, condition, value):
     """ Helper for the search_projects_by_title function which will add a condition to a query
@@ -203,3 +207,13 @@ def search_contributor(auth):
     size = int(bleach.clean(request.args.get('size', '5'), tags=[], strip=True))
     return search.search_contributor(query=query, page=page, size=size,
                                      exclude=exclude, current_user=user)
+
+
+@must_have_read_permission_or_be_public
+@must_be_valid_project
+@must_be_logged_in
+def search_entities(**kwargs):
+    pid = kwargs.get('node', None)._id
+
+    query = build_fuzzy_query(kwargs['query'], pid)
+    return search.entities_search(query, index=settings.ELASTIC_ENTITES_INDEX, doc_type=kwargs['entity_type'])

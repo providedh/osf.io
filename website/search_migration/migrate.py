@@ -194,6 +194,7 @@ def migrate(delete, remove=False, index=None, app=None):
 
     ctx.pop()
 
+
 def set_up_index(idx):
     alias = es_client().indices.get_aliases(index=idx)
 
@@ -201,16 +202,16 @@ def set_up_index(idx):
         # Deal with empty indices or the first migration
         index = '{}_v1'.format(idx)
         search.create_index(index=index)
-        logger.info('Reindexing {0} to {1}_v1'.format(idx, idx))
+        logger.info('Reindexing {} to {}_v1'.format(idx, idx))
         helpers.reindex(es_client(), idx, index)
         logger.info('Deleting {} index'.format(idx))
         es_client().indices.delete(index=idx)
         es_client().indices.put_alias(index=index, name=idx)
     else:
         # Increment version
-        version = int(alias.keys()[0].split('_v')[1]) + 1
+        version = int(alias.keys()[0].split('_v')[-1]) + 1
         logger.info('Incrementing index version to {}'.format(version))
-        index = '{0}_v{1}'.format(idx, version)
+        index = '{}_v{}'.format(idx, version)
         search.create_index(index=index)
         logger.info('{} index created'.format(index))
     return index
@@ -226,7 +227,7 @@ def set_up_alias(old_index, index):
 
 
 def remove_old_index(index):
-    old_version = int(index.split('_v')[1]) - 1
+    old_version = int(index.split('_v')[-1]) - 1
     if old_version < 1:
         logger.info('No index before {} to delete'.format(index))
         pass

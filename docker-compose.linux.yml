@@ -36,11 +36,11 @@ services:
 #  wb:
 #    volumes:
 #      - ../waterbutler:/code
-#
+
 #  wb_worker:
 #    volumes:
 #      - ../waterbutler:/code
-#
+
 #  wb_requirements:
 #    volumes:
 #      - ../waterbutler:/code

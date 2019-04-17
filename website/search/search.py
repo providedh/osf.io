@@ -28,6 +28,11 @@ def search(query, index=None, doc_type=None, raw=None):
 
 
 @requires_search
+def entities_search(query, index=None, doc_type=None):
+    index = index or settings.ELASTIC_ENTITES_INDEX
+    return search_engine.entities_search(query, index=index, entity=doc_type)
+
+@requires_search
 def update_node(node, index=None, bulk=False, async=True):
     kwargs = {
         'index': index,

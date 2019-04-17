@@ -192,6 +192,12 @@ def get_tags(query, index):
 
 
 @requires_search
+def entities_search(query, entity, index=None):
+    index = index or settings.ELASTIC_ENTITES_INDEX
+    return client().search(index=index, doc_type=entity, body=query)['hits']['hits']
+
+
+@requires_search
 def search(query, index=None, doc_type='_all', raw=False):
     """Search for a query
 
@@ -873,6 +879,10 @@ def search_contributor(query, page=0, size=10, exclude=None, current_user=None):
         # TODO: use utils.serialize_user
         user = OSFUser.load(doc['id'])
 
+        if user is None:
+            logger.error('Could not load user {0}'.format(doc['id']))
+            continue
+
         if current_user and current_user._id == user._id:
             n_projects_in_common = -1
         elif current_user:
@@ -880,9 +890,6 @@ def search_contributor(query, page=0, size=10, exclude=None, current_user=None):
         else:
             n_projects_in_common = 0
 
-        if user is None:
-            logger.error('Could not load user {0}'.format(doc['id']))
-            continue
         if user.is_active:  # exclude merged, unregistered, etc.
             current_employment = None
             education = None

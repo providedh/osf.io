@@ -2,11 +2,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 TITLE_WEIGHT = 4
 DESCRIPTION_WEIGHT = 1.2
 JOB_SCHOOL_BOOST = 1
 ALL_JOB_SCHOOL_BOOST = 0.125
+
 
 def build_query(qs='*', start=0, size=10, sort=None):
     query = {
@@ -49,8 +49,28 @@ def build_query_string(qs):
     }
 
 
-def build_fuzzy_query(qs='*', sort=None):
-    pass
+def build_fuzzy_query(qs, pid):
+    query = {
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "multi_match": {
+                            "query": qs,
+                            "fields": ["_all"],
+                            "fuzziness": "AUTO"
+                        }
+                    },
+                    {
+                        "match": {
+                            "project": pid
+                        }
+                    }
+                ]
+            }
+        }
+    }
+    return query
 
 
 def clean_splitters(text):

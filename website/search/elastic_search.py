@@ -751,7 +751,7 @@ def create_index(index=None):
 
 
 def get_index_mappings(index=None):
-    if index == settings.ELASTIC_INDEX:
+    if index.startswith(settings.ELASTIC_INDEX):
         document_types = ('project', 'component', 'registration', 'user', 'file', 'institution', 'preprint')
         project_like_types = ('project', 'component', 'registration', 'preprint')
         analyzed_fields = ('title', 'description')
@@ -804,7 +804,7 @@ def get_index_mappings(index=None):
                 'boost': '0.01'
             },
         })
-    elif index == settings.ELASTIC_ENTITES_INDEX:
+    elif index.startswith(settings.ELASTIC_ENTITES_INDEX):
         basic_mapping = {'properties':
                              {'projectID': NOT_ANALYZED_PROPERTY,
                               'fileID': NOT_ANALYZED_PROPERTY,

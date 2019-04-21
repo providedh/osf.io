@@ -7,21 +7,21 @@
 	z-index: -1;
 }
 
-
+img#logo{
+    position: fixed;
+    left:1em;
+    height: 9em;
+}
 
 body {
-  background: white;
+  background: white; 
   padding: 0;
   margin: 0;
   font-family: sans-serif;
 }
 
-span.annotation{
-	background-color: lightblue;
-}
-
 div#stats{
-	padding-top: 5em;
+	padding-top: 8em;
 	width: 21cm;
 	display: block;
 	align-self: auto;
@@ -35,26 +35,47 @@ div#stats span{
 
 section#editor{
 	padding-top: 1.5em;
-	line-height: 1.8em;
+	line-height: 2em;
 }
 
 section#toolbar, section#top-panel{
-	position: sticky;
-	top: 100px;
+	position:fixed;
 	z-index: 300;
-	background: #F5F5F5;
-	height: 50px;
+	background:white;
+	height: 8em;
+	width: 100%;
 	box-shadow: 0 1px 3px 1px rgba(60,64,67,.15);
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	flex-direction: column;
+}
+
+section#toolbar{
+    padding-top:5px;
 }
 
 section#top-panel{
+    padding-top:6px;
 	z-index: 200;
-	height: 6.3em;
-	top: 150px;
+	height: 7.5em;
+	top: 8em;
 	display: none;
+}
+
+div#annotator-root.topPanelDisplayed section#top-panel{
+    display:flex;
+}
+
+div#annotator-root.topPanelDisplayed div#stats{
+    padding-top:15em;
+}
+
+div#annotator-root.timelineExpanded div#stats{
+    padding-top:12em;
+}
+
+div#annotator-root.topPanelDisplayed.timelineExpanded div#stats{
+    padding-top:19em;
 }
 
 div.toolbarRow div.row.closePanel{
@@ -68,6 +89,7 @@ div.toolbarRow{
 }
 
 div.toolbarRow div.row{
+    padding-top: 5px;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
@@ -78,8 +100,12 @@ section.panel form, section.panel input{
 	display: inline-block;
 }
 
-input#certainty, input#type{
+input#type{
 	width:2.6em;
+}
+
+input#certainty{
+	width:4em;
 }
 
 a.help{
@@ -100,85 +126,136 @@ div#toolbar-header label span#name{
 }
 
 page {
-  padding: 16px 6px;
-  background: #F5F5F5;
+  padding: 16px 16px;
+  background: white;
   display: block;
   margin: 0 auto;
   margin-bottom: 0.5cm;
   box-shadow: 0 1px 3px 1px rgba(60,64,67,.15);
+  box-sizing: border-box;
 }
-page[size="A4"] {
+page[size="A4"] {  
   width: 21cm;
-  height: 29.7cm;
 }
 
-/* TEI markdown highlighting
- *
-*/
-span.teiElement{
-	min-height: 4px;
-	margin: 2px 0;
-	border-bottom: solid 2px white;
+div#side-panel,
+div#legend-right{
+    /*display: none;*/
+    font-size: small;
+    position:fixed;
+    margin-left: 2em;
+    margin-top: 1.8em;
+    line-height: 1.8em;
+    z-index:500;
+    width:300px;
+    min-height:8em;
+    line-height: 1.4em;
+    padding: 7px;
 }
 
-span.name{
-	z-index: 200;
-	border-color: green;
+div#legend-right i.fas{
+    color:grey;
+    font-weight: 900;
+    font-size: 0.9em;
 }
 
-span.pb{
-	width: 15px;
-	z-index: 200;
-	border-color: blue;
+div#side-panel,
+div#legend-right{
+    display: none;
 }
 
-span.rolename{
-	width: 15px;
-	z-index: 200;
-	border-color: black;
-}
-
-span.p{
-	z-index: 100;
-	border-color: red;
-}
-
-span.name{
-	z-index: 200;
-	border-color: green;
-}
-
-span.name{
-	z-index: 200;
-	border-color: green;
-}
-
-section#editor[color-uncertainty="false"] span.annotation{
-	background-color: lightgrey;
-}
-
-section#editor[color-annotations="false"] span{
-	border-color: lightgrey;
-}
-
-section#editor[display-uncertainty="false"] span.annotation{
-	background-color: white;
-}
-
-section#editor[display-annotations="false"] span{
-	border-color: white;
+div.side-panel,
+div#legend-right{
+    background-color:white;
+    box-shadow:0 1px 3px 1px rgba(60,64,67,.15);
 }
 
 
+div#side-panel hr{border-style: dashed;}
+div#side-panel div#desc,
+div#side-panel div#text{
+    background-color: lightgrey;
+    padding:3px;
+}
+
+div#legend-right{
+    display: none;
+    right: 2em;
+}
+
+div#annotator-root[display-legend="true"] div#legend-right{
+    display:block;
+}
+
+div.legend span.teiLegendElement{
+    display:block;
+
+}
+
+span.teiLegendElement span.color{
+    display: inline-block;
+    height:1em;
+    width:1em;
+    margin-right: 3px;
+    border:solid black 1px;
+    position: relative;
+    top:3px;
+}
+
+div#side-panel div#certrange{
+	display: inline-block;
+}
+
+div#side-panel div#certrange span{
+    display: inline-block;
+    height:1em;
+    width:1em;
+    margin-right: 3px;
+    border:solid black 1px;
+}
+
+div#side-panel div#certrange span:nth-child(1){
+    background-color: #fef0d9;
+}
+
+div#side-panel div#certrange span:nth-child(2){
+    background-color: #fdcc8a;
+}
+
+div#side-panel div#certrange.unknown span:nth-child(2){
+    background-color: white;
+}
+
+div#side-panel div#certrange.medium span:nth-child(3){
+    background-color: #fc8d59;
+}
+
+div#side-panel div#certrange.high span:nth-child(3){
+    background-color: #fc8d59;
+}
+
+div#side-panel div#certrange.high span:nth-child(4){
+    background-color: #d7301f;
+}
+
+div#annotator-root.sidePanelDisplayed div#side-panel{
+    display:block;
+}
+
+section#toolbar, section#top-panel{
+    font-size: 13px;
+}
 
 @-moz-document url-prefix() {
+    section#toolbar{
+        height:9.5em;
+    }
+
 	section#top-panel{
 		z-index: 200;
-		height: 7.5em;
-		padding-top: 0.5em;
-		top: 150px;
-		align-items: center;
-		justify-content: center;
+        height:9.8em;
+		padding-top: 2.5em;
+		justify-content: flex-start;
 	}
 
   	section#toolbar, section#top-panel{
@@ -194,8 +271,510 @@ section#editor[display-annotations="false"] span{
 	input[type="text"]{
 		width:9em;
 	}
+
+    select{
+        height:1.2em;
+        font-size:small;
+    }
+
+    div#stats{
+        padding-top: 9em;
+    }
+
+    div#annotator-root.topPanelDisplayed div#stats{
+        padding-top:17em;
+    }
+
+    div#annotator-root.timelineExpanded div#stats{
+        padding-top:11em;
+    }
+
+    div#annotator-root.topPanelDisplayed.timelineExpanded div#stats{
+        padding-top:19em;
+    }
 }
 
-#fileName {
-	padding-top: 50px;
+/* ------------------ annotations.css ------------------ */
+/* ----------------------------------------------------- */
+
+/* TEI markdown highlighting
+ * 
+*/
+div#annotator-root[color-annotations="false"] placeName,
+div#annotator-root[color-annotations="false"] place,
+div#annotator-root[color-annotations="false"] country,
+div#annotator-root[color-annotations="false"] location,
+div#annotator-root[color-annotations="false"] geogName,
+div#annotator-root[color-annotations="false"] person,
+div#annotator-root[color-annotations="false"] name,
+div#annotator-root[color-annotations="false"] persName,
+div#annotator-root[color-annotations="false"] occupation,
+div#annotator-root[color-annotations="false"] event,
+div#annotator-root[color-annotations="false"] object,
+div#annotator-root[color-annotations="false"] date,
+div#annotator-root[color-annotations="false"] time,
+div#annotator-root[color-annotations="false"] org,
+div#annotator-root[color-annotations="false"] pb,
+div#annotator-root[color-annotations="false"] rolename
+{
+	border-color: lightgrey !important;
+}
+
+div#annotator-root[display-annotations="true"] placeName::before,
+div#annotator-root[display-annotations="true"] place::before,
+div#annotator-root[display-annotations="true"] country::before,
+div#annotator-root[display-annotations="true"] location::before,
+div#annotator-root[display-annotations="true"] geogName::before,
+div#annotator-root[display-annotations="true"] person::before,
+div#annotator-root[display-annotations="true"] name::before,
+div#annotator-root[display-annotations="true"] persName::before,
+div#annotator-root[display-annotations="true"] occupation::before,
+div#annotator-root[display-annotations="true"] event::before,
+div#annotator-root[display-annotations="true"] object::before,
+div#annotator-root[display-annotations="true"] date::before,
+div#annotator-root[display-annotations="true"] time::before,
+div#annotator-root[display-annotations="true"] org::before,
+div#annotator-root[display-annotations="true"] pb::before,
+div#annotator-root[display-annotations="true"] rolename::before,
+div#annotator-root[display-annotations="true"] person::after
+{
+    content="";
+    position: absolute;
+    font-size: 0.9em;
+    padding-top:1.3em;
+    color:grey;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+div#annotator-root[display-annotations="false"] placeName,
+div#annotator-root[display-annotations="false"] place,
+div#annotator-root[display-annotations="false"] country,
+div#annotator-root[display-annotations="false"] location,
+div#annotator-root[display-annotations="false"] geogName,
+div#annotator-root[display-annotations="false"] person,
+div#annotator-root[display-annotations="false"] name,
+div#annotator-root[display-annotations="false"] persName,
+div#annotator-root[display-annotations="false"] occupation,
+div#annotator-root[display-annotations="false"] event,
+div#annotator-root[display-annotations="false"] object,
+div#annotator-root[display-annotations="false"] date,
+div#annotator-root[display-annotations="false"] time,
+div#annotator-root[display-annotations="false"] org,
+div#annotator-root[display-annotations="false"] pb,
+div#annotator-root[display-annotations="false"] rolename
+{
+	border-color: white !important;
+} 
+
+placeName,place,country,location,geogName,person,
+name,persName,occupation,event,object,date,time,
+org,pb,rolename {
+	min-height: 4px;
+	margin: 2px 0;
+	border-bottom: solid 2px white;
+}
+
+/* Locations : 
+ * */
+placeName,
+place,
+country,
+[type="place"]{
+    border-color: #33a02c;
+}
+
+div#annotator-root[display-annotations="true"] placeName::before,
+div#annotator-root[display-annotations="true"] place::before{
+    content:"\f279";
+}
+
+div#annotator-root[color-annotations="true"] placeName::before,
+div#annotator-root[color-annotations="true"] place::before{
+    color: #33a02c;
+}
+
+div#annotator-root[display-annotations="true"] country::before{
+    content:"\f67f";
+}
+
+div#annotator-root[color-annotations="true"] country::before{
+    color: #33a02c;
+}
+
+span.teiLegendElement#placeName span.color,
+span.teiLegendElement#country span.color,
+span.teiLegendElement#place span.color{
+    background-color: #33a02c;
+}
+
+location,
+geogName{
+    border-color: #b2df8a;
+}
+div#annotator-root[display-annotations="true"] location::before,
+div#annotator-root[display-annotations="true"] geogName::before{
+    content:"\f5a0";
+}
+
+div#annotator-root[color-annotations="true"] location::before,
+div#annotator-root[color-annotations="true"] geogName::before{
+    color: #b2df8a;
+}
+
+span.teiLegendElement#geogName span.color,
+span.teiLegendElement#location span.color{
+    background-color: #b2df8a;
+}
+
+/* People
+ * */
+person,
+[type="person"]{
+    border-color: #ff7f00;
+}
+div#annotator-root[display-annotations="true"] person::after{
+    content:"\f007";
+    position: absolute;
+    font-size: 0.9em;
+    padding-top:1.3em;
+}
+
+div#annotator-root[color-annotations="true"] person::after{
+    color: #ff7f00;
+}
+
+span.teiLegendElement#person span.color{
+    background-color: #ff7f00;
+}
+
+name,
+persName{
+    border-color: #fdbf6f;
+}
+
+div#annotator-root[display-annotations="true"] name::before,
+div#annotator-root[display-annotations="true"] persName::before{
+    content:"\f507";
+}
+
+div#annotator-root[color-annotations="true"] name::before,
+div#annotator-root[color-annotations="true"] persName::before{
+    color: #fdbf6f;
+}
+
+span.teiLegendElement#persName span.color,
+span.teiLegendElement#name span.color{
+    background-color: #fdbf6f;
+}
+
+
+occupation{
+    border-color: #b15928;
+}
+
+div#annotator-root[display-annotations="true"] occupation::before{
+    content:"\f0b1";
+}
+
+div#annotator-root[color-annotations="true"] occupation::before{
+    color: #b15928;
+}
+
+span.teiLegendElement#occupation span.color{
+    background-color: #b15928;
+}
+/* Events
+ */
+event{
+    border-color: #cab2d6;
+}
+
+div#annotator-root[display-annotations="true"] event::before{
+    content:"\f274";
+}
+
+div#annotator-root[color-annotations="true"] event::before{
+    color: #cab2d6;
+}
+
+span.teiLegendElement#event span.color{
+    background-color: #cab2d6;
+}
+
+/* Objects 
+ */
+object{
+    border-color: #6a3d9a;
+}
+
+div#annotator-root[display-annotations="true"] object::before{
+    content:"\f466";
+}
+
+div#annotator-root[color-annotations="true"] object::before{
+    color: #6a3d9a;
+}
+
+span.teiLegendElement#object span.color{
+    background-color: #6a3d9a;
+}
+
+/* Time
+ */
+date{
+    border-color: #e31a1c;
+}
+div#annotator-root[display-annotations="true"] date::before{
+    content:"\f073";
+}
+div#annotator-root[color-annotations="true"] date::before{
+    color: #e31a1c;
+}
+span.teiLegendElement#date span.color{
+    background-color: #e31a1c;
+}
+
+time{
+    border-color: #fb9a99;
+}
+div#annotator-root[display-annotations="true"] time::before{
+    content:'\f017';
+}
+div#annotator-root[color-annotations="true"] time::before{
+    color: #fb9a99;
+}
+span.teiLegendElement#time span.color{
+    background-color: #fb9a99;
+}
+
+org{
+    border-color: #1f78b4;
+}
+div#annotator-root[display-annotations="true"] org::before{
+    content:"\f1ad";
+}
+div#annotator-root[color-annotations="true"] org::before{
+    color: #1f78b4;
+}
+span.teiLegendElement#org span.color{
+    background-color: #1f78b4;
+}
+
+pb{
+	width: 15px;
+	z-index: 200;
+	border-color: blue;
+}
+
+rolename{
+	width: 15px;
+	z-index: 200;
+	border-color: black;
+}
+
+/* -------------------- tags.css ----------------------- */
+/* ----------------------------------------------------- */
+
+desc{
+    display: none;
+}
+
+.ignorance{
+    /*Blue*/
+    background-color: rgba(23,85,141,0.5);
+}
+
+.imprecision{
+    /*Violet*/
+    background-color: rgba(148,15,137,0.5);
+}
+
+.credibility{
+    /*Orange*/
+    background-color: rgba(218,136,21,0.5);
+}
+
+.incompleteness{
+    /*Green*/
+    background-color: rgba(174,210,21,0.5);
+}
+
+[source="ignorance"]{
+    /*Blue*/
+    background-color: #17558D;
+}
+
+[source="imprecision"]{
+    /*Violet*/
+    background-color: #940F89;
+}
+
+[source="credibility"]{
+    /*Orange*/
+    background-color: #DA8815;
+}
+
+[source="incompleteness"]{
+    /*Green*/
+    background-color: #AED215;
+}
+
+[source="ignorance"][cert="medium"]{
+    /*Blue*/
+    background-color: #31699B;
+}
+
+[source="imprecision"][cert="medium"]{
+    /*Violet*/
+    background-color: #A32B99;
+}
+
+[source="credibility"][cert="medium"]{
+    /*Orange*/
+    background-color: #F0A740;
+}
+
+[source="incompleteness"][cert="medium"]{
+    /*Green*/
+    background-color: #C6E73D;
+}
+[source="ignorance"][cert="low"]{
+    /*Blue*/
+    background-color: #4D80AE;
+}
+
+[source="imprecision"][cert="low"]{
+    /*Violet*/
+    background-color: #B548AC;
+}
+
+[source="credibility"][cert="low"]{
+    /*Orange*/
+    background-color: #FFBF66;
+}
+
+[source="incompleteness"][cert="low"]{
+    /*Green*/
+    background-color: #DAF662;
+}
+[source="ignorance"][cert="unknown"]{
+    /*Blue*/
+    background-color: #79A4CB;
+}
+
+[source="imprecision"][cert="unknown"]{
+    /*Violet*/
+    background-color: #D075C8;
+}
+
+[source="credibility"][cert="unknown"]{
+    /*Orange*/
+    background-color: #FFD190;
+}
+
+[source="incompleteness"][cert="unknown"]{
+    /*Green*/
+    background-color: #E4F98C;
+}
+
+certainty{
+    background-image: linear-gradient(180deg, white 11px, transparent 1%);
+    background-position: center;
+    background-size: 10px 1.3em;
+}
+    
+certainty[author="me"]{
+    background-image: none;
+}
+
+div#annotator-root[color-uncertainty="false"] section#editor certainty{
+	background-color: lightgrey !important;
+} 
+
+div#annotator-root[display-uncertainty="false"] section#editor certainty{
+	background-color: white !important;
+} 
+
+/* ------------------- timeline.css -------------------- */
+/* ----------------------------------------------------- */
+
+div#timeline {
+
+}
+
+div#timeline{
+    position: relative;
+}
+
+div#timeline div#time-bar{
+    position:relative;
+    display: flex;
+    align-items: center;
+
+}
+
+div#timeline div#time-bar hr{
+    padding: 0 0;
+    width: 21cm;
+}
+
+div#timeline div.timestamp{
+    position:absolute;
+    width:8px;
+    height:8px;
+    background-color:black;
+}
+
+div#timeline div#popup{
+    display:none;
+    position:absolute;
+    z-index:500;
+    width:22em;
+    height:8em;
+    line-height: 1.4em;
+    padding: 7px;
+    background-color:white;
+    box-shadow:0 1px 3px 1px rgba(60,64,67,.15);
+}
+
+div#timeline div#popup div.content{
+    width:100%;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+div#timeline div#popup span{
+    display: inline-block;
+}
+
+div#timeline div#popup span.color{
+    display: inline-block;
+    height: 1em;
+}
+
+div#timeline a#toggle-timeline-details{
+    display:inline-block;
+    width:17em;
+    position: absolute;
+    left: 21.1cm;
+}
+
+div#timeline div#time-bar canvas{
+    position:absolute;
+    padding-top: 2px;
+    display:none;
+}
+
+.timelineExpanded section#toolbar{height:12em;}
+.timelineExpanded section#top-panel{padding-top:4.5em;}
+.timelineExpanded section#toolbar div#toolbar-header{height:8em;}
+.timelineExpanded section#toolbar div#timeline{height:5em;}
+.timelineExpanded section#toolbar div#timeline hr{height:4em;}
+.timelineExpanded div#timeline div#time-bar canvas{display:block}
+.timelineExpanded div#timeline div#time-bar div.timestamp{
+    margin-top:8px;
+    top:4em;
 }

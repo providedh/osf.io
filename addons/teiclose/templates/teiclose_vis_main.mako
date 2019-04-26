@@ -187,7 +187,7 @@ source="incompleteness" cert="high"></span>
   </div>
   <div  id="side-panel">
       <div id="text" class="row"></div>
-      <div class="side-panel">
+      <div class="side-panel row">
           <b>Associated annotation : </b><span class="teiLegendElement" id=""><span class="color"></span></span><span id="parent"></span>
           <hr/>
           <div id="tag-stats" class="row">

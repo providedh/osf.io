@@ -9,40 +9,34 @@
 ## Use full page width
 <%def name="container_class()">container-xxl</%def>
 
-<div class="row" id="fileName">
-  <div class="col-sm-5">
-    <h2 class="break-word">
-      ## Split file name into two parts: with and without extension
-      <span id="fileTitleEditable">${ file['filename'] | h}</span>
-      <a id='versionLink'  class='scripted'>(Version: ${ file['version'] | h})</a>
-      % if file_revision:
-        <small>&nbsp;${file_revision | h}</small>
-      % endif
-    </h2>
-  </div>
-  <div class="col-sm-7">
-    <div id="toggleBar" class="pull-right"></div>
-  </div>
-</div>
-<hr>
-
 <div id="annotator-root" display-uncertainty='false' display-annotations='false' color-uncertainty='false' color-annotations='false'>
   <section id="toolbar">
-    <a target="blank" href="https://providedh.eu/">
-        <img id="logo" src="/logo.jpg"></img>
-    </a>
     <div class="toolbarRow" id="toolbar-header">
-      <input type="file" name="file" id="fileinput" class="inputfile" />
-      <label for="fileinput"><span id="name">No file selected</span><span> Click to change</span></label>
-      <div id="timeline">
-          <div id="time-bar">
-                <canvas></canvas>
-                <hr/>
-                <a id="toggle-timeline-details" title="show details for timeline" class='help'>( Show details )</a>
-          </div>
-          <div id="popup">
-          </div>
+
+      <div id="fileName">
+        <div>
+          <h2 class="break-word">
+            ## Split file name into two parts: with and without extension
+            <span id="fileTitleEditable">${ file['filename'] | h}</span>
+            <a id='versionLink'  class='scripted'>(Version: ${ file['version'] | h})</a>
+            % if file_revision:
+              <small>&nbsp;${file_revision | h}</small>
+            % endif
+          </h2>
+        </div>
+        <div>
+          <div id="toggleBar" class="pull-right"></div>
+        </div>
       </div>
+    </div>
+    <div id="timeline">
+        <div id="time-bar">
+              <canvas></canvas>
+              <hr/>
+              <a id="toggle-timeline-details" title="show details for timeline" class='help'>( Show details )</a>
+        </div>
+        <div id="popup">
+        </div>
     </div>
     <div class="toolbarRow" id="toolbar-controls">
       <div class="row" id="display-options">
@@ -59,7 +53,6 @@
       <div class="row">
         <span class="toolbar-control" id="selected-control"> 
             <a id="openPanel" title="open panel" class='help'>( Toggle panel )</a>
-            <a id="export-tei" title="export tei" class='help'>( Export TEI )</a>
         </span>
       </div>
     </div>

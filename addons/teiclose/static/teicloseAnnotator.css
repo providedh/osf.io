@@ -1,65 +1,52 @@
-.inputfile {
-	width: 0.1px;
-	height: 0.1px;
-	opacity: 0;
-	overflow: hidden;
-	position: absolute;
-	z-index: -1;
-}
 
-img#logo{
-    position: fixed;
-    left:1em;
-    height: 9em;
-}
-
-body {
+div#annotator-root {
+  margin-top: 65px;
   background: white; 
   padding: 0;
   margin: 0;
-  font-family: sans-serif;
 }
 
 div#stats{
-	padding-top: 8em;
-	width: 21cm;
-	display: block;
-	align-self: auto;
-	margin: 0 auto;
+    padding-top: 8em;
+    width: 21cm;
+    display: block;
+    align-self: auto;
+    margin: 0 auto;
 }
 
 div#stats span{
-	font-weight: bold;
-	padding-right: 1em;
+    font-weight: bold;
+    padding-right: 1em;
 }
 
 section#editor{
-	padding-top: 1.5em;
-	line-height: 2em;
+    padding-top: 1.5em;
+    line-height: 2em;
 }
 
 section#toolbar, section#top-panel{
-	position:fixed;
-	z-index: 300;
-	background:white;
-	height: 8em;
-	width: 100%;
-	box-shadow: 0 1px 3px 1px rgba(60,64,67,.15);
-	display: flex;
-	align-items: center;
-	flex-direction: column;
+    position:fixed;
+    z-index: 300;
+    background:white;
+    height: 8em;
+    width: 100%;
+    box-shadow: 0 1px 3px 1px rgba(60,64,67,.15);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
 section#toolbar{
     padding-top:5px;
+    left: 0;
 }
 
 section#top-panel{
     padding-top:6px;
-	z-index: 200;
-	height: 7.5em;
-	top: 8em;
-	display: none;
+    z-index: 200;
+    height: 7.5em;
+    top: 16em;
+    display: none;
 }
 
 div#annotator-root.topPanelDisplayed section#top-panel{
@@ -67,7 +54,7 @@ div#annotator-root.topPanelDisplayed section#top-panel{
 }
 
 div#annotator-root.topPanelDisplayed div#stats{
-    padding-top:15em;
+    padding-top:21em;
 }
 
 div#annotator-root.timelineExpanded div#stats{
@@ -75,54 +62,58 @@ div#annotator-root.timelineExpanded div#stats{
 }
 
 div#annotator-root.topPanelDisplayed.timelineExpanded div#stats{
-    padding-top:19em;
+    padding-top:25em;
 }
 
 div.toolbarRow div.row.closePanel{
-	justify-content: center;
+    justify-content: center;
 }
 
 div.toolbarRow{
-	width: 21cm;
-	height: 4em;
-	display: inline-block;
+    width: 21cm;
+    height: 4em;
+    display: inline-block;
 }
 
 div.toolbarRow div.row{
     padding-top: 5px;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 section#toolbar form, section#toolbar input,
 section.panel form, section.panel input{
-	display: inline-block;
+    display: inline-block;
 }
 
 input#type{
-	width:2.6em;
+    width:2.6em;
 }
 
 input#certainty{
-	width:4em;
+    width:4em;
 }
 
 a.help{
-	font-size: 0.8em;
-	color: blue;
-	cursor: pointer;
+    font-size: 0.8em;
+    color: blue;
+    cursor: pointer;
 }
 
 div#toolbar-header label span{
-	font-family: serif;
-	color: grey;
+    font-family: serif;
+    color: grey;
 }
 
-div#toolbar-header label span#name{
-	font-family: sans-serif;
-	color:black;
-	font-size: 2.5em;
+div#toolbar-header #fileName h2{
+    margin : 0;
+    color:black;
+    font-size: 2.5em;
+}
+
+div#toolbar-header #fileName h2 a{
+    font-size: .8em;
 }
 
 page {
@@ -203,7 +194,7 @@ span.teiLegendElement span.color{
 }
 
 div#side-panel div#certrange{
-	display: inline-block;
+    display: inline-block;
 }
 
 div#side-panel div#certrange span{
@@ -246,53 +237,7 @@ section#toolbar, section#top-panel{
     font-size: 13px;
 }
 
-@-moz-document url-prefix() {
-    section#toolbar{
-        height:9.5em;
-    }
 
-	section#top-panel{
-		z-index: 200;
-        height:9.8em;
-		padding-top: 2.5em;
-		justify-content: flex-start;
-	}
-
-  	section#toolbar, section#top-panel{
-		font-size: 12px;
-	}
-
-	section#toolbar form, section#toolbar input,
-	section.panel form, section.panel input{
-		height: 10px;
-		display: inline-block;
-	}
-
-	input[type="text"]{
-		width:9em;
-	}
-
-    select{
-        height:1.2em;
-        font-size:small;
-    }
-
-    div#stats{
-        padding-top: 9em;
-    }
-
-    div#annotator-root.topPanelDisplayed div#stats{
-        padding-top:17em;
-    }
-
-    div#annotator-root.timelineExpanded div#stats{
-        padding-top:11em;
-    }
-
-    div#annotator-root.topPanelDisplayed.timelineExpanded div#stats{
-        padding-top:19em;
-    }
-}
 
 /* ------------------ annotations.css ------------------ */
 /* ----------------------------------------------------- */
@@ -317,7 +262,7 @@ div#annotator-root[color-annotations="false"] org,
 div#annotator-root[color-annotations="false"] pb,
 div#annotator-root[color-annotations="false"] rolename
 {
-	border-color: lightgrey !important;
+    border-color: lightgrey !important;
 }
 
 div#annotator-root[display-annotations="true"] placeName::before,
@@ -338,7 +283,7 @@ div#annotator-root[display-annotations="true"] pb::before,
 div#annotator-root[display-annotations="true"] rolename::before,
 div#annotator-root[display-annotations="true"] person::after
 {
-    content="";
+    content:"";
     position: absolute;
     font-size: 0.9em;
     padding-top:1.3em;
@@ -364,15 +309,15 @@ div#annotator-root[display-annotations="false"] org,
 div#annotator-root[display-annotations="false"] pb,
 div#annotator-root[display-annotations="false"] rolename
 {
-	border-color: white !important;
+    border-color: white !important;
 } 
 
 placeName,place,country,location,geogName,person,
 name,persName,occupation,event,object,date,time,
 org,pb,rolename {
-	min-height: 4px;
-	margin: 2px 0;
-	border-bottom: solid 2px white;
+    min-height: 4px;
+    margin: 2px 0;
+    border-bottom: solid 2px white;
 }
 
 /* Locations : 
@@ -562,15 +507,15 @@ span.teiLegendElement#org span.color{
 }
 
 pb{
-	width: 15px;
-	z-index: 200;
-	border-color: blue;
+    width: 15px;
+    z-index: 200;
+    border-color: blue;
 }
 
 rolename{
-	width: 15px;
-	z-index: 200;
-	border-color: black;
+    width: 15px;
+    z-index: 200;
+    border-color: black;
 }
 
 /* -------------------- tags.css ----------------------- */
@@ -689,18 +634,18 @@ certainty[author="me"]{
 }
 
 div#annotator-root[color-uncertainty="false"] section#editor certainty{
-	background-color: lightgrey !important;
+    background-color: lightgrey !important;
 } 
 
 div#annotator-root[display-uncertainty="false"] section#editor certainty{
-	background-color: white !important;
+    background-color: white !important;
 } 
 
 /* ------------------- timeline.css -------------------- */
 /* ----------------------------------------------------- */
 
 div#timeline {
-
+    height: 2em;
 }
 
 div#timeline{
@@ -715,6 +660,7 @@ div#timeline div#time-bar{
 }
 
 div#timeline div#time-bar hr{
+    margin: 0;
     padding: 0 0;
     width: 21cm;
 }

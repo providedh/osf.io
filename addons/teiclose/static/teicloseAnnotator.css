@@ -133,6 +133,10 @@ page[size="A4"] {
   width: 21cm;
 }
 
+div#side-panel .row{
+    padding-left: 15px;
+}
+
 div#side-panel,
 div#legend-right{
     /*display: none;*/
@@ -170,7 +174,6 @@ div#side-panel hr{border-style: dashed;}
 div#side-panel div#desc,
 div#side-panel div#text{
     background-color: lightgrey;
-    padding:3px;
 }
 
 div#legend-right{
@@ -680,9 +683,6 @@ div#annotator-root[display-uncertainty="false"] section#editor certainty{
 div#timeline {
     margin-top: 10px;
     height: 2em;
-}
-
-div#timeline{
     position: relative;
 }
 

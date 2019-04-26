@@ -237,7 +237,30 @@ section#toolbar, section#top-panel{
     font-size: 13px;
 }
 
+@-moz-document url-prefix() {
+    section#top-panel{
+        z-index: 200;
+        height: 7.5em;
+        padding-top: 0.5em;
+        top: 150px;
+        align-items: center;
+        justify-content: center;
+    }
 
+    section#toolbar, section#top-panel{
+        font-size: 12px;
+    }
+
+    section#toolbar form, section#toolbar input,
+    section.panel form, section.panel input{
+        height: 10px;
+        display: inline-block;
+    }
+
+    input[type="text"]{
+        width:9em;
+    }
+}
 
 /* ------------------ annotations.css ------------------ */
 /* ----------------------------------------------------- */

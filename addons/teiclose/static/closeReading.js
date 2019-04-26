@@ -52,8 +52,7 @@ var CloseReadingWidget = {
                 self.content = response.responseText;
                 m.endComputation();
 
-                const model = new annotator.Model(new annotator.SidePanel());
-                model.loadTEI(model.fromText, self.content);
+                annotator.fileChange(self.content);
             });
 
             response.fail(function (xhr, textStatus, error) {

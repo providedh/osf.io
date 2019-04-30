@@ -49,6 +49,8 @@ function getUserSelection(model) {
         text = document.selection.createRange().text;
     }
 
+    console.log(selection)
+
     const selection_range = selection.getRangeAt(0),
         start_range = document.createRange(),
         end_range = document.createRange();
@@ -75,7 +77,6 @@ function getUserSelection(model) {
     for(let i=0; i<start_content.length; i++){
         if(start_content[i]!=end_content[i]){
             body_start_offset = i+1;
-       
             break;
         }
     }
@@ -83,36 +84,17 @@ function getUserSelection(model) {
     let body_end_offset = 0;
     for(let i=0; i<end_content.length; i++){
         if(model.TEIbody[i]!=end_content[i]){
-       
             body_end_offset = i;
-       
             break;
         }
     }
-    
-    let pos = 0;
-    const t1 = model.TEItext.replace(/\r/gm," "), 
-        t2 = (model.TEIheader+end_content).replace(/\r/gm," ")
-    for(let i=0; i<model.TEItext.length; i++){
-        if(t1[i]!=t2[i]){
-            pos = i;
-            break;
-        }
-    }
-
-    console.log('pos : ',+pos)
 
     const abs_positions = [
         model.TEIheaderOffset+body_start_offset,
-   
         model.TEIheaderOffset+body_end_offset
-   
     ]
 
-    console.log(abs_positions)
-
-            
-    return {text:text, range:selection_range};
+    return {text:text, range:selection_range, abs_positions:abs_positions};
 }
 
 /* Timeline
@@ -357,7 +339,7 @@ Model.prototype.loadTEI = function(method, file){
         const reader = new TEIreader(xml.content).parse();
         //console.log(reader)
         $("#toolbar-header span#name").html(xml.name)
-        this.TEIbody = reader.body().replace(/\r/gm," ");
+        this.TEIbody = reader.body();
    
         $('#editor page').html(this.TEIbody);
    
@@ -485,6 +467,8 @@ Panel.prototype.hide = function(){
 Panel.prototype.handleSelection = function(evt){
     const selection = getUserSelection(this.model);
     if(selection.range.collapsed === false){
+
+        console.log('> Selection absolute positions : ', selection.abs_positions)
         $('section#top-panel #references').val(selection.text);
         this.range = selection.range;
         this.show();
@@ -578,7 +562,7 @@ Annotation.prototype.renderTEI = function(){}
  * */
 
 function TEIreader(doc) {
-    this.doc = doc;
+    this.doc = doc.replace(/\r/gm," ");;
     this.header_ = "";
     this.body_= "";
     this.parsed = false;
@@ -621,7 +605,6 @@ TEIreader.prototype.parse = function(){
                 //this.headerOffset_ = this.header_.replace(/\r/gm,"").length+1
                 // Count \r too
                 this.headerOffset_ = i+1
-                i+=1;
                 continue;
             }
             reading_tag = false;

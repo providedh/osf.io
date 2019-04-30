@@ -1,0 +1,4 @@
+#!/bin/bash
+docker-compose up -d --force-recreate --no-deps assets admin_assets
+docker-compose up -d --force-recreate --no-deps mfr wb fakecas sharejs
+docker-compose up -d --force-recreate --no-deps worker web api admin

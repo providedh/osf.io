@@ -1,0 +1,4 @@
+#!/bin/bash
+docker-compose up -d assets admin_assets
+docker-compose up -d mfr wb fakecas sharejs
+docker-compose up -d worker web api admin

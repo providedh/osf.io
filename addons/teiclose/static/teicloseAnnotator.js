@@ -1,116 +1,46 @@
 require('./teicloseAnnotator.css');
-var d3 = require('d3');
-window.API_urls = require('./annotationApiUrlBuilder.js').API_urls;
 
-function saveVersion(){
-    $.ajax({
-        url: API_urls.get_save_url(window.project, window.file),
-        type: 'PUT',   //type is any HTTP method
-        data: {},      //Data as js object
-        success: function (a) {
-            console.log('save - success < ',API_urls.get_save_url(window.project, window.file),' < ',a)
-        },
-        error: function (a) {
-            console.log('save - error < ',API_urls.get_save_url(window.project, window.file),' < ',a)
-        }
-    })
-}
-
-
-function updateStatistics(){
-    const authors = Array.from($('certainty')).reduce((acd,c)=>acd.add(c.attributes['author'].value),new Set()).size;
-    $("div#stats #annotations").html($('certainty').length);
-    $("div#stats #authors").html(authors);
-}
-
-function updateTimeStatistics(date){
-    $("div#stats #date").html(date.toDateString());
-}
+const versions = [
+    {"url": "","timestamp": "2018-4-1","imprecision": 0,"ignorance": 1,"credibility": 2,"incompleteness": 0 },
+    {"url": "","timestamp": "2018-6-12","imprecision": 0,"ignorance": 3,"credibility": 2,"incompleteness": 0},
+    {"url": "","timestamp": "2018-8-14","imprecision": 3,"ignorance": 5,"credibility": 2,"incompleteness": 0},
+    {"url": "","timestamp": "2018-8-22","imprecision": 3,"ignorance": 5,"credibility": 9,"incompleteness": 2},
+    {"url": "","timestamp": "2019-1-19","imprecision": 3,"ignorance": 6,"credibility": 14,"incompleteness": 5}
+];
 
 function fileChange (file){
-    window.project = window.location.pathname.split('/')[1]
-    window.file = window.location.pathname.split('/')[3]
-    window.version = window.location.pathname.split('/')[4]
-
     const sidepanel = new SidePanel();
-    const model = new Model();
-    const panel = new Panel();
+    const model = new Model(sidepanel);
+    const panel = new Panel(model);
     const timeline = new Timeline();
-    $.ajax({
-        url: API_urls.get_history_url(window.project, window.file, window.version),
-        type: 'GET',   //type is any HTTP method
-        data: {},      //Data as js object
-        success: function (history) {
-            console.log(history)
-            const currentDate = new Date(history[history.length-1].timestamp);
-            updateTimeStatistics(currentDate);
-            timeline.loadHistory(history);
-            timeline.renderTimestamps();
-            document.getElementById('toggle-timeline-details').addEventListener('click', ()=>timeline.toggleDetails());
-        },
-        error: function (a) {
-            console.log('save - error < ',API_urls.get_save_url(window.project, window.file),' < ',a)
-        }
-    })
-
-    // Add event handlers for all the application
-    document.getElementById("attribute-name-input").setAttribute('locus', 
-        document.getElementById('locus').value);
-    const input = $('#asserted-value-input-options [locus='+document.getElementById('locus').value+']')[0];
-    $("#asserted-value-container").html(input.outerHTML);
+    timeline.renderTimestamps();
 
     document.getElementById('locus').addEventListener('change', (evt)=>{
         if(evt.target.value == 'value')
             document.getElementById('value').value = document.getElementById('references').value;
-        document.getElementById("attribute-name-input").setAttribute('locus', evt.target.value);
-        const input = $('#asserted-value-input-options [locus='+evt.target.value+']')[0];
-        $("#asserted-value-container").html(input.outerHTML);
     }, false);
-
-
-    document.getElementById('saveFile').addEventListener('click', ()=>saveVersion());
     document.getElementById('openPanel').addEventListener('click', ()=>panel.show());
     document.getElementById('closePanel').addEventListener('click', ()=>panel.hide());
-
     document.getElementById('create-annotation').addEventListener('click', ()=>panel.createAnnotation());
-
     document.getElementById('editor').onmouseup = 
-      document.getElementById('editor').onselectionchange = ()=>panel.handleSelection(model);
+      document.getElementById('editor').onselectionchange = ()=>panel.handleSelection();
 
+    document.getElementById('toggle-timeline-details').addEventListener('click', ()=>timeline.toggleDetails())
 
     for(let input of document.getElementById('display-options').getElementsByTagName('input'))
         input.addEventListener('click', handleDisplayChange);
 
-    model.loadTEI(model.fromText, file).then(()=>{
-        for(annotation of Array.from(document.getElementsByTagName('certainty'))){
-            annotation.addEventListener('mouseenter', (e)=>sidepanel.show(e));
-            annotation.addEventListener('mouseleave', (e)=>sidepanel.hide(e));
-        }
-        updateStatistics();
-    });
+    model.loadTEI(model.fromText, file);
 }
 
 function handleDisplayChange(evt){ 
     $('div#annotator-root').attr(evt.target.id,evt.target.checked);
 }
 
-function contentsFromRange(startNode, startOffset, endNode, endOffset){
-    const selection = document.createRange();
-
-    selection.setStart(startNode, startOffset);
-    selection.setEnd(endNode,endOffset);
-
-    const fragment = selection.cloneRange().cloneContents(),
-        container = document.createElement('div');
-
-    container.appendChild(fragment);
-
-    return container.innerHTML;
-}
 
 function getUserSelection(model) {
-
-    let text = "", selection, node = null;
+    let text = "", selection;
+    let node = null;
     if (window.getSelection) {
         selection = window.getSelection();
         text = selection.toString();
@@ -119,33 +49,50 @@ function getUserSelection(model) {
         text = document.selection.createRange().text;
     }
 
-    const selection_range = selection.getRangeAt(0);
+    console.log(selection)
 
-    let start_content = contentsFromRange($('#editor page')[0], 0, selection_range.startContainer,selection_range.startOffset),
-        end_content = contentsFromRange($('#editor page')[0], 0, selection_range.endContainer,selection_range.endOffset);
+    const selection_range = selection.getRangeAt(0),
+        start_range = document.createRange(),
+        end_range = document.createRange();
 
-    for(empty_tag of model.TEIemptyTags){
-        start_content = start_content.replace(model.expandedEmptyTag(empty_tag), empty_tag);
-        end_content = end_content.replace(model.expandedEmptyTag(empty_tag), empty_tag);
-    }
+    start_range.setStart($('#editor page')[0], 0);
+    start_range.setEnd(selection_range.startContainer,selection_range.startOffset);
 
-    const positions = [];
+    end_range.setStart($('#editor page')[0], 0);
+    end_range.setEnd(selection_range.endContainer,selection_range.endOffset);
 
+    const start_fragment = start_range.cloneRange().cloneContents(),
+        end_fragment = end_range.cloneRange().cloneContents();
+
+    const start_container = document.createElement('div'),
+        end_container = document.createElement('div');
+
+    start_container.appendChild(start_fragment);
+    end_container.appendChild(end_fragment);
+
+    const start_content = start_container.innerHTML,
+        end_content = end_container.innerHTML;
+    
+    let body_start_offset = 0;
     for(let i=0; i<start_content.length; i++){
-        if(model.TEIbody[i]!=start_content[i]){
-            positions.push(model.TEIheaderLength + i + 1);
+        if(start_content[i]!=end_content[i]){
+            body_start_offset = i+1;
             break;
         }
     }
 
+    let body_end_offset = 0;
     for(let i=0; i<end_content.length; i++){
         if(model.TEIbody[i]!=end_content[i]){
-            positions.push(model.TEIheaderLength + i);
+            body_end_offset = i;
             break;
         }
     }
 
-    const abs_positions = {start: Math.min(...positions), end: Math.max(...positions)};
+    const abs_positions = [
+        model.TEIheaderOffset+body_start_offset,
+        model.TEIheaderOffset+body_end_offset
+    ]
 
     return {text:text, range:selection_range, abs_positions:abs_positions};
 }
@@ -153,36 +100,63 @@ function getUserSelection(model) {
 /* Timeline
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * */
+function timeScale(domain_, range_){
+    const domain = [
+        domain_.reduce((a,b)=>a<b?a:b),
+        domain_.reduce((a,b)=>a>b?a:b)
+    ], range = [
+        Math.min(...range_),
+        Math.max(...range_)
+    ];
+
+    return (t)=>{
+        //   24 hrs/day * 60 minutes/hour * 60 seconds/minute * 1000 msecs/second
+        const msDomainRange = domain[1]-domain[0];
+        const daysDomainRange = Math.floor(msDomainRange/(1000 * 60 * 60  * 24));
+
+        const msTrange = t - domain[0];
+        const daysTrange = Math.floor(msTrange/(1000 * 60 * 60  * 24));
+
+        return range[0] + (range[1]*(daysTrange/daysDomainRange));
+    }
+}
+
+function linearScale(domain_, range_){
+    const domain = [
+        Math.min(...domain_),
+        Math.max(...domain_)
+    ], range = [
+        Math.min(...range_),
+        Math.max(...range_)
+    ], domRange = domain[1] - domain[0];
+
+    return (x)=>{
+        return range[0] + (range[1]*((x-domain[0])/domRange));
+    }
+}
+
 function Timeline(){
     this.width = "21cm";
     this.displayDetails = false;
     this.detailsRendered = false;
-    this.history = [];
-}
-
-Timeline.prototype.loadHistory = function(history){
-    this.history = history;
 }
 
 Timeline.prototype.renderTimestamps = function(){
-    const timestamps = this.history.map(x=>new Date(x.timestamp)),
-        xScale = d3.scaleTime()
-            .domain([Math.min(...timestamps),Math.max(...timestamps)])
-            .range([0,20.8]);
+    const timestamps = versions.map(x=>new Date(...x.timestamp.split('-'))),
+        firstDate = timestamps.reduce((a,b)=>a<b?a:b),
+        lastDate = timestamps.reduce((a,b)=>a>b?a:b),
+        xScale = timeScale([firstDate, lastDate],[0,20.8]);
 
     let element = null, offset = 0;
-    for(let timestamp of this.history){
-        offset = xScale(new Date(timestamp.timestamp));
+    for(let timestamp of versions){
+        offset = xScale(new Date(...timestamp.timestamp.split('-')));
 
-        element = document.createElement('a');
+        element = document.createElement('div');
         element.setAttribute('class','timestamp');
-        element.setAttribute('href',timestamp.url);
         element.style = `left:${offset}cm`;
 
         element.addEventListener('mouseenter', (evt)=>this.handleTimestampMouseenter(evt,timestamp));
         element.addEventListener('mouseleave', (evt)=>this.handleTimestampMouseleave(evt,timestamp));
-
-
 
         document.getElementById('time-bar').appendChild(element);
     }
@@ -192,30 +166,30 @@ Timeline.prototype.renderDetails = function(){
     $('div#time-bar canvas').attr('width', $('div#timeline hr').width());
     $('div#time-bar canvas').attr('height', $('div#timeline hr').height());
 
-    const timestamps = this.history.map(x=>new Date(...x.timestamp.split('-'))),
+    const timestamps = versions.map(x=>new Date(...x.timestamp.split('-'))),
+        firstDate = timestamps.reduce((a,b)=>a<b?a:b),
+        lastDate = timestamps.reduce((a,b)=>a>b?a:b),
         width = Math.trunc($('div#time-bar canvas').width()+1),
         height = Math.trunc($('div#time-bar canvas').height()-2),
-        max = Math.max(...Array.prototype.concat(...this.history.map(x=>([
+        max = Math.max(...Array.prototype.concat(...versions.map(x=>([
                 x.imprecision,
                 x.credibility,
                 x.ignorance,
                 x.incompleteness
             ])))),
-        yScale = d3.scaleLinear().domain([0,max]).range([0,height]),
-        xScale = d3.scaleTime()
-            .domain([Math.min(...timestamps),Math.max(...timestamps)])
-            .range([0,width]),
+        yScale = linearScale([0,max],[0,height]),
+        xScale = timeScale([firstDate, lastDate],[0,width]),
         canvasCtx = $('div#time-bar canvas')[0].getContext('2d');
 
     const renderVersions = (uncertainty, color)=>{
         canvasCtx.beginPath();
         canvasCtx.moveTo(0,height);
 
-        for(let d of this.history){
-            canvasCtx.lineTo(xScale(new Date(d.timestamp)),height-yScale(d[uncertainty]));
+        for(let d of versions){
+            canvasCtx.lineTo(xScale(new Date(...d.timestamp.split('-'))),height-yScale(d[uncertainty]));
         }
 
-        const last = this.history[this.history.length-1];
+        const last = versions[versions.length-1];
         canvasCtx.lineTo(xScale(new Date(...last.timestamp.split('-'))),height);
         canvasCtx.lineTo(0,height);
 
@@ -258,17 +232,16 @@ Timeline.prototype.handleTimestampMouseenter = function(evt,timestamp){
     const popup = document.getElementById('popup');
     const max = Math.max(timestamp.imprecision,timestamp.incompleteness,
         timestamp.ignorance,timestamp.credibility),
-        xScale = d3.scaleLinear().domain([0,max]).range([0,6]);
+        xScale = linearScale([0,max],[0,6]);
 
     popup.innerHTML=`Timestamp : ${timestamp.timestamp}<br>
-      Contributor : ${timestamp.contributor}<br>
+      Author : _@email.com<br>
       <div class="content">
       <span>
-        Imprecision uncertainty<br/>
-        Incompleteness uncertainty<br/>
-        Credibility uncertainty<br/>
-        Ignorance uncertainty<br/>
-        Variation uncertainty
+        Imprecision uncertainty</br>
+        Incompleteness uncertainty</br>
+        Credibility uncertainty</br>
+        Ignorance uncertainty
       </span>
       <span>
         <span class="color uncertainty" author="me" title="high"
@@ -279,15 +252,12 @@ Timeline.prototype.handleTimestampMouseenter = function(evt,timestamp){
             style="width:${xScale(timestamp.ignorance)}em;" source="ignorance" cert="high"></span></br>
         <span class="color uncertainty" author="me" title="high" 
             style="width:${xScale(timestamp.credibility)}em;" source="credibility" cert="high"></span></br>
-        <span class="color variation" author="me" title="high" 
-            style="width:${xScale(timestamp.variation)}em;" source="variation" cert="high"></span></br>
       </span>
       <span>
         ${timestamp.imprecision}</br> 
         ${timestamp.incompleteness}</br> 
         ${timestamp.ignorance}</br> 
-        ${timestamp.credibility}</br>
-        ${timestamp.variation}
+        ${timestamp.credibility}
       </span>
       </div>
     `;
@@ -303,8 +273,38 @@ Timeline.prototype.handleTimestampMouseleave = function(evt){
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * */
 
-function Model(){
+function Model(sidepanel){
+    this.sidePanel = sidepanel;
     this.TEIheader=null;
+}
+
+Model.prototype.createAnnotation = function(range, annotation_){
+    const annotation = annotation_.renderHTML();
+    annotation.addEventListener('mouseenter', (evt)=>this.sidePanel.show(evt));
+    annotation.addEventListener('mouseleave', (evt)=>this.sidePanel.hide(evt));
+    let contents = range.extractContents();
+    annotation.appendChild(contents);
+    range.insertNode(annotation);
+    this.updateStatistics()
+    $('div#annotator-root').toggleClass('topPanelDisplayed');
+}
+
+Model.prototype.exportTEI = function(){
+    let doc = this.TEIheader+document.getElementById('editor').innerHTML+'</TEI>';
+    doc = doc.replace(/<page.*>/gm,"");
+    doc = doc.replace(/<\/page>/gm,"");
+
+    //Download the TEI
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(doc));
+    element.setAttribute('download', 'tei.xml');
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
 }
 
 Model.prototype.fromTag = function(f){
@@ -332,36 +332,37 @@ Model.prototype.fromText = function(text){
     });
 }
 
-Model.prototype.expandedEmptyTag = function(empty_tag){
-    const tag_name = empty_tag.slice(1).split(' ')[0],
-        opening_tag = empty_tag.replace('/>','>'),
-        closing_tag = '</'+tag_name+'>';
-
-    return opening_tag + closing_tag;
-}
-
 Model.prototype.loadTEI = function(method, file){
     const self_ = this;
 
-    return new Promise((resolve, error)=>{
-        method(file).then((xml=>{
-            const sanityzed_xml = xml.content.replace(/\r/gm," "),
-                body_replaced_xml = sanityzed_xml.replace(/body>/gm, 'page>'), // Creating a separate div would alter structure
-                parsed_tei = $.parseXML(body_replaced_xml).documentElement,
-                body = parsed_tei.getElementsByTagName('page')[0];
-            
-            this.TEItext = parsed_tei.outerHTML.replace(' xmlns="http://www.tei-c.org/ns/1.0"', '');
-            this.TEIbody = body.innerHTML.replace(' xmlns="http://www.tei-c.org/ns/1.0"', '');
-            this.TEIemptyTags = body.innerHTML.match(/<[^>]+\/>/gm);
-            this.TEIheaderLength = parsed_tei.outerHTML.indexOf('<page>');
+    method(file).then((xml=>{
+        const reader = new TEIreader(xml.content).parse();
+        //console.log(reader)
+        $("#toolbar-header span#name").html(xml.name)
+        this.TEIbody = reader.body();
+   
+        $('#editor page').html(this.TEIbody);
+   
+        this.updateStatistics();
 
-            body.setAttribute('size', 'A4');
-            $('#editor').append(body);
-        }));
-        resolve();
-    });
+        for(annotation of Array.from(document.getElementsByTagName('certainty'))){
+            annotation.addEventListener('mouseenter', (e)=>this.sidePanel.show(e));
+            annotation.addEventListener('mouseleave', (e)=>this.sidePanel.hide(e));
+        }
+        this.TEIheader = reader.header();
+        this.TEIheaderOffset = reader.headerOffset();
+        this.TEItext = reader.doc;
+        const parser = new DOMParser();
+        this.TEIdoc = parser.parseFromString(reader.doc, 'text/xml');
+    }));
 }
 
+Model.prototype.updateStatistics = function(){
+    const authors = Array.from($('certainty')).reduce((acd,c)=>acd.add(c.attributes['author'].value),new Set()).size;
+    $("div#stats").html(`Total annotations : <span>${$('certainty').length} </span> Total contributors : <span>${authors} </span>
+            Place : <span>Ireland </span>Date of creation : <span>None </span>`)
+
+}
 /* Side panel
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * */
@@ -439,11 +440,12 @@ SidePanel.prototype.levenshtein = function(a,b){
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * */
 
-function Panel(){
+function Panel(model_){
     this.annotation = new Annotation();
     this.shown = false;
     this.range = document.createRange();
     this.text = '';
+    this.model = model_
 }
 
 Panel.prototype.changeAnnotation = function(annotation_){
@@ -451,26 +453,24 @@ Panel.prototype.changeAnnotation = function(annotation_){
 }
 
 Panel.prototype.show = function(){
-    $('div#annotator-root').addClass('topPanelDisplayed');
+    $('div#annotator-root').toggleClass('topPanelDisplayed');
     this.shown = true;
 }
 
 Panel.prototype.hide = function(){
-    $('div#annotator-root').removeClass('topPanelDisplayed');
+    $('div#annotator-root').toggleClass('topPanelDisplayed');
     this.shown = false;
     this.range = document.createRange();
     Array.from($("#top-panel input"), x=>x).map(i=>i.value = '');
 }
 
-Panel.prototype.handleSelection = function(model){
-    const selection = getUserSelection(model);
-    console.log(selection);
+Panel.prototype.handleSelection = function(evt){
+    const selection = getUserSelection(this.model);
     if(selection.range.collapsed === false){
 
-        $('section#top-panel #references').val(selection.text);   
-
+        console.log('> Selection absolute positions : ', selection.abs_positions)
+        $('section#top-panel #references').val(selection.text);
         this.range = selection.range;
-        this.selection = selection;
         this.show();
     }
 }
@@ -484,35 +484,10 @@ Panel.prototype.createAnnotation = function(){
 
     const annotation = (new Annotation()).fromDict(values);
     
-    const url = API_urls.get_add_annotation_url(window.project, window.file);
-    const data = {
-            "start_pos": this.selection.abs_positions.start,
-            "end_pos": this.selection.abs_positions.end,
-            "source": values.source,
-            "locus": values.locus,
-            "certainty": values.cert,
-            "asserted_value": values.proposedValue,
-            "description": values.desc,
-            "tag": "xxx"
-        }
-
-    if(values['locus'] == 'attribute')
-        data['attribute'] = values['attributeName'];
-    
-    $.ajax({
-        url: url,
-        type: 'PUT',   //type is any HTTP method
-        contentType: "application/json; charset=UTF-8",
-        data: JSON.stringify(data),      //Data as js object
-        scriptCharset: 'utf8',
-        success: function (a) {
-            console.log('annotate - success < ',a)
-        },
-        error: function(data) {
-            console.log('annotate - error < ', data);
-        }
-    })
+    this.model.createAnnotation(this.range,annotation);
 }
+
+Panel.prototype.updateAnnotation = function(){}
 
 /* Annotation
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -521,6 +496,7 @@ Panel.prototype.createAnnotation = function(){
 function Annotation(){
     this.locus = '';
     this.cert = '';
+    this.author = '';
     this.value = '';
     this.proposedValue = '';
     this.source = '';
@@ -528,10 +504,11 @@ function Annotation(){
 }
 
 Annotation.prototype.fromDict = function(values){
-    const {locus, cert, value, proposedValue, source, desc} = values;
+    const {locus, cert, author, value, proposedValue, source, desc} = values;
 
     this.locus = locus;
     this.cert = cert;
+    this.author = author;
     this.value = value;
     this.proposedValue = proposedValue;
     this.source = source;
@@ -560,7 +537,7 @@ Annotation.prototype.renderHTML = function(){
 
     annotation.setAttribute('locus', this.locus);
     annotation.setAttribute('cert', this.cert);
-    annotation.setAttribute('author', 'me');
+    annotation.setAttribute('author', this.author);
     annotation.setAttribute('value', this.value);
     annotation.setAttribute('proposedValue', this.proposedValue);
     annotation.setAttribute('source', this.source);
@@ -580,4 +557,73 @@ Annotation.prototype.renderHTML = function(){
 // Returns the TEI XML code for such annotation
 Annotation.prototype.renderTEI = function(){}
 
-module.exports = { fileChange };
+/* TEIreader
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * */
+
+function TEIreader(doc) {
+    this.doc = doc.replace(/\r/gm," ");;
+    this.header_ = "";
+    this.body_= "";
+    this.parsed = false;
+}
+
+TEIreader.prototype.headerOffset = function(){
+    if(this.parsed === false)
+        this.parse();
+    return this.headerOffset_;
+}
+
+TEIreader.prototype.header = function(){
+    if(this.parsed === false)
+        this.parse();
+    return this.header_;
+}
+
+TEIreader.prototype.body = function(){
+    if(this.parsed === false)
+        this.parse();
+    return this.body_;
+}
+
+// Parse the doc to extract both the header and bod
+TEIreader.prototype.parse = function(){
+    let reading_tag = false, tag="", header=true;
+
+    this.body_ = '';
+
+    for(let i =0; i<this.doc.length; i++){
+        if(this.doc[i] == '<'){
+            reading_tag = true;
+            tag="";
+        }else if(reading_tag === true && this.doc[i] == '>'){
+            if(tag.includes('/teiHeader')){
+                header = false;
+                this.header_ += '>';
+                reading_tag = false;
+                // Just count \r caracters
+                //this.headerOffset_ = this.header_.replace(/\r/gm,"").length+1
+                // Count \r too
+                this.headerOffset_ = i+1
+                continue;
+            }
+            reading_tag = false;
+        }
+
+        if(reading_tag===true)
+            tag+=this.doc[i];
+        
+        if(header===true)
+            this.header_+=this.doc[i];
+        else
+            this.body_+=this.doc[i];
+   
+    }
+
+    this.parsed =true;
+    return this;
+}
+
+module.exports = {
+    fileChange
+};

@@ -1,4 +1,5 @@
 require('./teicloseAnnotator.css');
+const API_urls = require('./annotationApiUrlBuilder.js');
 
 const versions = [
     {"url": "","timestamp": "2018-4-1","imprecision": 0,"ignorance": 1,"credibility": 2,"incompleteness": 0 },
@@ -10,14 +11,14 @@ const versions = [
 
 function saveVersion(){
     $.ajax({
-        url: ['/api/v1/project', window.project, 'teiclose', window.file, 'save/'].join('/'),
+        url: API_urls.get_save_url(window.project, window.file),
         type: 'PUT',   //type is any HTTP method
         data: {},      //Data as js object
         success: function (a) {
-            console.log('save - success < ',['/api/v1/project', window.project, 'teiclose', window.file, 'save'].join('/'),' < ',a)
+            console.log('save - success < ',API_urls.get_save_url(window.project, window.file),' < ',a)
         },
         error: function (a) {
-            console.log('save - error < ',['/api/v1/project', window.project, 'teiclose', window.file, 'save'].join('/'),' < ',a)
+            console.log('save - error < ',API_urls.get_save_url(window.project, window.file),' < ',a)
         }
     })
 }
@@ -502,7 +503,7 @@ Panel.prototype.createAnnotation = function(){
 
     const annotation = (new Annotation()).fromDict(values);
     
-    const url = ['/api/v1/project', window.project, 'teiclose', window.file, 'annotate/'].join('/');
+    const url = API_urls.get_add_annotation_url(window.project, window.file).join('/');
     const data = {
             "start_pos": this.selection.abs_positions[0],
             "end_pos": this.selection.abs_positions[1],

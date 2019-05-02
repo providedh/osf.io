@@ -23,6 +23,8 @@
             % if file_revision:
               <small>&nbsp;${file_revision | h}</small>
             % endif
+            
+            <a id="saveFile">Save current file</a>
           </h2>
         </div>
         <div>

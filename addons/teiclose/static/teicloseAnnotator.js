@@ -8,7 +8,25 @@ const versions = [
     {"url": "","timestamp": "2019-1-19","imprecision": 3,"ignorance": 6,"credibility": 14,"incompleteness": 5}
 ];
 
+function saveVersion(){
+    $.ajax({
+        url: ['/api/v1/project', window.project, 'teiclose', window.file, 'save/'].join('/'),
+        type: 'PUT',   //type is any HTTP method
+        data: {},      //Data as js object
+        success: function (a) {
+            console.log('save - success < ',['/api/v1/project', window.project, 'teiclose', window.file, 'save'].join('/'),' < ',a)
+        },
+        error: function (a) {
+            console.log('save - error < ',['/api/v1/project', window.project, 'teiclose', window.file, 'save'].join('/'),' < ',a)
+        }
+    })
+}
+
 function fileChange (file){
+    window.project = window.location.pathname.split('/')[1]
+    window.file = window.location.pathname.split('/')[3]
+    window.version = window.location.pathname.split('/')[4]
+
     const sidepanel = new SidePanel();
     const model = new Model(sidepanel);
     const panel = new Panel(model);
@@ -19,6 +37,7 @@ function fileChange (file){
         if(evt.target.value == 'value')
             document.getElementById('value').value = document.getElementById('references').value;
     }, false);
+    document.getElementById('saveFile').addEventListener('click', ()=>saveVersion());
     document.getElementById('openPanel').addEventListener('click', ()=>panel.show());
     document.getElementById('closePanel').addEventListener('click', ()=>panel.hide());
     document.getElementById('create-annotation').addEventListener('click', ()=>panel.createAnnotation());
@@ -48,8 +67,6 @@ function getUserSelection(model) {
         selection = document.selection;
         text = document.selection.createRange().text;
     }
-
-    console.log(selection)
 
     const selection_range = selection.getRangeAt(0),
         start_range = document.createRange(),
@@ -336,7 +353,7 @@ Model.prototype.loadTEI = function(method, file){
     const self_ = this;
 
     method(file).then((xml=>{
-        const reader = new TEIreader(xml.content).parse();
+        const reader = new TEIreader(xml.content);
         //console.log(reader)
         $("#toolbar-header span#name").html(xml.name)
         this.TEIbody = reader.body();
@@ -468,9 +485,10 @@ Panel.prototype.handleSelection = function(evt){
     const selection = getUserSelection(this.model);
     if(selection.range.collapsed === false){
 
-        console.log('> Selection absolute positions : ', selection.abs_positions)
-        $('section#top-panel #references').val(selection.text);
+        $('section#top-panel #references').val(selection.text);   
+
         this.range = selection.range;
+        this.selection = selection;
         this.show();
     }
 }
@@ -483,6 +501,32 @@ Panel.prototype.createAnnotation = function(){
         values['value'] = values['references'];
 
     const annotation = (new Annotation()).fromDict(values);
+    
+    const url = ['/api/v1/project', window.project, 'teiclose', window.file, 'annotate/'].join('/');
+    const data = {
+            "start_pos": this.selection.abs_positions[0],
+            "end_pos": this.selection.abs_positions[1],
+            "source": values.source,
+            "locus": values.locus,
+            "certainty": values.cert,
+            "asserted_value": values.proposedValue,
+            "description": values.desc,
+            "tag": "xxx"
+        }
+    
+    $.ajax({
+        url: url,
+        type: 'PUT',   //type is any HTTP method
+        contentType: "application/json; charset=UTF-8",
+        data: JSON.stringify(data),      //Data as js object
+        scriptCharset: 'utf8',
+        success: function (a) {
+            console.log('annotate - success < ',a)
+        },
+        error: function(data) {
+            console.log('annotate - error < ', data);
+        }
+    })
     
     this.model.createAnnotation(this.range,annotation);
 }
@@ -570,24 +614,24 @@ function TEIreader(doc) {
 
 TEIreader.prototype.headerOffset = function(){
     if(this.parsed === false)
-        this.parse();
+        this._parse();
     return this.headerOffset_;
 }
 
 TEIreader.prototype.header = function(){
     if(this.parsed === false)
-        this.parse();
+        this._parse();
     return this.header_;
 }
 
 TEIreader.prototype.body = function(){
     if(this.parsed === false)
-        this.parse();
+        this._parse();
     return this.body_;
 }
 
 // Parse the doc to extract both the header and bod
-TEIreader.prototype.parse = function(){
+TEIreader.prototype._parse = function(){
     let reading_tag = false, tag="", header=true;
 
     this.body_ = '';

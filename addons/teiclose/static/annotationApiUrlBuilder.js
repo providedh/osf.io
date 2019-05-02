@@ -8,14 +8,14 @@ const API_urls = {
         'save/'].join('/'),
     get_add_annotation_url : (project, file) => [
         window.location.hostname+':5000', 
-        '/api/v1/project', 
+        'api/v1/project', 
         project, 
         'teiclose', 
         file, 
         'annotate/'].join('/'),
     get_history_url : (project, file, version) => [
         window.location.hostname+':5000', 
-        '/api/v1/project', 
+        'api/v1/project', 
         project, 
         'teiclose', 
         file, 
@@ -23,7 +23,7 @@ const API_urls = {
         'annotationhistory/'].join('/'),
     get_autocomplete_url : (project, entity_type, query) => [
         window.location.hostname+':5000', 
-        '/api/v1/fuzzysearch', 
+        'api/v1/fuzzysearch', 
         project, 
         entity_type, 
         query].join('/')

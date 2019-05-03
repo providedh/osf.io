@@ -1,5 +1,5 @@
 require('./teicloseAnnotator.css');
-const API_urls = require('./annotationApiUrlBuilder.js');
+window.API_urls = require('./annotationApiUrlBuilder.js').API_urls;
 
 const versions = [
     {"url": "","timestamp": "2018-4-1","imprecision": 0,"ignorance": 1,"credibility": 2,"incompleteness": 0 },

@@ -99,6 +99,9 @@ section.panel form, section.panel input{
     display: inline-block;
 }
 
+section.panel #attribute-name-input{display: none;}
+section.panel #attribute-name-input[locus='attribute']{display: inline-block;}
+
 input#type{
     width:2.6em;
 }

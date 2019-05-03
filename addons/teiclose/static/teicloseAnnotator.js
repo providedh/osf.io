@@ -34,9 +34,13 @@ function fileChange (file){
     const timeline = new Timeline();
     timeline.renderTimestamps();
 
+    // Add event handlers for all the application
+    document.getElementById("attribute-name-input").setAttribute('locus', 
+        document.getElementById('locus').value);
     document.getElementById('locus').addEventListener('change', (evt)=>{
         if(evt.target.value == 'value')
             document.getElementById('value').value = document.getElementById('references').value;
+        document.getElementById("attribute-name-input").setAttribute('locus', evt.target.value);
     }, false);
     document.getElementById('saveFile').addEventListener('click', ()=>saveVersion());
     document.getElementById('openPanel').addEventListener('click', ()=>panel.show());
@@ -503,7 +507,7 @@ Panel.prototype.createAnnotation = function(){
 
     const annotation = (new Annotation()).fromDict(values);
     
-    const url = API_urls.get_add_annotation_url(window.project, window.file).join('/');
+    const url = API_urls.get_add_annotation_url(window.project, window.file);
     const data = {
             "start_pos": this.selection.abs_positions[0],
             "end_pos": this.selection.abs_positions[1],
@@ -514,6 +518,9 @@ Panel.prototype.createAnnotation = function(){
             "description": values.desc,
             "tag": "xxx"
         }
+
+    if(values['locus'] == 'attribute')
+        data['attribute'] = values['attributeName'];
     
     $.ajax({
         url: url,
@@ -541,7 +548,6 @@ Panel.prototype.updateAnnotation = function(){}
 function Annotation(){
     this.locus = '';
     this.cert = '';
-    this.author = '';
     this.value = '';
     this.proposedValue = '';
     this.source = '';
@@ -549,11 +555,10 @@ function Annotation(){
 }
 
 Annotation.prototype.fromDict = function(values){
-    const {locus, cert, author, value, proposedValue, source, desc} = values;
+    const {locus, cert, value, proposedValue, source, desc} = values;
 
     this.locus = locus;
     this.cert = cert;
-    this.author = author;
     this.value = value;
     this.proposedValue = proposedValue;
     this.source = source;
@@ -582,7 +587,7 @@ Annotation.prototype.renderHTML = function(){
 
     annotation.setAttribute('locus', this.locus);
     annotation.setAttribute('cert', this.cert);
-    annotation.setAttribute('author', this.author);
+    annotation.setAttribute('author', 'me');
     annotation.setAttribute('value', this.value);
     annotation.setAttribute('proposedValue', this.proposedValue);
     annotation.setAttribute('source', this.source);

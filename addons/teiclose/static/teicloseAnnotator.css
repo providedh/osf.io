@@ -14,20 +14,6 @@ div#annotator-root.topPanelDisplayed #openPanel{
     cursor: default;
 }
 
-div#annotator-root .row{
-    margin-right: 0;
-    margin-left: 0;
-}
-
-section#top-panel div.row:nth-of-type(2){
-    position: relative;
-}
-
-button#create-annotation{
-    position: absolute;
-    right: 0;
-}
-
 div#stats{
     padding-top: 8em;
     width: 21cm;
@@ -105,8 +91,6 @@ div.toolbarRow div.row{
     padding-top: 5px;
     display: flex;
     flex-direction: row;
-}
-section#toolbar div.row{
     justify-content: space-between;
 }
 
@@ -114,9 +98,6 @@ section#toolbar form, section#toolbar input,
 section.panel form, section.panel input{
     display: inline-block;
 }
-
-section.panel #attribute-name-input{display: none;}
-section.panel #attribute-name-input[locus='attribute']{display: inline-block;}
 
 input#type{
     width:2.6em;
@@ -270,8 +251,6 @@ div#annotator-root.sidePanelDisplayed div#side-panel{
 section#toolbar, section#top-panel{
     font-size: 13px;
 }
-
-section#asserted-value-input-options{display: none;}
 
 @-moz-document url-prefix() {
     section#top-panel{
@@ -610,11 +589,6 @@ desc{
     background-color: rgba(174,210,21,0.5);
 }
 
-.variation{
-    /*Red*/
-    background-color: rgba(175,9,0,0.5);
-}
-
 [source="ignorance"]{
     /*Blue*/
     background-color: #17558D;
@@ -633,11 +607,6 @@ desc{
 [source="incompleteness"]{
     /*Green*/
     background-color: #AED215;
-}
-
-[source="variation"]{
-    /*Red*/
-    background-color: #AF0900;
 }
 
 [source="ignorance"][cert="medium"]{
@@ -659,12 +628,6 @@ desc{
     /*Green*/
     background-color: #C6E73D;
 }
-
-[source="variation"][cert="medium"]{
-    /*Red*/
-    background-color: #E00B00;
-}
-
 [source="ignorance"][cert="low"]{
     /*Blue*/
     background-color: #4D80AE;
@@ -684,12 +647,6 @@ desc{
     /*Green*/
     background-color: #DAF662;
 }
-
-[source="variation"][cert="low"]{
-    /*Red*/
-    background-color: #FA4A41;
-}
-
 [source="ignorance"][cert="unknown"]{
     /*Blue*/
     background-color: #79A4CB;
@@ -708,11 +665,6 @@ desc{
 [source="incompleteness"][cert="unknown"]{
     /*Green*/
     background-color: #E4F98C;
-}
-
-[source="variation"][cert="unknown"]{
-    /*Red*/
-    background-color: #FA9B96;
 }
 
 certainty{
@@ -755,7 +707,7 @@ div#timeline div#time-bar hr{
     width: 21cm;
 }
 
-div#timeline a.timestamp{
+div#timeline div.timestamp{
     position:absolute;
     width:8px;
     height:8px;
@@ -767,6 +719,7 @@ div#timeline div#popup{
     position:absolute;
     z-index:500;
     width:22em;
+    height:8em;
     line-height: 1.4em;
     padding: 7px;
     background-color:white;
@@ -808,6 +761,6 @@ div#timeline div#time-bar canvas{
 .timelineExpanded section#toolbar div#timeline{height:5em;}
 .timelineExpanded section#toolbar div#timeline hr{height:4em;}
 .timelineExpanded div#timeline div#time-bar canvas{display:block}
-.timelineExpanded div#timeline div#time-bar a.timestamp{
+.timelineExpanded div#timeline div#time-bar div.timestamp{
     top:4em;
 }

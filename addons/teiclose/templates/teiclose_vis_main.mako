@@ -60,39 +60,22 @@
       </div>
     </div>
   </section>
-  <section id="asserted-value-input-options">
-    <input locus="attribute" type="text" id="proposedValue">
-    <input locus="value" type="text" id="proposedValue">
-    <select locus="name" id='proposedValue'>
-        <option value="date">Date</option>
-        <option value="event">Event</option>
-        <option value="geolocation">geolocation</option>
-        <option value="name">Name</option>
-        <option value="occupation">Occupation</option>
-        <option value="object">Object</option>
-        <option value="org">Org</option>
-        <option value="person">Person</option>
-        <option value="country">country</option>
-        <option value="time">Time</option>
-    </select>
-  </section>
   <section id="top-panel" class="panel">
     <div class="toolbarRow" id="toolbar-controls">
       <div class="row">
         <span class="toolbar-control" id="">
               Source of uncertainty <a title="help : source of the uncertainty" class='help'>?</a> 
               <select name="" id='source'>
+                  <option class="imprecision" value="imprecision">Imprecision</option>
                   <option class="ignorance" value="ignorance">Ignorance</option>
                   <option class="credibility" value="credibility">Credibility</option>
-                  <option class="imprecision" value="imprecision">Imprecision</option>
                   <option class="incompleteness" value="incompleteness">Incompleteness</option>
-                  <option class="variation" value="variation">Variation</option>
               </select>
               Locus <a title="help : locus" class='help'>?</a>
               <select name="" id='locus'>
-                  <option value="value">Value</option>
                   <option value="name">Name</option>
                   <option value="attribute">Attribute</option>
+                  <option value="value">Value</option>
               </select>
               <span id="attribute-name-input"> 
                 Attribute name <a title="help : attribute name" class='help'>?</a> <input type="text" id="attributeName"> 
@@ -101,8 +84,8 @@
       </div>
       <div class="row">
         <span class="toolbar-control" id="">
-          Previous value <a title="help : value" class='help'>?</a> <input type="text" name="" id="value" readonly> 
-          Asserted value <a title="help : asserted value" class='help'>?</a> <span id="asserted-value-container"></span> 
+          Previous value <a title="help : value" class='help'>?</a> <input type="text" name="" id="value"> 
+          Proposed value <a title="help : proposed value" class='help'>?</a> <input type="text" id="proposedValue"> 
           Certainty <a title="help : certainty" class='help'>?</a> <select name="" id='cert'>
               <option value="unknown">Unknown</option>
               <option value="high">High</option>
@@ -116,7 +99,7 @@
       </div>
       <div class="row">
         <span class="toolbar-control" id="">
-          References <a title="help : references" class='help'>?</a> <input type="text" id="references"> 
+          References <a title="help : references" class='help'>?</a> <input type="text" id="references" readonly> 
           Description <a title="help : description" class='help'>?</a> <input type="text" id="desc"> 
         </span>
       </div>
@@ -125,11 +108,7 @@
       </div>
     </div>
   </section>
-  <div id="stats">
-    Total annotations : <span id="annotations"> </span> 
-    Total contributors : <span id="authors"> </span> 
-    Date of editing : <span id="date"> </span>
-  </div>
+  <div id="stats"></div>
   <div class="legend" id="legend-right">
       <b>Annotation color scheme</b><br/>
       <span class="teiLegendElement" id="date">
@@ -207,17 +186,6 @@ source="incompleteness" cert="medium"></span>
 source="incompleteness" cert="high"></span> 
         Incompleteness
       </span>
-      <span class="teiLegendElement">
-        <span class="color uncertainty" author="me" title="unknown"
-source="variation" cert="unknown"></span>
-        <span class="color uncertainty" author="me" title="low"
-source="variation" cert="low"></span> 
-        <span class="color uncertainty" author="me" title="medium"
-source="variation" cert="medium"></span> 
-        <span class="color uncertainty" author="me" title="high"
-source="variation" cert="high"></span> 
-        Variation
-      </span>
   </div>
   <div  id="side-panel">
       <div id="text" class="row"></div>
@@ -250,6 +218,9 @@ source="variation" cert="high"></span>
       <div id="desc" class="row"></div>
   </div>
   <section id="editor">
+      <page size="A4">
+
+      </page>
   </section>
      <div id="close-reading-widget"></div>
 </div>

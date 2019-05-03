@@ -14,6 +14,20 @@ div#annotator-root.topPanelDisplayed #openPanel{
     cursor: default;
 }
 
+div#annotator-root .row{
+    margin-right: 0;
+    margin-left: 0;
+}
+
+section#top-panel div.row:nth-of-type(2){
+    position: relative;
+}
+
+button#create-annotation{
+    position: absolute;
+    right: 0;
+}
+
 div#stats{
     padding-top: 8em;
     width: 21cm;
@@ -91,6 +105,8 @@ div.toolbarRow div.row{
     padding-top: 5px;
     display: flex;
     flex-direction: row;
+}
+section#toolbar div.row{
     justify-content: space-between;
 }
 

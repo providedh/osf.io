@@ -97,7 +97,7 @@ function getUserSelection(model) {
     
     let body_start_offset = 0;
     for(let i=0; i<start_content.length; i++){
-        if(start_content[i]!=end_content[i]){
+        if(model.TEIbody[i]!=end_content[i]){
             body_start_offset = i+1;
             break;
         }
@@ -114,7 +114,7 @@ function getUserSelection(model) {
     const abs_positions = [
         model.TEIheaderOffset+body_start_offset,
         model.TEIheaderOffset+body_end_offset
-    ]
+    ].sort();
 
     return {text:text, range:selection_range, abs_positions:abs_positions};
 }
@@ -307,8 +307,7 @@ Model.prototype.createAnnotation = function(range, annotation_){
     let contents = range.extractContents();
     annotation.appendChild(contents);
     range.insertNode(annotation);
-    this.updateStatistics()
-    $('div#annotator-root').toggleClass('topPanelDisplayed');
+    this.updateStatistics();
 }
 
 Model.prototype.exportTEI = function(){

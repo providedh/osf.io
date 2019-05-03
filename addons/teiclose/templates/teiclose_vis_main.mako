@@ -64,33 +64,33 @@
     <div class="toolbarRow" id="toolbar-controls">
       <div class="row">
         <span class="toolbar-control" id="">
-          Locus <a title="help : locus" class='help'>?</a>
-              <select name="" id='locus'>
-                  <option value="name">Name</option>
-                  <option value="start">Start</option>
-                  <option value="end">End</option>
-                  <option value="location">Location</option>
-                  <option value="value">Value</option>
-              </select>
-          Certainty <a title="help : certainty" class='help'>?</a> <select name="" id='cert'>
-              <option value="unknown">Unknown</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-              </select>
-          Author <a title="help : author" class='help'>?</a> <input type="text" name="" id="author"> 
-          Value <a title="help : value" class='help'>?</a> <input type="text" name="" id="value"> 
-        </span>
-      </div>
-      <div class="row">
-        <span class="toolbar-control" id="">
-          Proposed value <a title="help : proposed value" class='help'>?</a> <input type="text" id="proposedValue"> 
-          Source of uncertainty <a title="help : source of the uncertainty" class='help'>?</a> 
+              Source of uncertainty <a title="help : source of the uncertainty" class='help'>?</a> 
               <select name="" id='source'>
                   <option class="imprecision" value="imprecision">Imprecision</option>
                   <option class="ignorance" value="ignorance">Ignorance</option>
                   <option class="credibility" value="credibility">Credibility</option>
                   <option class="incompleteness" value="incompleteness">Incompleteness</option>
+              </select>
+              Locus <a title="help : locus" class='help'>?</a>
+              <select name="" id='locus'>
+                  <option value="name">Name</option>
+                  <option value="attribute">Attribute</option>
+                  <option value="value">Value</option>
+              </select>
+              <span id="attribute-name-input"> 
+                Attribute name <a title="help : attribute name" class='help'>?</a> <input type="text" id="attributeName"> 
+              </span>
+        </span>
+      </div>
+      <div class="row">
+        <span class="toolbar-control" id="">
+          Previous value <a title="help : value" class='help'>?</a> <input type="text" name="" id="value"> 
+          Proposed value <a title="help : proposed value" class='help'>?</a> <input type="text" id="proposedValue"> 
+          Certainty <a title="help : certainty" class='help'>?</a> <select name="" id='cert'>
+              <option value="unknown">Unknown</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
               </select>
         </span>
         <span>

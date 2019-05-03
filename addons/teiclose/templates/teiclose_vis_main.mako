@@ -84,7 +84,7 @@
       </div>
       <div class="row">
         <span class="toolbar-control" id="">
-          Previous value <a title="help : value" class='help'>?</a> <input type="text" name="" id="value"> 
+          Previous value <a title="help : value" class='help'>?</a> <input type="text" name="" id="value" readonly> 
           Proposed value <a title="help : proposed value" class='help'>?</a> <input type="text" id="proposedValue"> 
           Certainty <a title="help : certainty" class='help'>?</a> <select name="" id='cert'>
               <option value="unknown">Unknown</option>
@@ -99,7 +99,7 @@
       </div>
       <div class="row">
         <span class="toolbar-control" id="">
-          References <a title="help : references" class='help'>?</a> <input type="text" id="references" readonly> 
+          References <a title="help : references" class='help'>?</a> <input type="text" id="references"> 
           Description <a title="help : description" class='help'>?</a> <input type="text" id="desc"> 
         </span>
       </div>

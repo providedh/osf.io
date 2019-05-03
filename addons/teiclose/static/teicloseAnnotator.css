@@ -1,9 +1,17 @@
-
 div#annotator-root {
   margin-top: 65px;
   background: white; 
   padding: 0;
   margin: 0;
+}
+
+div#annotator-root #openPanel{
+    display: block;
+}
+
+div#annotator-root.topPanelDisplayed #openPanel{
+    opacity: 0;
+    cursor: default;
 }
 
 div#stats{

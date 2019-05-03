@@ -10,7 +10,7 @@
 ## Use full page width
 <%def name="container_class()">container-xxl</%def>
 
-<div id="annotator-root" display-uncertainty='false' display-annotations='false' color-uncertainty='false' color-annotations='false'>
+<div id="annotator-root" class="topPanelDisplayed" display-uncertainty='false' display-annotations='false' color-uncertainty='false' color-annotations='false'>
   <section id="toolbar">
     <div class="toolbarRow" id="toolbar-header">
 
@@ -55,7 +55,7 @@
       </div>
       <div class="row">
         <span class="toolbar-control" id="selected-control"> 
-            <a id="openPanel" title="open panel" class='help'>( Toggle panel )</a>
+            <a id="openPanel" title="open panel" class='help'>( Open panel )</a>
         </span>
       </div>
     </div>

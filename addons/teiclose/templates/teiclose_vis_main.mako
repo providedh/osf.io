@@ -66,10 +66,11 @@
         <span class="toolbar-control" id="">
               Source of uncertainty <a title="help : source of the uncertainty" class='help'>?</a> 
               <select name="" id='source'>
-                  <option class="imprecision" value="imprecision">Imprecision</option>
-                  <option class="ignorance" value="ignorance">Ignorance</option>
-                  <option class="credibility" value="credibility">Credibility</option>
                   <option class="incompleteness" value="incompleteness">Incompleteness</option>
+                  <option class="imprecision" value="imprecision">Imprecision</option>
+                  <option class="variation" value="variation">Variation</option>
+                  <option class="credibility" value="credibility">Credibility</option>
+                  <option class="ignorance" value="ignorance">Ignorance</option>
               </select>
               Locus <a title="help : locus" class='help'>?</a>
               <select name="" id='locus'>

@@ -471,12 +471,12 @@ Panel.prototype.changeAnnotation = function(annotation_){
 }
 
 Panel.prototype.show = function(){
-    $('div#annotator-root').toggleClass('topPanelDisplayed');
+    $('div#annotator-root').addClass('topPanelDisplayed');
     this.shown = true;
 }
 
 Panel.prototype.hide = function(){
-    $('div#annotator-root').toggleClass('topPanelDisplayed');
+    $('div#annotator-root').removeClass('topPanelDisplayed');
     this.shown = false;
     this.range = document.createRange();
     Array.from($("#top-panel input"), x=>x).map(i=>i.value = '');

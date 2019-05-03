@@ -69,6 +69,9 @@ function setup(file){
 
     panel.updateControls(annotationType, locus);
 
+    // Add event handlers for all the application
+    document.getElementById("attribute-name-input").setAttribute('locus', 
+        document.getElementById('locus').value);
     document.getElementById('locus').addEventListener('change', (evt)=>{
         setAnnotatorAttribute('locus', evt.target.value);
         panel.updateControls(getAnnotatorAttribute('annotation'), evt.target.value);

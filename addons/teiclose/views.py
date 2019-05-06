@@ -87,8 +87,12 @@ def teiclose_add_annotation(**kwargs):
 
     xml_text = current_session.data[file_key]
 
-    annotator = Annotator()
-    xml_text = annotator.add_annotation(xml_text, request_json, user_guid)
+    try:
+        annotator = Annotator()
+        xml_text = annotator.add_annotation(xml_text, request_json, user_guid)
+    except ValueError:
+        return '', 400
+
     current_session.data[file_key] = xml_text
     current_session.save()
 

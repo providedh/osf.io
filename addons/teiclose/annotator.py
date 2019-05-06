@@ -492,7 +492,7 @@ class Annotator:
             partic_desc = etree.Element(prefix + 'particDesc', nsmap=ns_map)
             profile_desc[0].append(partic_desc)
 
-        list_person = tree.xpath('//default:teiHeader/default:profileDesc/default:particDesc/default:listPerson',
+        list_person = tree.xpath('//default:teiHeader/default:profileDesc/default:particDesc/default:listPerson[@type="PROVIDEDH Annotators"]',
                                  namespaces=NAMESPACES)
 
         if not list_person:

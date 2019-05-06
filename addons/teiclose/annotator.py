@@ -44,6 +44,9 @@ class Annotator:
     def __get_data_from_xml(self):
         self.__start, self.__end = self.__get_fragment_position(self.__xml, self.__json)
 
+        if self.__start >= self.__end:
+            raise ValueError("Start position of annotating fragment is greater or equal to end position.")
+
         self.__start, self.__end = self.__get_fragment_position_with_adhering_tags(self.__xml, self.__start, self.__end)
         self.__fragment_to_annotate = self.__xml[self.__start: self.__end]
 

@@ -23,14 +23,22 @@ function saveVersion(){
     })
 }
 
+
+function updateStatistics(){
+    const authors = Array.from($('certainty')).reduce((acd,c)=>acd.add(c.attributes['author'].value),new Set()).size;
+    $("div#stats").html(`Total annotations : <span>${$('certainty').length} </span> Total contributors : <span>${authors} </span>
+            Place : <span>Ireland </span>Date of creation : <span>None </span>`)
+
+}
+
 function fileChange (file){
     window.project = window.location.pathname.split('/')[1]
     window.file = window.location.pathname.split('/')[3]
     window.version = window.location.pathname.split('/')[4]
 
     const sidepanel = new SidePanel();
-    const model = new Model(sidepanel);
-    const panel = new Panel(model);
+    const model = new Model();
+    const panel = new Panel();
     const timeline = new Timeline();
     timeline.renderTimestamps();
 
@@ -42,29 +50,50 @@ function fileChange (file){
             document.getElementById('value').value = document.getElementById('references').value;
         document.getElementById("attribute-name-input").setAttribute('locus', evt.target.value);
     }, false);
+
     document.getElementById('saveFile').addEventListener('click', ()=>saveVersion());
     document.getElementById('openPanel').addEventListener('click', ()=>panel.show());
     document.getElementById('closePanel').addEventListener('click', ()=>panel.hide());
+
     document.getElementById('create-annotation').addEventListener('click', ()=>panel.createAnnotation());
+
     document.getElementById('editor').onmouseup = 
-      document.getElementById('editor').onselectionchange = ()=>panel.handleSelection();
+      document.getElementById('editor').onselectionchange = ()=>panel.handleSelection(model);
 
     document.getElementById('toggle-timeline-details').addEventListener('click', ()=>timeline.toggleDetails())
 
     for(let input of document.getElementById('display-options').getElementsByTagName('input'))
         input.addEventListener('click', handleDisplayChange);
 
-    model.loadTEI(model.fromText, file);
+    model.loadTEI(model.fromText, file).then(()=>{
+        for(annotation of Array.from(document.getElementsByTagName('certainty'))){
+            annotation.addEventListener('mouseenter', (e)=>sidepanel.show(e));
+            annotation.addEventListener('mouseleave', (e)=>sidepanel.hide(e));
+        }
+    });
 }
 
 function handleDisplayChange(evt){ 
     $('div#annotator-root').attr(evt.target.id,evt.target.checked);
 }
 
+function contentsFromRange(startNode, startOffset, endNode, endOffset){
+    const selection = document.createRange();
+
+    selection.setStart(startNode, startOffset);
+    selection.setEnd(endNode,endOffset);
+
+    const fragment = selection.cloneRange().cloneContents(),
+        container = document.createElement('div');
+
+    container.appendChild(fragment);
+
+    return container.innerHTML;
+}
 
 function getUserSelection(model) {
-    let text = "", selection;
-    let node = null;
+
+    let text = "", selection, node = null;
     if (window.getSelection) {
         selection = window.getSelection();
         text = selection.toString();
@@ -73,48 +102,40 @@ function getUserSelection(model) {
         text = document.selection.createRange().text;
     }
 
-    const selection_range = selection.getRangeAt(0),
-        start_range = document.createRange(),
-        end_range = document.createRange();
+    const selection_range = selection.getRangeAt(0);
 
-    start_range.setStart($('#editor page')[0], 0);
-    start_range.setEnd(selection_range.startContainer,selection_range.startOffset);
+    let start_content = contentsFromRange($('#editor page')[0], 0, selection_range.startContainer,selection_range.startOffset),
+        end_content = contentsFromRange($('#editor page')[0], 0, selection_range.endContainer,selection_range.endOffset);
 
-    end_range.setStart($('#editor page')[0], 0);
-    end_range.setEnd(selection_range.endContainer,selection_range.endOffset);
+    for(empty_tag of model.TEIemptyTags){
+        console.log(model.expandedEmptyTag(empty_tag), empty_tag);
+        start_content = start_content.replace(model.expandedEmptyTag(empty_tag), empty_tag);
+        end_content = end_content.replace(model.expandedEmptyTag(empty_tag), empty_tag);
+    }
 
-    const start_fragment = start_range.cloneRange().cloneContents(),
-        end_fragment = end_range.cloneRange().cloneContents();
+    console.log('replaced')
+    console.log(model.TEIbody)
+    console.log(end_content)
+    console.log(model.TEIheaderLength)
 
-    const start_container = document.createElement('div'),
-        end_container = document.createElement('div');
+    const abs_positions = {
+        start: 0,
+        end: 0
+    };
 
-    start_container.appendChild(start_fragment);
-    end_container.appendChild(end_fragment);
-
-    const start_content = start_container.innerHTML,
-        end_content = end_container.innerHTML;
-    
-    let body_start_offset = 0;
     for(let i=0; i<start_content.length; i++){
-        if(model.TEIbody[i]!=end_content[i]){
-            body_start_offset = i+1;
+        if(model.TEIbody[i]!=start_content[i]){
+            abs_positions.end = model.TEIheaderLength + i + 1;
             break;
         }
     }
 
-    let body_end_offset = 0;
     for(let i=0; i<end_content.length; i++){
         if(model.TEIbody[i]!=end_content[i]){
-            body_end_offset = i;
+            abs_positions.start = model.TEIheaderLength + i;
             break;
         }
     }
-
-    const abs_positions = [
-        model.TEIheaderOffset+body_start_offset,
-        model.TEIheaderOffset+body_end_offset
-    ].sort();
 
     return {text:text, range:selection_range, abs_positions:abs_positions};
 }
@@ -295,37 +316,8 @@ Timeline.prototype.handleTimestampMouseleave = function(evt){
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * */
 
-function Model(sidepanel){
-    this.sidePanel = sidepanel;
+function Model(){
     this.TEIheader=null;
-}
-
-Model.prototype.createAnnotation = function(range, annotation_){
-    const annotation = annotation_.renderHTML();
-    annotation.addEventListener('mouseenter', (evt)=>this.sidePanel.show(evt));
-    annotation.addEventListener('mouseleave', (evt)=>this.sidePanel.hide(evt));
-    let contents = range.extractContents();
-    annotation.appendChild(contents);
-    range.insertNode(annotation);
-    this.updateStatistics();
-}
-
-Model.prototype.exportTEI = function(){
-    let doc = this.TEIheader+document.getElementById('editor').innerHTML+'</TEI>';
-    doc = doc.replace(/<page.*>/gm,"");
-    doc = doc.replace(/<\/page>/gm,"");
-
-    //Download the TEI
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(doc));
-    element.setAttribute('download', 'tei.xml');
-
-    element.style.display = 'none';
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
 }
 
 Model.prototype.fromTag = function(f){
@@ -353,37 +345,41 @@ Model.prototype.fromText = function(text){
     });
 }
 
+Model.prototype.expandedEmptyTag = function(empty_tag){
+    const tag_name = empty_tag.slice(1).split(' ')[0],
+        opening_tag = empty_tag.replace('/>','>'),
+        closing_tag = '</'+tag_name+'>';
+
+    return opening_tag + closing_tag;
+}
+
 Model.prototype.loadTEI = function(method, file){
     const self_ = this;
 
-    method(file).then((xml=>{
-        const reader = new TEIreader(xml.content);
-        //console.log(reader)
-        $("#toolbar-header span#name").html(xml.name)
-        this.TEIbody = reader.body();
-   
-        $('#editor page').html(this.TEIbody);
-   
-        this.updateStatistics();
+    return new Promise((resolve, error)=>{
+        method(file).then((xml=>{
+            const sanityzed_xml = xml.content.replace(/\r/gm," "),
+                body_replaced_xml = sanityzed_xml.replace(/body>/gm, 'page>'), // Creating a separate div would alter structure
+                parsed_tei = $.parseXML(body_replaced_xml).documentElement,
+                body = parsed_tei.getElementsByTagName('page')[0];
+            
+            this.TEItext = parsed_tei.outerHTML.replace(' xmlns="http://www.tei-c.org/ns/1.0"', '');
+            this.TEIbody = body.innerHTML.replace(' xmlns="http://www.tei-c.org/ns/1.0"', '');
+            this.TEIemptyTags = body.innerHTML.match(/<[^>]+\/>/gm);
+            this.TEIheaderLength = parsed_tei.outerHTML.indexOf('<page>');
 
-        for(annotation of Array.from(document.getElementsByTagName('certainty'))){
-            annotation.addEventListener('mouseenter', (e)=>this.sidePanel.show(e));
-            annotation.addEventListener('mouseleave', (e)=>this.sidePanel.hide(e));
-        }
-        this.TEIheader = reader.header();
-        this.TEIheaderOffset = reader.headerOffset();
-        this.TEItext = reader.doc;
-        const parser = new DOMParser();
-        this.TEIdoc = parser.parseFromString(reader.doc, 'text/xml');
-    }));
+            body.setAttribute('size', 'A4');
+            $('#editor').append(body);
+
+            
+            console.log(body, this.TEIemptyTags)
+           
+            updateStatistics();
+        }));
+        resolve();
+    });
 }
 
-Model.prototype.updateStatistics = function(){
-    const authors = Array.from($('certainty')).reduce((acd,c)=>acd.add(c.attributes['author'].value),new Set()).size;
-    $("div#stats").html(`Total annotations : <span>${$('certainty').length} </span> Total contributors : <span>${authors} </span>
-            Place : <span>Ireland </span>Date of creation : <span>None </span>`)
-
-}
 /* Side panel
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * */
@@ -461,12 +457,11 @@ SidePanel.prototype.levenshtein = function(a,b){
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * */
 
-function Panel(model_){
+function Panel(){
     this.annotation = new Annotation();
     this.shown = false;
     this.range = document.createRange();
     this.text = '';
-    this.model = model_
 }
 
 Panel.prototype.changeAnnotation = function(annotation_){
@@ -485,8 +480,9 @@ Panel.prototype.hide = function(){
     Array.from($("#top-panel input"), x=>x).map(i=>i.value = '');
 }
 
-Panel.prototype.handleSelection = function(evt){
-    const selection = getUserSelection(this.model);
+Panel.prototype.handleSelection = function(model){
+    const selection = getUserSelection(model);
+    console.log(selection);
     if(selection.range.collapsed === false){
 
         $('section#top-panel #references').val(selection.text);   
@@ -508,8 +504,8 @@ Panel.prototype.createAnnotation = function(){
     
     const url = API_urls.get_add_annotation_url(window.project, window.file);
     const data = {
-            "start_pos": this.selection.abs_positions[0],
-            "end_pos": this.selection.abs_positions[1],
+            "start_pos": this.selection.abs_positions.start,
+            "end_pos": this.selection.abs_positions.end,
             "source": values.source,
             "locus": values.locus,
             "certainty": values.cert,
@@ -534,11 +530,7 @@ Panel.prototype.createAnnotation = function(){
             console.log('annotate - error < ', data);
         }
     })
-    
-    this.model.createAnnotation(this.range,annotation);
 }
-
-Panel.prototype.updateAnnotation = function(){}
 
 /* Annotation
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -606,73 +598,4 @@ Annotation.prototype.renderHTML = function(){
 // Returns the TEI XML code for such annotation
 Annotation.prototype.renderTEI = function(){}
 
-/* TEIreader
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * */
-
-function TEIreader(doc) {
-    this.doc = doc.replace(/\r/gm," ");;
-    this.header_ = "";
-    this.body_= "";
-    this.parsed = false;
-}
-
-TEIreader.prototype.headerOffset = function(){
-    if(this.parsed === false)
-        this._parse();
-    return this.headerOffset_;
-}
-
-TEIreader.prototype.header = function(){
-    if(this.parsed === false)
-        this._parse();
-    return this.header_;
-}
-
-TEIreader.prototype.body = function(){
-    if(this.parsed === false)
-        this._parse();
-    return this.body_;
-}
-
-// Parse the doc to extract both the header and bod
-TEIreader.prototype._parse = function(){
-    let reading_tag = false, tag="", header=true;
-
-    this.body_ = '';
-
-    for(let i =0; i<this.doc.length; i++){
-        if(this.doc[i] == '<'){
-            reading_tag = true;
-            tag="";
-        }else if(reading_tag === true && this.doc[i] == '>'){
-            if(tag.includes('/teiHeader')){
-                header = false;
-                this.header_ += '>';
-                reading_tag = false;
-                // Just count \r caracters
-                //this.headerOffset_ = this.header_.replace(/\r/gm,"").length+1
-                // Count \r too
-                this.headerOffset_ = i+1
-                continue;
-            }
-            reading_tag = false;
-        }
-
-        if(reading_tag===true)
-            tag+=this.doc[i];
-        
-        if(header===true)
-            this.header_+=this.doc[i];
-        else
-            this.body_+=this.doc[i];
-   
-    }
-
-    this.parsed =true;
-    return this;
-}
-
-module.exports = {
-    fileChange
-};
+module.exports = { fileChange };

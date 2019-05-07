@@ -219,9 +219,6 @@ source="incompleteness" cert="high"></span>
       <div id="desc" class="row"></div>
   </div>
   <section id="editor">
-      <page size="A4">
-
-      </page>
   </section>
      <div id="close-reading-widget"></div>
 </div>

@@ -58,7 +58,7 @@ def build_fuzzy_query(qs, pid):
                         "multi_match": {
                             "query": qs,
                             "fields": ["_all"],
-                            "fuzziness": "AUTO"
+                            "fuzziness": "50"
                         }
                     },
                     {

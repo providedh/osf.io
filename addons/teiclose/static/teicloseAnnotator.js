@@ -108,34 +108,27 @@ function getUserSelection(model) {
         end_content = contentsFromRange($('#editor page')[0], 0, selection_range.endContainer,selection_range.endOffset);
 
     for(empty_tag of model.TEIemptyTags){
-        console.log(model.expandedEmptyTag(empty_tag), empty_tag);
         start_content = start_content.replace(model.expandedEmptyTag(empty_tag), empty_tag);
         end_content = end_content.replace(model.expandedEmptyTag(empty_tag), empty_tag);
     }
 
-    console.log('replaced')
-    console.log(model.TEIbody)
-    console.log(end_content)
-    console.log(model.TEIheaderLength)
-
-    const abs_positions = {
-        start: 0,
-        end: 0
-    };
+    const positions = [];
 
     for(let i=0; i<start_content.length; i++){
         if(model.TEIbody[i]!=start_content[i]){
-            abs_positions.end = model.TEIheaderLength + i + 1;
+            positions.push(model.TEIheaderLength + i + 1);
             break;
         }
     }
 
     for(let i=0; i<end_content.length; i++){
         if(model.TEIbody[i]!=end_content[i]){
-            abs_positions.start = model.TEIheaderLength + i;
+            positions.push(model.TEIheaderLength + i);
             break;
         }
     }
+
+    const abs_positions = {start: Math.min(...positions), end: Math.max(...positions)};
 
     return {text:text, range:selection_range, abs_positions:abs_positions};
 }
@@ -370,9 +363,6 @@ Model.prototype.loadTEI = function(method, file){
 
             body.setAttribute('size', 'A4');
             $('#editor').append(body);
-
-            
-            console.log(body, this.TEIemptyTags)
            
             updateStatistics();
         }));

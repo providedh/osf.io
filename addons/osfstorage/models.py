@@ -355,6 +355,7 @@ class OsfStorageFile(OsfStorageFileNode, File):
         from website.search import search
 
         search.update_file(self, delete=True)
+        search.update_entities(self, delete=True)
         return super(OsfStorageFile, self).delete(user, parent, **kwargs)
 
     def save(self, skip_search=False):
@@ -363,6 +364,7 @@ class OsfStorageFile(OsfStorageFileNode, File):
         ret = super(OsfStorageFile, self).save()
         if not skip_search:
             search.update_file(self)
+        search.update_entities(self)
         return ret
 
 

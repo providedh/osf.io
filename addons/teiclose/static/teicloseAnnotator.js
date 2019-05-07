@@ -246,7 +246,7 @@ Timeline.prototype.handleTimestampMouseenter = function(evt,timestamp){
         xScale = d3.scaleLinear().domain([0,max]).range([0,6]);
 
     popup.innerHTML=`Timestamp : ${timestamp.timestamp}<br>
-      Author : _@email.com<br>
+      Contributor : ${timestamp.contributor}<br>
       <div class="content">
       <span>
         Imprecision uncertainty</br>

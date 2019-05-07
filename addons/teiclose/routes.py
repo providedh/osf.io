@@ -30,8 +30,8 @@ api_routes = {
     'rules': [
         Rule(
             [
-                '/project/<project_guid>/teiclose/<file_guid>/<file_ver>/certhistory/',
-                '/project/<project_guid>/node/<node_guid>/teiclose/<file_guid>/<file_ver>/certhistory/',
+                '/project/<project_guid>/teiclose/<file_guid>/<file_ver>/annotationhistory/',
+                '/project/<project_guid>/node/<node_guid>/teiclose/<file_guid>/<file_ver>/annotationhistory/',
             ],
             'get',
             views.teiclose_get_annotation_history,

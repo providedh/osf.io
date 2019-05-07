@@ -601,7 +601,7 @@ def update_entities(file_, index=None, delete=False):  # type: (OsfStorageFile, 
             client().delete(
                 index=index,
                 doc_type=entity['tag'],
-                id=entity['id'],
+                id="{}/{}#{}".format(entity['project'], entity['path'], entity['id']),
                 refresh=True,
                 ignore=[404]
             )

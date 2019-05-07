@@ -82,8 +82,8 @@ def teiclose_add_annotation(**kwargs):
         xml_text = load_file(project_guid, file_guid)
         current_session.data[file_key] = xml_text
 
-    xml_text = load_file(project_guid, file_guid)   # ONLY FOR TESTS - RELOAD DEFAULT FILE TO current_session.data
-    current_session.data[file_key] = xml_text       # ONLY FOR TESTS - RELOAD DEFAULT FILE TO current_session.data
+    # xml_text = load_file(project_guid, file_guid)   # ONLY FOR TESTS - RELOAD DEFAULT FILE TO current_session.data
+    # current_session.data[file_key] = xml_text       # ONLY FOR TESTS - RELOAD DEFAULT FILE TO current_session.data
 
     xml_text = current_session.data[file_key]
 
@@ -108,7 +108,7 @@ def teiclose_save_annotations(**kwargs):
     file_key = '_'.join(('xml_text', project_guid, file_guid))
 
     if file_key not in current_session.data:
-        return '', 404
+        return '', 304
 
     else:
         xml_text = current_session.data[file_key]

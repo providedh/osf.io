@@ -738,7 +738,6 @@ div#timeline div#popup{
     position:absolute;
     z-index:500;
     width:22em;
-    height:8em;
     line-height: 1.4em;
     padding: 7px;
     background-color:white;

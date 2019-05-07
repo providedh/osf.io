@@ -1,13 +1,6 @@
 require('./teicloseAnnotator.css');
+var d3 = require('d3');
 window.API_urls = require('./annotationApiUrlBuilder.js').API_urls;
-
-const versions = [
-    {"url": "","timestamp": "2018-4-1","imprecision": 0,"ignorance": 1,"credibility": 2,"incompleteness": 0 },
-    {"url": "","timestamp": "2018-6-12","imprecision": 0,"ignorance": 3,"credibility": 2,"incompleteness": 0},
-    {"url": "","timestamp": "2018-8-14","imprecision": 3,"ignorance": 5,"credibility": 2,"incompleteness": 0},
-    {"url": "","timestamp": "2018-8-22","imprecision": 3,"ignorance": 5,"credibility": 9,"incompleteness": 2},
-    {"url": "","timestamp": "2019-1-19","imprecision": 3,"ignorance": 6,"credibility": 14,"incompleteness": 5}
-];
 
 function saveVersion(){
     $.ajax({
@@ -40,7 +33,20 @@ function fileChange (file){
     const model = new Model();
     const panel = new Panel();
     const timeline = new Timeline();
-    timeline.renderTimestamps();
+    $.ajax({
+        url: API_urls.get_history_url(window.project, window.file, window.version),
+        type: 'GET',   //type is any HTTP method
+        data: {},      //Data as js object
+        success: function (history) {
+            console.log(history)
+            timeline.loadHistory(history);
+            timeline.renderTimestamps();
+            document.getElementById('toggle-timeline-details').addEventListener('click', ()=>timeline.toggleDetails())
+        },
+        error: function (a) {
+            console.log('save - error < ',API_urls.get_save_url(window.project, window.file),' < ',a)
+        }
+    })
 
     // Add event handlers for all the application
     document.getElementById("attribute-name-input").setAttribute('locus', 
@@ -60,7 +66,6 @@ function fileChange (file){
     document.getElementById('editor').onmouseup = 
       document.getElementById('editor').onselectionchange = ()=>panel.handleSelection(model);
 
-    document.getElementById('toggle-timeline-details').addEventListener('click', ()=>timeline.toggleDetails())
 
     for(let input of document.getElementById('display-options').getElementsByTagName('input'))
         input.addEventListener('click', handleDisplayChange);
@@ -136,56 +141,26 @@ function getUserSelection(model) {
 /* Timeline
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * */
-function timeScale(domain_, range_){
-    const domain = [
-        domain_.reduce((a,b)=>a<b?a:b),
-        domain_.reduce((a,b)=>a>b?a:b)
-    ], range = [
-        Math.min(...range_),
-        Math.max(...range_)
-    ];
-
-    return (t)=>{
-        //   24 hrs/day * 60 minutes/hour * 60 seconds/minute * 1000 msecs/second
-        const msDomainRange = domain[1]-domain[0];
-        const daysDomainRange = Math.floor(msDomainRange/(1000 * 60 * 60  * 24));
-
-        const msTrange = t - domain[0];
-        const daysTrange = Math.floor(msTrange/(1000 * 60 * 60  * 24));
-
-        return range[0] + (range[1]*(daysTrange/daysDomainRange));
-    }
-}
-
-function linearScale(domain_, range_){
-    const domain = [
-        Math.min(...domain_),
-        Math.max(...domain_)
-    ], range = [
-        Math.min(...range_),
-        Math.max(...range_)
-    ], domRange = domain[1] - domain[0];
-
-    return (x)=>{
-        return range[0] + (range[1]*((x-domain[0])/domRange));
-    }
-}
-
 function Timeline(){
     this.width = "21cm";
     this.displayDetails = false;
     this.detailsRendered = false;
+    this.history = [];
+}
+
+Timeline.prototype.loadHistory = function(history){
+    this.history = history;
 }
 
 Timeline.prototype.renderTimestamps = function(){
-    const timestamps = versions.map(x=>new Date(...x.timestamp.split('-'))),
-        firstDate = timestamps.reduce((a,b)=>a<b?a:b),
-        lastDate = timestamps.reduce((a,b)=>a>b?a:b),
-        xScale = timeScale([firstDate, lastDate],[0,20.8]);
+    const timestamps = this.history.map(x=>new Date(x.timestamp)),
+        xScale = d3.scaleTime()
+            .domain([Math.min(...timestamps),Math.max(...timestamps)])
+            .range([0,20.8]);
 
     let element = null, offset = 0;
-    for(let timestamp of versions){
-        offset = xScale(new Date(...timestamp.timestamp.split('-')));
+    for(let timestamp of this.history){
+        offset = xScale(new Date(timestamp.timestamp));
 
         element = document.createElement('div');
         element.setAttribute('class','timestamp');
@@ -202,30 +177,30 @@ Timeline.prototype.renderDetails = function(){
     $('div#time-bar canvas').attr('width', $('div#timeline hr').width());
     $('div#time-bar canvas').attr('height', $('div#timeline hr').height());
 
-    const timestamps = versions.map(x=>new Date(...x.timestamp.split('-'))),
-        firstDate = timestamps.reduce((a,b)=>a<b?a:b),
-        lastDate = timestamps.reduce((a,b)=>a>b?a:b),
+    const timestamps = this.history.map(x=>new Date(...x.timestamp.split('-'))),
         width = Math.trunc($('div#time-bar canvas').width()+1),
         height = Math.trunc($('div#time-bar canvas').height()-2),
-        max = Math.max(...Array.prototype.concat(...versions.map(x=>([
+        max = Math.max(...Array.prototype.concat(...this.history.map(x=>([
                 x.imprecision,
                 x.credibility,
                 x.ignorance,
                 x.incompleteness
             ])))),
-        yScale = linearScale([0,max],[0,height]),
-        xScale = timeScale([firstDate, lastDate],[0,width]),
+        yScale = d3.scaleLinear().domain([0,max]).range([0,height]),
+        xScale = d3.scaleTime()
+            .domain([Math.min(...timestamps),Math.max(...timestamps)])
+            .range([0,width]),
         canvasCtx = $('div#time-bar canvas')[0].getContext('2d');
 
     const renderVersions = (uncertainty, color)=>{
         canvasCtx.beginPath();
         canvasCtx.moveTo(0,height);
 
-        for(let d of versions){
-            canvasCtx.lineTo(xScale(new Date(...d.timestamp.split('-'))),height-yScale(d[uncertainty]));
+        for(let d of this.history){
+            canvasCtx.lineTo(xScale(new Date(d.timestamp)),height-yScale(d[uncertainty]));
         }
 
-        const last = versions[versions.length-1];
+        const last = this.history[this.history.length-1];
         canvasCtx.lineTo(xScale(new Date(...last.timestamp.split('-'))),height);
         canvasCtx.lineTo(0,height);
 
@@ -268,7 +243,7 @@ Timeline.prototype.handleTimestampMouseenter = function(evt,timestamp){
     const popup = document.getElementById('popup');
     const max = Math.max(timestamp.imprecision,timestamp.incompleteness,
         timestamp.ignorance,timestamp.credibility),
-        xScale = linearScale([0,max],[0,6]);
+        xScale = d3.scaleLinear().domain([0,max]).range([0,6]);
 
     popup.innerHTML=`Timestamp : ${timestamp.timestamp}<br>
       Author : _@email.com<br>

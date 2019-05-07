@@ -594,14 +594,14 @@ def update_entities(file_, index=None, delete=False):  # type: (OsfStorageFile, 
                 index=index,
                 doc_type=entity['tag'],
                 body=entity,
-                id="{}/{}#{}".format(entity['project'], entity['path'], entity['id']),
+                id="{}/{}#{}".format(entity['project'], entity['filepath'], entity['id']),
                 refresh=True
             )
         else:
             client().delete(
                 index=index,
                 doc_type=entity['tag'],
-                id="{}/{}#{}".format(entity['project'], entity['path'], entity['id']),
+                id="{}/{}#{}".format(entity['project'], entity['filepath'], entity['id']),
                 refresh=True,
                 ignore=[404]
             )

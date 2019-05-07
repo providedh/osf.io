@@ -584,7 +584,7 @@ def parse_entities(file_):  # type: (OsfStorageFile) -> list
 @requires_search
 def update_entities(file_, index=None, delete=False):  # type: (OsfStorageFile, str, bool) -> None
     index = index or settings.ELASTIC_ENTITES_INDEX
-    delete = delete or not file_.name or not file_.node.is_public or file_.node.is_deleted or file_.node.archiving
+    delete = delete or not file_.name or file_.node.is_deleted or file_.node.archiving
 
     entities = parse_entities(file_)
 

@@ -405,10 +405,10 @@ class Annotator:
                 <surname>{2}</surname>
                 <email>{3}</email>
               </persName>
-              <profile>{4}</profile>
+              <link>{4}</link>
             </person>
         """.format(user_xml_id, annotator_data['forename'], annotator_data['surname'], annotator_data['email'],
-                   annotator_data['profile'])
+                   annotator_data['link'])
 
         annotator_xml = etree.fromstring(annotator)
 
@@ -422,7 +422,7 @@ class Annotator:
             'forename': osf_user.given_name,
             'surname': osf_user.family_name,
             'email': osf_user.username,
-            'profile': 'https://providedh.ehum.psnc.pl/' + user_guid + '/',
+            'link': 'https://providedh.ehum.psnc.pl/' + user_guid + '/',
         }
 
         return data
@@ -558,7 +558,7 @@ class Annotator:
                                 namespaces=NAMESPACES)
 
         if not class_code:
-            text_class = tree.xpath('//default:teiHeader/default:profileDesc/default:textClass', namespaces=NAMESPACES)
+            text_class = tree.xpath('//default:teiHeader/default:linkDesc/default:textClass', namespaces=NAMESPACES)
             class_code = etree.Element(default + 'classCode', scheme="http://providedh.eu/uncertainty/ns/1.0",
                                        nsmap=ns_map)
             text_class[0].append(class_code)

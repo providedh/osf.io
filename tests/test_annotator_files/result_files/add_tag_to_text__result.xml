@@ -47,7 +47,7 @@
               <surname>Kozak</surname>
               <email>mkozak@man.poznan.pl</email>
             </persName>
-            <profile>https://providedh.ehum.psnc.pl/ercfd/</profile>
+            <link>https://providedh.ehum.psnc.pl/ercfd/</link>
           </person>
           <person xml:id="personzuay9">
             <persName>
@@ -55,7 +55,7 @@
               <surname>Benito</surname>
               <email>abenito@usal.es</email>
             </persName>
-            <profile>https://providedh.ehum.psnc.pl/zuay9/</profile>
+            <link>https://providedh.ehum.psnc.pl/zuay9/</link>
           </person>
         </listPerson>
       </particDesc>

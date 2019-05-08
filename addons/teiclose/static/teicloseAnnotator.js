@@ -84,6 +84,7 @@ function setup(file){
     });
 
 
+
     // Add event handlers for all the application
     document.getElementById('saveFile').addEventListener('click', ()=>saveVersion());
     document.getElementById('openPanel').addEventListener('click', ()=>panel.show());

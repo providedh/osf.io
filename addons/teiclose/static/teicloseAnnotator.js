@@ -56,11 +56,17 @@ function fileChange (file){
     // Add event handlers for all the application
     document.getElementById("attribute-name-input").setAttribute('locus', 
         document.getElementById('locus').value);
+    const input = $('#asserted-value-input-options [locus='+document.getElementById('locus').value+']')[0];
+    $("#asserted-value-container").html(input.outerHTML);
+
     document.getElementById('locus').addEventListener('change', (evt)=>{
         if(evt.target.value == 'value')
             document.getElementById('value').value = document.getElementById('references').value;
         document.getElementById("attribute-name-input").setAttribute('locus', evt.target.value);
+        const input = $('#asserted-value-input-options [locus='+evt.target.value+']')[0];
+        $("#asserted-value-container").html(input.outerHTML);
     }, false);
+
 
     document.getElementById('saveFile').addEventListener('click', ()=>saveVersion());
     document.getElementById('openPanel').addEventListener('click', ()=>panel.show());

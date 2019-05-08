@@ -109,7 +109,11 @@
       </div>
     </div>
   </section>
-  <div id="stats"></div>
+  <div id="stats">
+    Total annotations : <span id="annotations"> </span> 
+    Total contributors : <span id="authors"> </span> 
+    Date of editing : <span id="date"> </span>
+  </div>
   <div class="legend" id="legend-right">
       <b>Annotation color scheme</b><br/>
       <span class="teiLegendElement" id="date">

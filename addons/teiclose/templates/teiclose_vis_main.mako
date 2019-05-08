@@ -102,7 +102,7 @@
       <div class="row">
         <span class="toolbar-control" id="">
           Previous value <a title="help : value" class='help'>?</a> <input type="text" name="" id="value" readonly> 
-          Proposed value <a title="help : proposed value" class='help'>?</a> <span id="asserted-value-container"></span> 
+          Asserted value <a title="help : asserted value" class='help'>?</a> <span id="asserted-value-container"></span> 
           Certainty <a title="help : certainty" class='help'>?</a> <select name="" id='cert'>
               <option value="unknown">Unknown</option>
               <option value="high">High</option>

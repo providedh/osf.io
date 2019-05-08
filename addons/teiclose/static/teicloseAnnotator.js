@@ -19,9 +19,12 @@ function saveVersion(){
 
 function updateStatistics(){
     const authors = Array.from($('certainty')).reduce((acd,c)=>acd.add(c.attributes['author'].value),new Set()).size;
-    $("div#stats").html(`Total annotations : <span>${$('certainty').length} </span> Total contributors : <span>${authors} </span>
-            Place : <span>Ireland </span>Date of creation : <span>None </span>`)
+    $("div#stats #annotations").html($('certainty').length);
+    $("div#stats #authors").html(authors);
+}
 
+function updateTimeStatistics(date){
+    $("div#stats #date").html(date.toDateString());
 }
 
 function fileChange (file){
@@ -39,9 +42,11 @@ function fileChange (file){
         data: {},      //Data as js object
         success: function (history) {
             console.log(history)
+            const currentDate = new Date(history[history.length-1].timestamp);
+            updateTimeStatistics(currentDate);
             timeline.loadHistory(history);
             timeline.renderTimestamps();
-            document.getElementById('toggle-timeline-details').addEventListener('click', ()=>timeline.toggleDetails())
+            document.getElementById('toggle-timeline-details').addEventListener('click', ()=>timeline.toggleDetails());
         },
         error: function (a) {
             console.log('save - error < ',API_urls.get_save_url(window.project, window.file),' < ',a)
@@ -75,6 +80,7 @@ function fileChange (file){
             annotation.addEventListener('mouseenter', (e)=>sidepanel.show(e));
             annotation.addEventListener('mouseleave', (e)=>sidepanel.hide(e));
         }
+        updateStatistics();
     });
 }
 
@@ -338,8 +344,6 @@ Model.prototype.loadTEI = function(method, file){
 
             body.setAttribute('size', 'A4');
             $('#editor').append(body);
-           
-            updateStatistics();
         }));
         resolve();
     });

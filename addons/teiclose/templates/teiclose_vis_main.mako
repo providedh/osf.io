@@ -60,6 +60,22 @@
       </div>
     </div>
   </section>
+  <section id="asserted-value-input-options">
+    <input locus="attribute" type="text" id="proposedValue">
+    <input locus="value" type="text" id="proposedValue">
+    <select locus="name" id='proposedValue'>
+        <option value="date">Date</option>
+        <option value="event">Event</option>
+        <option value="geolocation">geolocation</option>
+        <option value="name">Name</option>
+        <option value="occupation">Occupation</option>
+        <option value="object">Object</option>
+        <option value="org">Org</option>
+        <option value="person">Person</option>
+        <option value="country">country</option>
+        <option value="time">Time</option>
+    </select>
+  </section>
   <section id="top-panel" class="panel">
     <div class="toolbarRow" id="toolbar-controls">
       <div class="row">
@@ -74,9 +90,9 @@
               </select>
               Locus <a title="help : locus" class='help'>?</a>
               <select name="" id='locus'>
+                  <option value="value">Value</option>
                   <option value="name">Name</option>
                   <option value="attribute">Attribute</option>
-                  <option value="value">Value</option>
               </select>
               <span id="attribute-name-input"> 
                 Attribute name <a title="help : attribute name" class='help'>?</a> <input type="text" id="attributeName"> 
@@ -86,7 +102,7 @@
       <div class="row">
         <span class="toolbar-control" id="">
           Previous value <a title="help : value" class='help'>?</a> <input type="text" name="" id="value" readonly> 
-          Proposed value <a title="help : proposed value" class='help'>?</a> <input type="text" id="proposedValue"> 
+          Proposed value <a title="help : proposed value" class='help'>?</a> <span id="asserted-value-container"></span> 
           Certainty <a title="help : certainty" class='help'>?</a> <select name="" id='cert'>
               <option value="unknown">Unknown</option>
               <option value="high">High</option>

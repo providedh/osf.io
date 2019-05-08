@@ -271,6 +271,8 @@ section#toolbar, section#top-panel{
     font-size: 13px;
 }
 
+section#asserted-value-input-options{display: none;}
+
 @-moz-document url-prefix() {
     section#top-panel{
         z-index: 200;

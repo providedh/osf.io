@@ -174,12 +174,15 @@ Timeline.prototype.renderTimestamps = function(){
     for(let timestamp of this.history){
         offset = xScale(new Date(timestamp.timestamp));
 
-        element = document.createElement('div');
+        element = document.createElement('a');
         element.setAttribute('class','timestamp');
+        element.setAttribute('href',timestamp.url);
         element.style = `left:${offset}cm`;
 
         element.addEventListener('mouseenter', (evt)=>this.handleTimestampMouseenter(evt,timestamp));
         element.addEventListener('mouseleave', (evt)=>this.handleTimestampMouseleave(evt,timestamp));
+
+
 
         document.getElementById('time-bar').appendChild(element);
     }

@@ -728,7 +728,7 @@ div#timeline div#time-bar hr{
     width: 21cm;
 }
 
-div#timeline div.timestamp{
+div#timeline a.timestamp{
     position:absolute;
     width:8px;
     height:8px;
@@ -781,6 +781,6 @@ div#timeline div#time-bar canvas{
 .timelineExpanded section#toolbar div#timeline{height:5em;}
 .timelineExpanded section#toolbar div#timeline hr{height:4em;}
 .timelineExpanded div#timeline div#time-bar canvas{display:block}
-.timelineExpanded div#timeline div#time-bar div.timestamp{
+.timelineExpanded div#timeline div#time-bar a.timestamp{
     top:4em;
 }

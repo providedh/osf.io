@@ -82,11 +82,11 @@
         <span class="toolbar-control" id="">
               Source of uncertainty <a title="help : source of the uncertainty" class='help'>?</a> 
               <select name="" id='source'>
-                  <option class="incompleteness" value="incompleteness">Incompleteness</option>
-                  <option class="imprecision" value="imprecision">Imprecision</option>
-                  <option class="variation" value="variation">Variation</option>
-                  <option class="credibility" value="credibility">Credibility</option>
                   <option class="ignorance" value="ignorance">Ignorance</option>
+                  <option class="credibility" value="credibility">Credibility</option>
+                  <option class="imprecision" value="imprecision">Imprecision</option>
+                  <option class="incompleteness" value="incompleteness">Incompleteness</option>
+                  <option class="variation" value="variation">Variation</option>
               </select>
               Locus <a title="help : locus" class='help'>?</a>
               <select name="" id='locus'>
@@ -206,6 +206,17 @@ source="incompleteness" cert="medium"></span>
         <span class="color uncertainty" author="me" title="high"
 source="incompleteness" cert="high"></span> 
         Incompleteness
+      </span>
+      <span class="teiLegendElement">
+        <span class="color uncertainty" author="me" title="unknown"
+source="variation" cert="unknown"></span>
+        <span class="color uncertainty" author="me" title="low"
+source="variation" cert="low"></span> 
+        <span class="color uncertainty" author="me" title="medium"
+source="variation" cert="medium"></span> 
+        <span class="color uncertainty" author="me" title="high"
+source="variation" cert="high"></span> 
+        Variation
       </span>
   </div>
   <div  id="side-panel">

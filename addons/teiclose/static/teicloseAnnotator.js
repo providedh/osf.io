@@ -16,7 +16,6 @@ function saveVersion(){
     })
 }
 
-
 function updateStatistics(){
     const authors = Array.from($('certainty')).reduce((acd,c)=>acd.add(c.attributes['author'].value),new Set()).size;
     $("div#stats #annotations").html($('certainty').length);
@@ -25,6 +24,14 @@ function updateStatistics(){
 
 function updateTimeStatistics(date){
     $("div#stats #date").html(date.toDateString());
+}
+
+function getAnnotatorAttribute(attr){
+    return document.getElementById('annotator-root').attributes[attr].value;
+}
+
+function setAnnotatorAttribute(attr, val){
+    return document.getElementById('annotator-root').setAttribute(attr, val);
 }
 
 function fileChange (file){
@@ -41,7 +48,6 @@ function fileChange (file){
         type: 'GET',   //type is any HTTP method
         data: {},      //Data as js object
         success: function (history) {
-            console.log(history)
             const currentDate = new Date(history[history.length-1].timestamp);
             updateTimeStatistics(currentDate);
             timeline.loadHistory(history);
@@ -53,21 +59,28 @@ function fileChange (file){
         }
     })
 
-    // Add event handlers for all the application
-    document.getElementById("attribute-name-input").setAttribute('locus', 
-        document.getElementById('locus').value);
-    const input = $('#asserted-value-input-options [locus='+document.getElementById('locus').value+']')[0];
-    $("#asserted-value-container").html(input.outerHTML);
+    // Setup the annotation controls based on the locus
+    const annotationType = $("#annotation-options input:checked")[0].value,
+        locus = document.getElementById('locus').value;
+
+    console.log($("#annotation-options input"))
+    setAnnotatorAttribute('locus', locus);
+    setAnnotatorAttribute('annotation', annotationType);
+
+    panel.updateControls(annotationType, locus);
 
     document.getElementById('locus').addEventListener('change', (evt)=>{
-        if(evt.target.value == 'value')
-            document.getElementById('value').value = document.getElementById('references').value;
-        document.getElementById("attribute-name-input").setAttribute('locus', evt.target.value);
-        const input = $('#asserted-value-input-options [locus='+evt.target.value+']')[0];
-        $("#asserted-value-container").html(input.outerHTML);
+        setAnnotatorAttribute('locus', evt.target.value);
+        panel.updateControls(getAnnotatorAttribute('annotation'), evt.target.value);
     }, false);
 
+    for(let input of document.getElementById('annotation-options').getElementsByTagName('input'))
+        input.addEventListener('click', (e)=>{
+        setAnnotatorAttribute('annotation', e.target.value);
+        panel.updateControls(e.target.value, getAnnotatorAttribute('locus'));
+    });
 
+    // Add event handlers for all the application
     document.getElementById('saveFile').addEventListener('click', ()=>saveVersion());
     document.getElementById('openPanel').addEventListener('click', ()=>panel.show());
     document.getElementById('closePanel').addEventListener('click', ()=>panel.hide());
@@ -467,7 +480,7 @@ Panel.prototype.handleSelection = function(model){
     console.log(selection);
     if(selection.range.collapsed === false){
 
-        $('section#top-panel #references').val(selection.text);   
+        $('section#top-panel #value').val(selection.text);   
 
         this.range = selection.range;
         this.selection = selection;
@@ -480,7 +493,7 @@ Panel.prototype.createAnnotation = function(){
     Array.from($("#top-panel input"), x=>x).map(i=>values[i.id]=i.value);
     Array.from($("#top-panel select"), x=>x).map(i=>values[i.id]=i.value);
     if(values['locus'] == 'value')
-        values['value'] = values['references'];
+        values['value'] = values['value'];
 
     const annotation = (new Annotation()).fromDict(values);
     
@@ -488,16 +501,31 @@ Panel.prototype.createAnnotation = function(){
     const data = {
             "start_pos": this.selection.abs_positions.start,
             "end_pos": this.selection.abs_positions.end,
+            "asserted_value": "",
+            "source": "",
+            "locus": "",
+            "certainty": "",
+            "asserted_value": "",
+            "description": "",
+            "tag": values.proposedValue
+        }
+
+    if(document.getElementById('annotator-root').attributes['annotator'] == 'uncertainty'){
+        Object.assign(data, {
             "source": values.source,
             "locus": values.locus,
             "certainty": values.cert,
             "asserted_value": values.proposedValue,
             "description": values.desc,
-            "tag": "xxx"
-        }
+            "tag": ""
+        });
 
-    if(values['locus'] == 'attribute')
-        data['attribute'] = values['attributeName'];
+        if(values['locus'] == 'attribute')
+            data['attribute'] = values.attributeName;
+
+        if(values['locus'] == 'name')
+            data['tag'] = values.proposedValue;
+    }
     
     $.ajax({
         url: url,
@@ -512,6 +540,15 @@ Panel.prototype.createAnnotation = function(){
             console.log('annotate - error < ', data);
         }
     })
+}
+
+Panel.prototype.updateControls = function(annotationType, locus){
+    if(annotationType == 'tei')
+        $("#asserted-value-container").html($('#asserted-value-input-options [locus=name]')[0].outerHTML);
+    else{
+        const input = $('#asserted-value-input-options [locus='+locus+']')[0];
+        $("#asserted-value-container").html(input.outerHTML);
+    }
 }
 
 /* Annotation

@@ -79,6 +79,12 @@
   <section id="top-panel" class="panel">
     <div class="toolbarRow" id="toolbar-controls">
       <div class="row">
+        <span class="toolbar-control" id="annotation-options">
+          <input type="radio" name="annotation" value="uncertainty" checked> Annotate Uncertainty
+          <input type="radio" name="annotation" value="tei"> Annotate TEI
+        </span>
+      </div>
+      <div class="row">
         <span class="toolbar-control" id="">
               Source of uncertainty <a title="help : source of the uncertainty" class='help'>?</a> 
               <select name="" id='source'>
@@ -101,14 +107,16 @@
       </div>
       <div class="row">
         <span class="toolbar-control" id="">
-          Previous value <a title="help : value" class='help'>?</a> <input type="text" name="" id="value" readonly> 
+          Text selection <a title="help : text selection" class='help'>?</a> <input type="text" name="" id="value" readonly> 
           Asserted value <a title="help : asserted value" class='help'>?</a> <span id="asserted-value-container"></span> 
+          <span id="cert-input">
           Certainty <a title="help : certainty" class='help'>?</a> <select name="" id='cert'>
               <option value="unknown">Unknown</option>
               <option value="high">High</option>
               <option value="medium">Medium</option>
               <option value="low">Low</option>
               </select>
+          </span>    
         </span>
         <span>
           <button id="create-annotation">Create</button>

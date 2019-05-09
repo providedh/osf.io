@@ -66,7 +66,7 @@ section#toolbar{
 section#top-panel{
     padding-top:6px;
     z-index: 200;
-    height: 7.5em;
+    height: 10.5em;
     top: 16em;
     display: none;
 }
@@ -76,7 +76,7 @@ div#annotator-root.topPanelDisplayed section#top-panel{
 }
 
 div#annotator-root.topPanelDisplayed div#stats{
-    padding-top:17em;
+    padding-top:19.5em;
 }
 
 div#annotator-root.timelineExpanded div#stats{
@@ -84,21 +84,43 @@ div#annotator-root.timelineExpanded div#stats{
 }
 
 div#annotator-root.topPanelDisplayed.timelineExpanded div#stats{
-    padding-top:21em;
+    padding-top:23em;
 }
 
 div#annotator-root.topPanelDisplayed.timelineExpanded section#top-panel{
-    margin-top: 4em;
+    margin-top: 8em;
 }
+
+div#annotator-root[annotation=tei].topPanelDisplayed div#stats{
+    padding-top:15em;
+}
+
+div#annotator-root[annotation=tei].topPanelDisplayed.timelineExpanded div#stats{
+    padding-top:18em;
+}
+
+div#annotator-root[annotation=tei] #top-panel #toolbar-controls .row:nth-of-type(2){display:none;}
+div#annotator-root[annotation=tei] #top-panel #toolbar-controls .row:nth-of-type(4){display:none;}
+div#annotator-root[annotation=tei] #top-panel #toolbar-controls span#cert-input {display:none;}
 
 div.toolbarRow div.row.closePanel{
     justify-content: center;
+    position: absolute;
+    bottom: 0;
+    align-self: center;
+}
+
+div.toolbarRow#toolbar-controls{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 div.toolbarRow{
     width: 21cm;
     height: 4em;
     display: inline-block;
+    position: relative;
 }
 
 div.toolbarRow div.row{
@@ -116,7 +138,7 @@ section.panel form, section.panel input{
 }
 
 section.panel #attribute-name-input{display: none;}
-section.panel #attribute-name-input[locus='attribute']{display: inline-block;}
+div#annotator-root[locus='attribute'] section.panel #attribute-name-input{display: inline-block;}
 
 input#type{
     width:2.6em;
@@ -276,10 +298,14 @@ section#asserted-value-input-options{display: none;}
 @-moz-document url-prefix() {
     section#top-panel{
         z-index: 200;
-        height: 10.5em;
+        height: 13.5em;
         padding-top: 0.5em;
         top: 150px;
         align-items: center;
+    }
+
+    div#annotator-root[annotation=tei] section#top-panel{
+        height: 7.5em;
     }
 
     section#toolbar, section#top-panel{
@@ -315,6 +341,7 @@ div#annotator-root[color-annotations="false"] place,
 div#annotator-root[color-annotations="false"] country,
 div#annotator-root[color-annotations="false"] location,
 div#annotator-root[color-annotations="false"] geogName,
+div#annotator-root[color-annotations="false"] geolocation,
 div#annotator-root[color-annotations="false"] person,
 div#annotator-root[color-annotations="false"] name,
 div#annotator-root[color-annotations="false"] persName,
@@ -335,6 +362,7 @@ div#annotator-root[display-annotations="true"] place::before,
 div#annotator-root[display-annotations="true"] country::before,
 div#annotator-root[display-annotations="true"] location::before,
 div#annotator-root[display-annotations="true"] geogName::before,
+div#annotator-root[display-annotations="true"] geolocation::before,
 div#annotator-root[display-annotations="true"] person::before,
 div#annotator-root[display-annotations="true"] name::before,
 div#annotator-root[display-annotations="true"] persName::before,
@@ -362,6 +390,7 @@ div#annotator-root[display-annotations="false"] place,
 div#annotator-root[display-annotations="false"] country,
 div#annotator-root[display-annotations="false"] location,
 div#annotator-root[display-annotations="false"] geogName,
+div#annotator-root[display-annotations="false"] geolocation,
 div#annotator-root[display-annotations="false"] person,
 div#annotator-root[display-annotations="false"] name,
 div#annotator-root[display-annotations="false"] persName,
@@ -377,8 +406,8 @@ div#annotator-root[display-annotations="false"] rolename
     border-color: white !important;
 } 
 
-placeName,place,country,location,geogName,person,
-name,persName,occupation,event,object,date,time,
+placeName,place,country,location,geogName,geolocation,
+person, name,persName,occupation,event,object,date,time,
 org,pb,rolename {
     min-height: 4px;
     margin: 2px 0;
@@ -419,15 +448,19 @@ span.teiLegendElement#place span.color{
 }
 
 location,
+geolocation,
 geogName{
     border-color: #b2df8a;
 }
+
 div#annotator-root[display-annotations="true"] location::before,
+div#annotator-root[display-annotations="true"] geolocation::before,
 div#annotator-root[display-annotations="true"] geogName::before{
     content:"\f5a0";
 }
 
 div#annotator-root[color-annotations="true"] location::before,
+div#annotator-root[color-annotations="true"] geolocation::before,
 div#annotator-root[color-annotations="true"] geogName::before{
     color: #b2df8a;
 }

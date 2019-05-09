@@ -32,6 +32,7 @@ class Annotator:
 
     def add_annotation(self, xml, json, annotator_guid):
         self.__xml = xml
+        self.__json = json
         self.__annotator_xml_id = 'person' + annotator_guid
 
         self.__json = self.__validate_request(json)
@@ -101,9 +102,6 @@ class Annotator:
 
     def __get_data_from_xml(self):
         self.__start, self.__end = self.__get_fragment_position(self.__xml, self.__json)
-
-        if self.__start >= self.__end:
-            raise ValueError("Start position of annotating fragment is greater or equal to end position.")
 
         self.__start, self.__end = self.__get_fragment_position_with_adhering_tags(self.__xml, self.__start, self.__end)
         self.__fragment_to_annotate = self.__xml[self.__start: self.__end]
@@ -622,7 +620,7 @@ class Annotator:
                                 namespaces=NAMESPACES)
 
         if not class_code:
-            text_class = tree.xpath('//default:teiHeader/default:linkDesc/default:textClass', namespaces=NAMESPACES)
+            text_class = tree.xpath('//default:teiHeader/default:profileDesc/default:textClass', namespaces=NAMESPACES)
             class_code = etree.Element(default + 'classCode', scheme="http://providedh.eu/uncertainty/ns/1.0",
                                        nsmap=ns_map)
             text_class[0].append(class_code)

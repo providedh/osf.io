@@ -264,10 +264,11 @@ Timeline.prototype.handleTimestampMouseenter = function(evt,timestamp){
       Contributor : ${timestamp.contributor}<br>
       <div class="content">
       <span>
-        Imprecision uncertainty</br>
-        Incompleteness uncertainty</br>
-        Credibility uncertainty</br>
-        Ignorance uncertainty
+        Imprecision uncertainty<br/>
+        Incompleteness uncertainty<br/>
+        Credibility uncertainty<br/>
+        Ignorance uncertainty<br/>
+        Variation uncertainty
       </span>
       <span>
         <span class="color uncertainty" author="me" title="high"
@@ -278,12 +279,15 @@ Timeline.prototype.handleTimestampMouseenter = function(evt,timestamp){
             style="width:${xScale(timestamp.ignorance)}em;" source="ignorance" cert="high"></span></br>
         <span class="color uncertainty" author="me" title="high" 
             style="width:${xScale(timestamp.credibility)}em;" source="credibility" cert="high"></span></br>
+        <span class="color variation" author="me" title="high" 
+            style="width:${xScale(timestamp.variation)}em;" source="variation" cert="high"></span></br>
       </span>
       <span>
         ${timestamp.imprecision}</br> 
         ${timestamp.incompleteness}</br> 
         ${timestamp.ignorance}</br> 
-        ${timestamp.credibility}
+        ${timestamp.credibility}</br>
+        ${timestamp.variation}
       </span>
       </div>
     `;

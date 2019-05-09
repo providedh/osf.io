@@ -103,8 +103,26 @@ class Annotator:
     def __get_data_from_xml(self):
         self.__start, self.__end = self.__get_fragment_position(self.__xml, self.__json)
 
-        if self.__start >= self.__end:
+        if position_v1:
+            start, end = self.__get_fragment_position(self.__xml, json)
+
+            validated_json.update({'start_pos': start, 'end_pos': end})
+        else:
+            validated_json.update({'start_pos': json['start_pos'], 'end_pos': json['end_pos']})
+
+        if validated_json['start_pos'] >= validated_json['end_pos']:
             raise ValueError("Start position of annotating fragment is greater or equal to end position.")
+
+        for param in optional_params:
+            if param in json:
+                validated_json.update({param: json[param]})
+            else:
+                validated_json.update({param: ''})
+
+        return validated_json
+
+    def __get_data_from_xml(self):
+        self.__start, self.__end = self.__get_fragment_position(self.__xml, self.__json)
 
         self.__start, self.__end = self.__get_fragment_position_with_adhering_tags(self.__xml, self.__start, self.__end)
         self.__fragment_to_annotate = self.__xml[self.__start: self.__end]

@@ -32,8 +32,9 @@ class Annotator:
 
     def add_annotation(self, xml, json, annotator_guid):
         self.__xml = xml
-        self.__json = json
         self.__annotator_xml_id = 'person' + annotator_guid
+
+        self.__json = self.__validate_request(json)
 
         self.__get_data_from_xml()
         self.__prepare_xml_parts()
@@ -41,11 +42,65 @@ class Annotator:
 
         return self.__xml_annotated
 
+    def __validate_request(self, json):
+        position_params_v1 = [
+            'start_row',
+            'start_col',
+            'end_row',
+            'end_col',
+        ]
+
+        position_params_v2 = [
+            'start_pos',
+            'end_pos',
+        ]
+
+        optional_params = [
+            'source',
+            'locus',
+            'certainty',
+            'asserted_value',
+            'description',
+            'tag'
+        ]
+
+        position_v1 = all(elements in json.keys() for elements in position_params_v1)
+        position_v2 = all(elements in json.keys() for elements in position_params_v2)
+
+        if not (position_v1 or position_v2):
+            raise ValueError("No position arguments in request.")
+
+        positions_to_check = position_params_v1 if position_v1 else position_params_v2
+
+        for position in positions_to_check:
+            if not isinstance(json[position], (int, long)):
+                raise TypeError("Value of '{}' is not a integer.".format(position))
+
+            if json[position] <= 0:
+                raise ValueError("Value of '{}' must be a positive number.".format(position))
+
+        validated_json = {}
+
+        if position_v1:
+            start, end = self.__get_fragment_position(self.__xml, json)
+
+            validated_json.update({'start_pos': start, 'end_pos': end})
+        else:
+            validated_json.update({'start_pos': json['start_pos'], 'end_pos': json['end_pos']})
+
+        if validated_json['start_pos'] >= validated_json['end_pos']:
+            raise ValueError("Start position of annotating fragment is greater or equal to end position.")
+
+        for param in optional_params:
+            if param in json:
+                validated_json.update({param: json[param]})
+            else:
+                validated_json.update({param: ''})
+
+        return validated_json
+
     def __get_data_from_xml(self):
         self.__start, self.__end = self.__get_fragment_position(self.__xml, self.__json)
-
-        if self.__start >= self.__end:
-            raise ValueError("Start position of annotating fragment is greater or equal to end position.")
 
         self.__start, self.__end = self.__get_fragment_position_with_adhering_tags(self.__xml, self.__start, self.__end)
         self.__fragment_to_annotate = self.__xml[self.__start: self.__end]
@@ -308,6 +363,9 @@ class Annotator:
             self.__certainty_to_add = self.__create_certainty_description(self.__json, annotation_ids,
                                                                           self.__annotator_xml_id)
             self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
+
+        else:
+            raise ValueError("There is no method to modify xml according to given parameters.")
 
     def __add_tag(self, annotated_fragment, tag, uncertainty=None):
         if not tag:

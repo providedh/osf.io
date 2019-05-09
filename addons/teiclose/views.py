@@ -90,8 +90,13 @@ def teiclose_add_annotation(**kwargs):
     try:
         annotator = Annotator()
         xml_text = annotator.add_annotation(xml_text, request_json, user_guid)
-    except ValueError:
-        return '', 400
+    except (ValueError, TypeError) as error:
+        response = {
+            'status': 400,
+            'message': error.message
+        }
+
+        return json.dumps(response), 400
 
     current_session.data[file_key] = xml_text
     current_session.save()
@@ -117,6 +122,7 @@ def teiclose_save_annotations(**kwargs):
         save_file(project_guid, file_guid, xml_text)
 
         current_session.data.pop(file_key, None)
+        current_session.save()
 
         return '', 200
 

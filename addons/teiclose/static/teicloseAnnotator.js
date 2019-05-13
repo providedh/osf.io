@@ -98,7 +98,7 @@ function setup(file){
 }
 
 function fileChange (model, sidepanel, file){
-    model.loadTEI(model.fromText, file).then(()=>{
+    model.loadTEI(file).then(()=>{
         for(annotation of Array.from(document.getElementsByTagName('certainty'))){
             annotation.addEventListener('mouseenter', (e)=>sidepanel.show(e));
             annotation.addEventListener('mouseleave', (e)=>sidepanel.hide(e));
@@ -109,20 +109,6 @@ function fileChange (model, sidepanel, file){
 
 function handleDisplayChange(evt){ 
     $('div#annotator-root').attr(evt.target.id,evt.target.checked);
-}
-
-function contentsFromRange(startNode, startOffset, endNode, endOffset){
-    const selection = document.createRange();
-
-    selection.setStart(startNode, startOffset);
-    selection.setEnd(endNode,endOffset);
-
-    const fragment = selection.cloneRange().cloneContents(),
-        container = document.createElement('div');
-
-    container.appendChild(fragment);
-
-    return container.innerHTML;
 }
 
 function getUserSelection(model) {
@@ -164,6 +150,7 @@ function getUserSelection(model) {
 
     const abs_positions = {start: Math.min(...positions), end: Math.max(...positions)};
 
+    console.log(start_content, model.TEItext)
     console.log({
         off: model.TEIheaderLength,
         abs_positions: abs_positions,
@@ -326,34 +313,7 @@ Timeline.prototype.handleTimestampMouseleave = function(evt){
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * */
 
-function Model(){
-    this.TEIheader=null;
-}
-
-Model.prototype.fromTag = function(f){
-    return new Promise((resolve)=>{
-        resolve({content:document.getElementsByTagName('teifile')[0].textContent, 
-            name:document.getElementsByTagName('teifile')[0].attributes['filename'].value});
-    });
-}
-
-Model.prototype.fromLocalFile = function(f){
-    return new Promise((resolve)=>{
-        let r = new FileReader();
-        r.onload = function(e) {
-            let contents = e.target.result;
-            resolve({content:contents, name:f.name});
-        };
-
-        r.readAsText(f);
-    });
-}
-
-Model.prototype.fromText = function(text){
-    return new Promise((resolve)=>{
-        resolve({'content': text});
-    });
-}
+function Model(){}
 
 Model.prototype.expandedEmptyTag = function(empty_tag){
     const tag_name = empty_tag.slice(1).split(' ')[0],
@@ -363,26 +323,22 @@ Model.prototype.expandedEmptyTag = function(empty_tag){
     return opening_tag + closing_tag;
 }
 
-Model.prototype.loadTEI = function(method, file){
-    const self_ = this;
-
+Model.prototype.loadTEI = function(xml){
     return new Promise((resolve, error)=>{
-        method(file).then((xml=>{
-            const sanityzed_xml = xml.content.replace(/\r/gm," "),
-                body_replaced_xml = sanityzed_xml.replace(/body>/gm, 'page>'), // Creating a separate div would alter structure
-                parsed_tei = $.parseXML(body_replaced_xml).documentElement,
-                body = parsed_tei.getElementsByTagName('page')[0];
-            
-            this.TEItext = xml.content;
-            this.TEIbody = body.innerHTML.replace(' xmlns="http://www.tei-c.org/ns/1.0"', '');
-            this.TEIemptyTags = body.innerHTML.match(/<[^>]+\/>/gm);
-            this.TEIheaderLength = xml.content.indexOf('<body>') + '<body>'.length;
+        const sanityzed_xml = xml.replace(/\r/gm," "),
+            body_replaced_xml = sanityzed_xml.replace(/body>/gm, 'page>'), // Creating a separate div would alter structure
+            parsed_tei = $.parseXML(body_replaced_xml).documentElement,
+            body = parsed_tei.getElementsByTagName('page')[0];
+        
+        this.TEItext = xml;
+        this.TEIbody = body.innerHTML.replace(' xmlns="http://www.tei-c.org/ns/1.0"', '');
+        this.TEIemptyTags = body.innerHTML.match(/<[^>]+\/>/gm);
+        this.TEIheaderLength = xml.indexOf('<body>') + '<body>'.length;
 
-            
-            body.setAttribute('size', 'A4');
-            $('#editor').html('');
-            $('#editor').append(body);
-        }));
+        body.setAttribute('size', 'A4');
+        $('#editor').html('');
+        $('#editor').append(body);
+
         resolve();
     });
 }

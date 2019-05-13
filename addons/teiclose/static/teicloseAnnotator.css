@@ -103,6 +103,10 @@ div#annotator-root[annotation=tei] section#top-panel{
         height: 6.5em;
 }
 
+div#annotator-root[annotation=tei] section#top-panel{
+        height: 6.5em;
+}
+
 div#annotator-root[annotation=tei] #top-panel #toolbar-controls .row:nth-of-type(2){display:none;}
 div#annotator-root[annotation=tei] #top-panel #toolbar-controls .row:nth-of-type(4){display:none;}
 div#annotator-root[annotation=tei] #top-panel #toolbar-controls span#cert-input {display:none;}

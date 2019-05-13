@@ -169,6 +169,12 @@ function getUserSelection(model) {
 
     const abs_positions = {start: Math.min(...positions), end: Math.max(...positions)};
 
+    console.log({
+        off: model.TEIheaderLength,
+        abs_positions: abs_positions,
+        tei: model.TEItext
+    })
+
     return {text:text, range:selection_range, abs_positions:abs_positions};
 }
 

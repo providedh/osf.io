@@ -111,6 +111,20 @@ function handleDisplayChange(evt){
     $('div#annotator-root').attr(evt.target.id,evt.target.checked);
 }
 
+function contentsFromRange(startNode, startOffset, endNode, endOffset){
+    const selection = document.createRange();
+
+    selection.setStart(startNode, startOffset);
+    selection.setEnd(endNode,endOffset);
+
+    const fragment = selection.cloneRange().cloneContents(),
+        container = document.createElement('div');
+
+    container.appendChild(fragment);
+
+    return container.innerHTML;
+}
+
 function getUserSelection(model) {
 
     let text = "", selection, node = null;

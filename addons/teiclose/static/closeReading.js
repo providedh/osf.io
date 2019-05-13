@@ -52,7 +52,7 @@ var CloseReadingWidget = {
                 self.content = response.responseText;
                 m.endComputation();
 
-                annotator.fileChange(self.content);
+                annotator.setup(self.content);
             });
 
             response.fail(function (xhr, textStatus, error) {

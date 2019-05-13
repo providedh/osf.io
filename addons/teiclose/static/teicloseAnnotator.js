@@ -34,7 +34,7 @@ function setAnnotatorAttribute(attr, val){
     return document.getElementById('annotator-root').setAttribute(attr, val);
 }
 
-function fileChange (file){
+function setup(file){
     window.project = window.location.pathname.split('/')[1]
     window.file = window.location.pathname.split('/')[3]
     window.version = window.location.pathname.split('/')[4]
@@ -43,6 +43,7 @@ function fileChange (file){
     const model = new Model();
     const panel = new Panel();
     const timeline = new Timeline();
+
     $.ajax({
         url: API_urls.get_history_url(window.project, window.file, window.version),
         type: 'GET',   //type is any HTTP method
@@ -63,7 +64,6 @@ function fileChange (file){
     const annotationType = $("#annotation-options input:checked")[0].value,
         locus = document.getElementById('locus').value;
 
-    console.log($("#annotation-options input"))
     setAnnotatorAttribute('locus', locus);
     setAnnotatorAttribute('annotation', annotationType);
 
@@ -90,10 +90,14 @@ function fileChange (file){
     document.getElementById('editor').onmouseup = 
       document.getElementById('editor').onselectionchange = ()=>panel.handleSelection(model);
 
-
     for(let input of document.getElementById('display-options').getElementsByTagName('input'))
         input.addEventListener('click', handleDisplayChange);
 
+    fileChange(model, sidepanel, file);
+    window.updateFile = (f)=>fileChange(model, sidepanel, f); 
+}
+
+function fileChange (model, sidepanel, file){
     model.loadTEI(model.fromText, file).then(()=>{
         for(annotation of Array.from(document.getElementsByTagName('certainty'))){
             annotation.addEventListener('mouseenter', (e)=>sidepanel.show(e));
@@ -159,6 +163,12 @@ function getUserSelection(model) {
     }
 
     const abs_positions = {start: Math.min(...positions), end: Math.max(...positions)};
+
+    console.log({
+        off: model.TEIheaderLength,
+        abs_positions: abs_positions,
+        tei: model.TEItext
+    })
 
     return {text:text, range:selection_range, abs_positions:abs_positions};
 }
@@ -363,12 +373,14 @@ Model.prototype.loadTEI = function(method, file){
                 parsed_tei = $.parseXML(body_replaced_xml).documentElement,
                 body = parsed_tei.getElementsByTagName('page')[0];
             
-            this.TEItext = parsed_tei.outerHTML.replace(' xmlns="http://www.tei-c.org/ns/1.0"', '');
+            this.TEItext = xml.content;
             this.TEIbody = body.innerHTML.replace(' xmlns="http://www.tei-c.org/ns/1.0"', '');
             this.TEIemptyTags = body.innerHTML.match(/<[^>]+\/>/gm);
-            this.TEIheaderLength = parsed_tei.outerHTML.indexOf('<page>');
+            this.TEIheaderLength = xml.content.indexOf('<body>') + '<body>'.length;
 
+            
             body.setAttribute('size', 'A4');
+            $('#editor').html('');
             $('#editor').append(body);
         }));
         resolve();
@@ -533,8 +545,9 @@ Panel.prototype.createAnnotation = function(){
         contentType: "application/json; charset=UTF-8",
         data: JSON.stringify(data),      //Data as js object
         scriptCharset: 'utf8',
-        success: function (a) {
-            console.log('annotate - success < ',a)
+        success: function (xml) {
+            console.log('annotate - success < ',xml);
+            window.updateFile(xml)
         },
         error: function(data) {
             console.log('annotate - error < ', data);
@@ -617,4 +630,4 @@ Annotation.prototype.renderHTML = function(){
 // Returns the TEI XML code for such annotation
 Annotation.prototype.renderTEI = function(){}
 
-module.exports = { fileChange };
+module.exports = { setup };

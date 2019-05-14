@@ -150,7 +150,7 @@ function getUserSelection(model) {
 
     for(let i=0; i<start_content.length; i++){
         if(model.TEIbody[i]!=start_content[i]){
-            positions.push(model.TEIheaderLength + i + 1);
+            positions.push(model.TEIheaderLength + i);
             break;
         }
     }
@@ -163,13 +163,6 @@ function getUserSelection(model) {
     }
 
     const abs_positions = {start: Math.min(...positions), end: Math.max(...positions)};
-
-    console.log(start_content, model.TEItext)
-    console.log({
-        off: model.TEIheaderLength,
-        abs_positions: abs_positions,
-        tei: model.TEItext
-    })
 
     return {text:text, range:selection_range, abs_positions:abs_positions};
 }

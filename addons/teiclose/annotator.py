@@ -103,27 +103,6 @@ class Annotator:
     def __get_data_from_xml(self):
         self.__start, self.__end = self.__get_fragment_position(self.__xml, self.__json)
 
-        if position_v1:
-            start, end = self.__get_fragment_position(self.__xml, json)
-
-            validated_json.update({'start_pos': start, 'end_pos': end})
-        else:
-            validated_json.update({'start_pos': json['start_pos'], 'end_pos': json['end_pos']})
-
-        if validated_json['start_pos'] >= validated_json['end_pos']:
-            raise ValueError("Start position of annotating fragment is greater or equal to end position.")
-
-        for param in optional_params:
-            if param in json:
-                validated_json.update({param: json[param]})
-            else:
-                validated_json.update({param: ''})
-
-        return validated_json
-
-    def __get_data_from_xml(self):
-        self.__start, self.__end = self.__get_fragment_position(self.__xml, self.__json)
-
         self.__start, self.__end = self.__get_fragment_position_with_adhering_tags(self.__xml, self.__start, self.__end)
         self.__fragment_to_annotate = self.__xml[self.__start: self.__end]
 
@@ -533,8 +512,6 @@ class Annotator:
         else:
             text_to_parse = text
 
-        text_to_parse = text_to_parse.encode('utf-8')
-
         tree = etree.fromstring(text_to_parse)
 
         list_person = tree.xpath('//default:teiHeader'
@@ -594,8 +571,6 @@ class Annotator:
         else:
             text_to_parse = text
 
-        text_to_parse = text_to_parse.encode('utf-8')
-
         tree = etree.fromstring(text_to_parse)
 
         certainties = tree.xpath('//default:teiHeader'
@@ -645,7 +620,7 @@ class Annotator:
                                 namespaces=NAMESPACES)
 
         if not class_code:
-            text_class = tree.xpath('//default:teiHeader/default:profileDesc/default:textClass', namespaces=NAMESPACES)
+            text_class = tree.xpath('//default:teiHeader/default:linkDesc/default:textClass', namespaces=NAMESPACES)
             class_code = etree.Element(default + 'classCode', scheme="http://providedh.eu/uncertainty/ns/1.0",
                                        nsmap=ns_map)
             text_class[0].append(class_code)
@@ -659,13 +634,13 @@ class Annotator:
         else:
             text_to_parse = text
 
-        text_to_parse = text_to_parse.encode('utf-8')
-
-        #parser = etree.XMLParser(remove_blank_text=True)
-        tree = etree.fromstring(text_to_parse)
-        pretty_xml = etree.tostring(tree, pretty_print=True, encoding="utf-8").decode('utf-8')
+        parser = etree.XMLParser(remove_blank_text=True)
+        tree = etree.fromstring(text_to_parse, parser=parser)
+        pretty_xml_etree = etree.tostring(tree, pretty_print=True, encoding="utf-8")
 
         if 'encoding=' in new_xml_in_lines[0]:
-            pretty_xml = '\n'.join((new_xml_in_lines[0], pretty_xml))
+            pretty_xml_etree = '\n'.join((new_xml_in_lines[0], pretty_xml_etree))
+        else:
+            pretty_xml_etree = pretty_xml_etree
 
-        return pretty_xml
+        return pretty_xml_etree

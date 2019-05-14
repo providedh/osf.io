@@ -492,7 +492,7 @@ Panel.prototype.createAnnotation = function(){
             "tag": values.proposedValue
         }
 
-    if(document.getElementById('annotator-root').attributes['annotator'] == 'uncertainty'){
+    if(getAnnotatorAttribute('annotation') == 'uncertainty'){
         Object.assign(data, {
             "source": values.source,
             "locus": values.locus,

@@ -576,7 +576,7 @@ def update_user(user, index=None):
 
 def parse_entities(file_):  # type: (OsfStorageFile) -> list
     if file_.entities is not None:
-        entities = json.loads(file_.entities)
+        entities = json.loads(file_.entities, encoding='utf-8')
         return entities
     return []
 
@@ -594,14 +594,14 @@ def update_entities(file_, index=None, delete=False):  # type: (OsfStorageFile, 
                 index=index,
                 doc_type=entity['tag'],
                 body=entity,
-                id="{}/{}#{}".format(entity['project'], entity['filepath'], entity['id']),
+                id=u"{}/{}#{}".format(entity['project'], entity['filepath'], entity['id']),
                 refresh=True
             )
         else:
             client().delete(
                 index=index,
                 doc_type=entity['tag'],
-                id="{}/{}#{}".format(entity['project'], entity['filepath'], entity['id']),
+                id=u"{}/{}#{}".format(entity['project'], entity['filepath'], entity['id']),
                 refresh=True,
                 ignore=[404]
             )

@@ -635,11 +635,9 @@ class Annotator:
 
         parser = etree.XMLParser(remove_blank_text=True)
         tree = etree.fromstring(text_to_parse, parser=parser)
-        pretty_xml_etree = etree.tostring(tree, pretty_print=True, encoding="utf-8")
+        pretty_xml = etree.tostring(tree, pretty_print=True, encoding="utf-8").decode('utf-8')
 
         if 'encoding=' in new_xml_in_lines[0]:
-            pretty_xml_etree = '\n'.join((new_xml_in_lines[0], pretty_xml_etree))
-        else:
-            pretty_xml_etree = pretty_xml_etree
+            pretty_xml = '\n'.join((new_xml_in_lines[0], pretty_xml))
 
-        return pretty_xml_etree
+        return pretty_xml

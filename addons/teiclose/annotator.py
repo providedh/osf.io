@@ -512,6 +512,8 @@ class Annotator:
         else:
             text_to_parse = text
 
+        text_to_parse = text_to_parse.encode('utf-8')
+
         tree = etree.fromstring(text_to_parse)
 
         list_person = tree.xpath('//default:teiHeader'
@@ -570,6 +572,8 @@ class Annotator:
             text_to_parse = '\n'.join(new_xml_in_lines[1:])
         else:
             text_to_parse = text
+
+        text_to_parse = text_to_parse.encode('utf-8')
 
         tree = etree.fromstring(text_to_parse)
 
@@ -634,8 +638,10 @@ class Annotator:
         else:
             text_to_parse = text
 
-        parser = etree.XMLParser(remove_blank_text=True)
-        tree = etree.fromstring(text_to_parse, parser=parser)
+        text_to_parse = text_to_parse.encode('utf-8')
+
+        #parser = etree.XMLParser(remove_blank_text=True)
+        tree = etree.fromstring(text_to_parse)
         pretty_xml = etree.tostring(tree, pretty_print=True, encoding="utf-8").decode('utf-8')
 
         if 'encoding=' in new_xml_in_lines[0]:

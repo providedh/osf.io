@@ -32,7 +32,6 @@ class Annotator:
 
     def add_annotation(self, xml, json, annotator_guid):
         self.__xml = xml
-        self.__json = json
         self.__annotator_xml_id = 'person' + annotator_guid
 
         self.__json = self.__validate_request(json)

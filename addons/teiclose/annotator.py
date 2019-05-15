@@ -211,7 +211,7 @@ class Annotator:
         else:
             text_to_parse = text
 
-        tree = etree.fromstring(text_to_parse.encode('utf-8'))
+        tree = etree.fromstring(text_to_parse)
 
         certainties = tree.xpath('//default:teiHeader'
                                  '//default:classCode[@scheme="http://providedh.eu/uncertainty/ns/1.0"]'
@@ -227,7 +227,7 @@ class Annotator:
         else:
             text_to_parse = text
 
-        tree = etree.fromstring(text_to_parse.encode('utf-8'))
+        tree = etree.fromstring(text_to_parse)
 
         annotators = tree.xpath('//default:teiHeader'
                                 '//default:listPerson[@type="PROVIDEDH Annotators"]'
@@ -512,7 +512,7 @@ class Annotator:
         else:
             text_to_parse = text
 
-        tree = etree.fromstring(text_to_parse.encode('utf-8'))
+        tree = etree.fromstring(text_to_parse)
 
         list_person = tree.xpath('//default:teiHeader'
                                  '//default:listPerson[@type="PROVIDEDH Annotators"]', namespaces=NAMESPACES)
@@ -524,7 +524,7 @@ class Annotator:
 
         list_person[0].append(annotator)
 
-        text = etree.tostring(tree, encoding="utf-8")
+        text = etree.tostring(tree, encoding="utf-8").decode("utf-8")
 
         if 'encoding=' in new_xml_in_lines[0]:
             text_to_return = '\n'.join((new_xml_in_lines[0], text))

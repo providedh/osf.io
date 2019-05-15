@@ -152,14 +152,14 @@ class Annotator:
             text_before = string[:start]
             text_after = string[end:]
 
-            if re.search(r'<[^<>]*?>\s*?$', text_before):
-                match = re.search(r'<[^<>]*?>\s*?$', text_before)
+            match = re.search(r'<[^<>]*?>\s*?$', text_before)
+            if match is not None:
                 tag_open = match.group()
                 start -= len(tag_open)
                 found_tag = True
 
-            if re.search(r'^\s*?<[^<>]*?>', text_after):
-                match = re.search(r'^\s*?<[^<>]*?>', text_after)
+            match = match = re.search(r'^\s*?<[^<>]*?>', text_after)
+            if match is not None:
                 tag_close = match.group()
                 end += len(tag_close)
                 found_tag = True
@@ -437,7 +437,8 @@ class Annotator:
 
         certainty = '<certainty source="{0}" locus="{1}" cert="{2}" resp="#{3}" target="{4}"/>'.format(json['source'],
                                                                                                        json['locus'],
-                                                                                                       json['certainty'],
+                                                                                                       json[
+                                                                                                           'certainty'],
                                                                                                        user_uuid,
                                                                                                        target)
 
@@ -553,11 +554,13 @@ class Annotator:
             partic_desc = etree.Element(prefix + 'particDesc', nsmap=ns_map)
             profile_desc[0].append(partic_desc)
 
-        list_person = tree.xpath('//default:teiHeader/default:profileDesc/default:particDesc/default:listPerson[@type="PROVIDEDH Annotators"]',
-                                 namespaces=NAMESPACES)
+        list_person = tree.xpath(
+            '//default:teiHeader/default:profileDesc/default:particDesc/default:listPerson[@type="PROVIDEDH Annotators"]',
+            namespaces=NAMESPACES)
 
         if not list_person:
-            partic_desc = tree.xpath('//default:teiHeader/default:profileDesc/default:particDesc', namespaces=NAMESPACES)
+            partic_desc = tree.xpath('//default:teiHeader/default:profileDesc/default:particDesc',
+                                     namespaces=NAMESPACES)
             list_person = etree.Element(prefix + 'listPerson', type="PROVIDEDH Annotators", nsmap=ns_map)
             partic_desc[0].append(list_person)
 
@@ -615,8 +618,9 @@ class Annotator:
             text_class = etree.Element(default + 'textClass', nsmap=ns_map)
             profile_desc[0].append(text_class)
 
-        class_code = tree.xpath('//default:teiHeader/default:profileDesc/default:textClass/default:classCode[@scheme="http://providedh.eu/uncertainty/ns/1.0"]',
-                                namespaces=NAMESPACES)
+        class_code = tree.xpath(
+            '//default:teiHeader/default:profileDesc/default:textClass/default:classCode[@scheme="http://providedh.eu/uncertainty/ns/1.0"]',
+            namespaces=NAMESPACES)
 
         if not class_code:
             text_class = tree.xpath('//default:teiHeader/default:profileDesc/default:textClass', namespaces=NAMESPACES)

@@ -573,7 +573,7 @@ class Annotator:
         else:
             text_to_parse = text
 
-        tree = etree.fromstring(text_to_parse.encode('utf-8'))
+        tree = etree.fromstring(text_to_parse)
 
         certainties = tree.xpath('//default:teiHeader'
                                  '//default:classCode[@scheme="http://providedh.eu/uncertainty/ns/1.0"]',

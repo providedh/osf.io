@@ -248,10 +248,8 @@ source="variation" cert="high"></span>
                 <span title="High"></span>
             </div>
             <span id="cert"></span></br>
-          <b>Author :</b><span id="author"></span></br>
           <b>Value :</b><span id="value"></span></br>
-          <b>Proposed value :</b><span id="proposedvalue"></span></br>
-          <span id="lev-dist"></span>
+          <b>Proposed value :</b><span id="assertedValue"></span></br>
           <span id="vis"></span>
           </div>
       </div>

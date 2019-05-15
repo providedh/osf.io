@@ -5,6 +5,10 @@ div#annotator-root {
   margin: 0;
 }
 
+.side-panel.row .row {
+    padding-left: 0 !important;
+}
+
 div#annotator-root #openPanel{
     display: block;
 }

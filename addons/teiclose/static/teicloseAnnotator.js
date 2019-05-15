@@ -103,11 +103,27 @@ function setup(file){
 }
 
 function fileChange (model, sidepanel, file){
-    model.loadTEI(file).then(()=>{
+    model.loadTEI(file).then((tei_doc)=>{
+        console.log({d3:d3})
         for(annotation of Array.from(document.getElementsByTagName('certainty'))){
-            annotation.addEventListener('mouseenter', (e)=>sidepanel.show(e));
-            annotation.addEventListener('mouseleave', (e)=>sidepanel.hide(e));
+            annotation.addEventListener('mouseenter', (e)=>sidepanel.show(e.target,e.target.textContent, annotation.parentNode.nodeName));
+            annotation.addEventListener('mouseleave', (e)=>sidepanel.hide());
         }
+
+        const page = document.getElementsByTagName('page')[0];
+        let identifyed = Array.from(page.getElementsByTagName('*'), a=>a.attributes['xml:id']?a:null);
+        identifyed = identifyed.filter(x=>x!=null);
+        const identifyed_map = Object.fromEntries(identifyed.map(x=>[x.attributes['xml:id'].value, x]));
+
+        Array.from(tei_doc.getElementsByTagName('teiHeader')[0].getElementsByTagName('certainty'), a=>a)
+            .forEach(annotation=>{
+                const node = identifyed_map[annotation.attributes['target'].value.slice(1)];
+                
+                if(node != undefined){
+                    node.addEventListener('mouseenter', ()=>sidepanel.show(annotation,node.textContent, node.nodeName));
+                    node.addEventListener('mouseleave', ()=>sidepanel.hide());       
+                }
+            });
         updateStatistics();
     });
 }
@@ -168,12 +184,6 @@ function getUserSelection(model) {
     }
 
     const abs_positions = {start: Math.min(...positions), end: Math.max(...positions)};
-
-    console.log({
-        off: model.TEIheaderLength,
-        abs_positions: abs_positions,
-        tei: model.TEItext
-    })
 
     return {text:text, range:selection_range, abs_positions:abs_positions};
 }
@@ -357,7 +367,7 @@ Model.prototype.loadTEI = function(xml){
         $('#editor').html('');
         $('#editor').append(body);
 
-        resolve();
+        resolve(parsed_tei);
     });
 }
 
@@ -366,51 +376,43 @@ Model.prototype.loadTEI = function(xml){
  * */
 function SidePanel(){
     this.shown = false;
-    this.attributes = ['locus','cert','author','value','proposedvalue','source'];
+    this.attributes = ['locus','cert','assertedValue','source'];
 }
-SidePanel.prototype.show = function(evt){
+SidePanel.prototype.show = function(annotation, value, id){
+    console.log(annotation)
     for(let attr of this.attributes){
-        $('div#side-panel span#'+attr).text(' '+evt.target.attributes[attr].value);
+        $('div#side-panel span#'+attr).text(' '+annotation.attributes[attr].value);
     }
 
-    $('div#side-panel div#text').text(evt.target.innerText);
-    let id = evt.target.childNodes[0].nodeName.toLowerCase();
-    id = id!='#text'?id:evt.target.parentNode.nodeName.toLowerCase();
+    $('div#side-panel div#text').text(value);
+    
     $('div#side-panel span.teiLegendElement').attr('id',id);
     $('div#side-panel span#parent').text(id);
 
-    const text = document.getElementById('editor').innerText,
-        exp = new RegExp(evt.target.innerText,'g'),
+    const text = document.getElementById('editor').textContent,
+        exp = new RegExp(value,'g'),
         result = text.match(exp);
     $('div#side-panel div#tag-stats #times').text(' '+(result?result.length-1:0));
 
-    const tags = Array.from(document.getElementsByTagName('certainty')).reduce((acd,c)=>acd+(c.innerText.includes(evt.target.innerText)?1:0),0)
+    const tags = Array.from(document.getElementsByTagName('certainty')).reduce((acd,c)=>acd+(c.textContent.includes(value)?1:0),0)
     $('div#side-panel div#tag-stats #tags').text(' '+(tags-1));
-    $('div#side-panel div#certrange').attr('class',evt.target.attributes['cert'].value)
-    $('div#annotator-root').toggleClass('sidePanelDisplayed');
+    $('div#side-panel div#certrange').attr('class',annotation.attributes['cert'].value)
 
-    const desc = Array.from(evt.target.childNodes).filter(x=>x.nodeName.toLowerCase()=="desc");
+    $('div#side-panel #value').text(value);
+
+    const desc = Array.from(annotation.childNodes).filter(x=>x.nodeName.toLowerCase()=="desc");
     if(desc && desc.length >= 1)
         $('div#side-panel div#desc').html(
-            `<b>Description :</b><br/><span>${desc[0].innerText}</span>`);
+            `<b>Description :</b><br/><span>${desc[0].textContent}</span>`);
     else
         $('div#side-panel div#desc').html('');
 
-    if(evt.target.attributes['locus'].value == 'value'){
-        $('div#side-panel span#lev-dist')
-            .html(`<b>Levenshtein distance with propposed value : </b>${this.levenshtein(
-                evt.target.attributes['value'].value,      
-                evt.target.attributes['proposedvalue'].value
-        )}`);
-    }else
-        $('div#side-panel span#lev-dist').html('');
-
-
+    $('div#annotator-root').addClass('sidePanelDisplayed');
     this.shown = true;
 }
 
 SidePanel.prototype.hide = function(){
-    $('div#annotator-root').toggleClass('sidePanelDisplayed');
+    $('div#annotator-root').removeClass('sidePanelDisplayed');
     this.shown = false;
 }
 

@@ -615,7 +615,7 @@ class Annotator:
             text_class = etree.Element(default + 'textClass', nsmap=ns_map)
             profile_desc[0].append(text_class)
 
-        class_code = tree.xpath('//default:teiHeader/default:profileDesc/default:textClass/default:classCode',
+        class_code = tree.xpath('//default:teiHeader/default:profileDesc/default:textClass/default:classCode[@scheme="http://providedh.eu/uncertainty/ns/1.0"]',
                                 namespaces=NAMESPACES)
 
         if not class_code:

@@ -158,7 +158,7 @@ class Annotator:
                 start -= len(tag_open)
                 found_tag = True
 
-            match = match = re.search(r'^\s*?<[^<>]*?>', text_after)
+            match = re.search(r'^\s*?<[^<>]*?>', text_after)
             if match is not None:
                 tag_close = match.group()
                 end += len(tag_close)

@@ -619,7 +619,7 @@ class Annotator:
                                 namespaces=NAMESPACES)
 
         if not class_code:
-            text_class = tree.xpath('//default:teiHeader/default:linkDesc/default:textClass', namespaces=NAMESPACES)
+            text_class = tree.xpath('//default:teiHeader/default:profileDesc/default:textClass', namespaces=NAMESPACES)
             class_code = etree.Element(default + 'classCode', scheme="http://providedh.eu/uncertainty/ns/1.0",
                                        nsmap=ns_map)
             text_class[0].append(class_code)

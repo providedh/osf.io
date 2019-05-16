@@ -80,6 +80,7 @@ def teiclose_add_annotation(**kwargs):
 
     if file_key not in current_session.data:
         xml_text = load_file(project_guid, file_guid)
+        xml_text = xml_text.decode('utf-8')
         current_session.data[file_key] = xml_text
 
     # xml_text = load_file(project_guid, file_guid)   # ONLY FOR TESTS - RELOAD DEFAULT FILE TO current_session.data

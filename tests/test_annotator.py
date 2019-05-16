@@ -19,7 +19,7 @@ def fake_get_user_data_from_db(guid):
         'forename': 'Tony',
         'surname': 'Stark',
         'email': 'tony.stark@zmyslonymail.com',
-        'profile': 'https://providedh.ehum.psnc.pl/abcde/',
+        'link': 'https://providedh.ehum.psnc.pl/abcde/',
     }
 
     return data
@@ -30,8 +30,8 @@ def fake_get_user_data_from_db(guid):
 class TestAnnotator:
     def test_add_annotation__add_tag_to_text__string(self, mock_get_user_data_from_db):
         json = {
-            "start_pos": 8440,
-            "end_pos": 8445,
+            "start_pos": 8427,
+            "end_pos": 8432,
             "source": "",
             "locus": "",
             "certainty": "",
@@ -50,8 +50,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -79,8 +83,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -108,8 +116,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -137,8 +149,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -166,8 +182,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -195,8 +215,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -224,8 +248,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -253,8 +281,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -282,8 +314,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -311,8 +347,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -340,8 +380,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -369,8 +413,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -398,8 +446,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -427,8 +479,12 @@ class TestAnnotator:
 
         user_guid = 'abcde'
 
+        input_text = input_text.decode('utf-8')
+
         annotator = Annotator()
         result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
 
         assert result == expected_text
 
@@ -503,6 +559,8 @@ class TestAnnotator:
         input_text = read_file(input_file_path)
 
         user_guid = 'abcde'
+
+        input_text = input_text.decode('utf-8')
 
         with assert_raises(error_type) as error:
             annotator = Annotator()

@@ -433,14 +433,13 @@ class Annotator:
         return new_annotated_fragment, annotation_ids
 
     def __create_certainty_description(self, json, annotation_ids, user_uuid):
-        target = " ".join(annotation_ids)
+        target = u" ".join(annotation_ids)
 
-        certainty = '<certainty source="{0}" locus="{1}" cert="{2}" resp="#{3}" target="{4}"/>'.format(json['source'],
-                                                                                                       json['locus'],
-                                                                                                       json[
-                                                                                                           'certainty'],
-                                                                                                       user_uuid,
-                                                                                                       target)
+        certainty = u'<certainty source="{0}" locus="{1}" cert="{2}" resp="#{3}" target="{4}"/>'.format(json['source'],
+                                                                                                        json['locus'],
+                                                                                                        json['certainty'],
+                                                                                                        user_uuid,
+                                                                                                        target)
 
         new_element = etree.fromstring(certainty)
 
@@ -460,7 +459,7 @@ class Annotator:
 
         annotator_data = self.__get_user_data_from_db(user_guid)
 
-        annotator = """
+        annotator = u"""
             <person xml:id="{0}">
               <persName>
                 <forename>{1}</forename>
@@ -490,15 +489,24 @@ class Annotator:
         return data
 
     def __create_new_xml(self):
-        self.__xml_annotated = self.__add_tagged_string(self.__xml, self.__fragment_annotated)
+        xml_annotated = self.__add_tagged_string(self.__xml, self.__fragment_annotated)
+
+        xml_annotated_in_lines = xml_annotated.splitlines()
+        if 'encoding=' in xml_annotated_in_lines[0]:
+            xml_annotated = '\n'.join(xml_annotated_in_lines[1:])
 
         if self.__annotator_xml_id not in self.__annotators_xml_ids and self.__annotator_to_add is not None:
-            self.__xml_annotated = self.__add_annotator(self.__xml_annotated, self.__annotator_to_add)
+            xml_annotated = self.__add_annotator(xml_annotated, self.__annotator_to_add)
 
         if self.__certainty_to_add is not None:
-            self.__xml_annotated = self.__add_certainty(self.__xml_annotated, self.__certainty_to_add)
+            xml_annotated = self.__add_certainty(xml_annotated, self.__certainty_to_add)
 
-        self.__xml_annotated = self.__reformat_xml(self.__xml_annotated)
+        xml_annotated = self.__reformat_xml(xml_annotated)
+
+        if 'encoding=' in xml_annotated_in_lines[0]:
+            xml_annotated = '\n'.join((xml_annotated_in_lines[0], xml_annotated))
+
+        self.__xml_annotated = xml_annotated
 
     def __add_tagged_string(self, xml, new_fragment):
         new_xml = xml[:self.__start] + new_fragment + xml[self.__end:]
@@ -506,13 +514,7 @@ class Annotator:
         return new_xml
 
     def __add_annotator(self, text, annotator):
-        new_xml_in_lines = text.splitlines()
-        if 'encoding=' in new_xml_in_lines[0]:
-            text_to_parse = '\n'.join(new_xml_in_lines[1:])
-        else:
-            text_to_parse = text
-
-        tree = etree.fromstring(text_to_parse)
+        tree = etree.fromstring(text)
 
         list_person = tree.xpath('//default:teiHeader'
                                  '//default:listPerson[@type="PROVIDEDH Annotators"]', namespaces=NAMESPACES)
@@ -524,14 +526,9 @@ class Annotator:
 
         list_person[0].append(annotator)
 
-        text = etree.tostring(tree, encoding="utf-8").decode("utf-8")
+        text = etree.tounicode(tree)
 
-        if 'encoding=' in new_xml_in_lines[0]:
-            text_to_return = '\n'.join((new_xml_in_lines[0], text))
-        else:
-            text_to_return = text
-
-        return text_to_return
+        return text
 
     def __create_list_person(self, tree):
         prefix = "{%s}" % NAMESPACES['default']
@@ -567,13 +564,7 @@ class Annotator:
         return tree
 
     def __add_certainty(self, text, certainty):
-        new_xml_in_lines = text.splitlines()
-        if 'encoding=' in new_xml_in_lines[0]:
-            text_to_parse = '\n'.join(new_xml_in_lines[1:])
-        else:
-            text_to_parse = text
-
-        tree = etree.fromstring(text_to_parse)
+        tree = etree.fromstring(text)
 
         certainties = tree.xpath('//default:teiHeader'
                                  '//default:classCode[@scheme="http://providedh.eu/uncertainty/ns/1.0"]',
@@ -587,14 +578,9 @@ class Annotator:
 
         certainties[0].append(certainty)
 
-        text = etree.tostring(tree, encoding="utf-8").decode('utf-8')
+        text = etree.tounicode(tree)
 
-        if 'encoding=' in new_xml_in_lines[0]:
-            text_to_return = '\n'.join((new_xml_in_lines[0], text))
-        else:
-            text_to_return = text
-
-        return text_to_return
+        return text
 
     def __create_annotation_list(self, tree):
         default_namespace = NAMESPACES['default']
@@ -631,19 +617,8 @@ class Annotator:
         return tree
 
     def __reformat_xml(self, text):
-        new_xml_in_lines = text.splitlines()
-        if 'encoding=' in new_xml_in_lines[0]:
-            text_to_parse = '\n'.join(new_xml_in_lines[1:])
-        else:
-            text_to_parse = text
-
         parser = etree.XMLParser(remove_blank_text=True)
-        tree = etree.fromstring(text_to_parse, parser=parser)
-        pretty_xml = etree.tostring(tree, pretty_print=True, encoding="utf-8").decode('utf-8')
-
-        if 'encoding=' in new_xml_in_lines[0]:
-            pretty_xml = '\n'.join((new_xml_in_lines[0], pretty_xml))
-        else:
-            pretty_xml = pretty_xml
+        tree = etree.fromstring(text, parser=parser)
+        pretty_xml = etree.tounicode(tree, pretty_print=True)
 
         return pretty_xml

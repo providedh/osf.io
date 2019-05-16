@@ -478,7 +478,7 @@ class Annotator:
 
     def __get_user_data_from_db(self, user_guid):
         guid = Guid.objects.get(_id=user_guid)
-        osf_user = OSFUser.objects.get(id=guid.id)
+        osf_user = OSFUser.objects.get(id=guid.object_id)
 
         data = {
             'forename': osf_user.given_name,

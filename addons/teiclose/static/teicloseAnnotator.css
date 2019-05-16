@@ -655,11 +655,6 @@ desc{
     background-color: rgba(174,210,21,0.5);
 }
 
-.variation{
-    /*Red*/
-    background-color: rgba(175,9,0,0.5);
-}
-
 [source="ignorance"]{
     /*Blue*/
     background-color: #17558D;
@@ -678,11 +673,6 @@ desc{
 [source="incompleteness"]{
     /*Green*/
     background-color: #AED215;
-}
-
-[source="variation"]{
-    /*Red*/
-    background-color: #AF0900;
 }
 
 [source="ignorance"][cert="medium"]{
@@ -705,11 +695,6 @@ desc{
     background-color: #C6E73D;
 }
 
-[source="variation"][cert="medium"]{
-    /*Red*/
-    background-color: #E00B00;
-}
-
 [source="ignorance"][cert="low"]{
     /*Blue*/
     background-color: #4D80AE;
@@ -730,11 +715,6 @@ desc{
     background-color: #DAF662;
 }
 
-[source="variation"][cert="low"]{
-    /*Red*/
-    background-color: #FA4A41;
-}
-
 [source="ignorance"][cert="unknown"]{
     /*Blue*/
     background-color: #79A4CB;
@@ -753,11 +733,6 @@ desc{
 [source="incompleteness"][cert="unknown"]{
     /*Green*/
     background-color: #E4F98C;
-}
-
-[source="variation"][cert="unknown"]{
-    /*Red*/
-    background-color: #FA9B96;
 }
 
 certainty{

@@ -50,7 +50,7 @@
       </particDesc>
       <textClass>
         <classCode scheme="http://providedh.eu/uncertainty/ns/1.0">
-          <certainty source="ignorance" locus="value" cert="high" resp="#personabcde" target="#ab000001"/>
+          <certainty category="ignorance" locus="value" cert="high" resp="#personabcde" target="#ab000001"/>
         </classCode>
       </textClass>
     </profileDesc>

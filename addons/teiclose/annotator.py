@@ -56,7 +56,7 @@ class Annotator:
         ]
 
         optional_params = [
-            'source',
+            'category',
             'locus',
             'certainty',
             'asserted_value',
@@ -307,7 +307,7 @@ class Annotator:
                                                                        self.__json['certainty'])
 
             new_json = {
-                "source": "imprecision",
+                "category": "imprecision",
                 "locus": "name",
                 "certainty": "unknown",
                 "asserted_value": "",
@@ -435,7 +435,7 @@ class Annotator:
     def __create_certainty_description(self, json, annotation_ids, user_uuid):
         target = u" ".join(annotation_ids)
 
-        certainty = u'<certainty source="{0}" locus="{1}" cert="{2}" resp="#{3}" target="{4}"/>'.format(json['source'],
+        certainty = u'<certainty category="{0}" locus="{1}" cert="{2}" resp="#{3}" target="{4}"/>'.format(json['category'],
                                                                                                         json['locus'],
                                                                                                         json['certainty'],
                                                                                                         user_uuid,

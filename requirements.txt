@@ -105,3 +105,6 @@ enum34==1.1.6
 
 # identifiers
 datacite==1.0.1
+
+# test parameterizing requirement
+parameterized==0.7.0

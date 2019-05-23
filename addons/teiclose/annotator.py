@@ -101,6 +101,7 @@ class Annotator:
 
     def __get_data_from_xml(self):
         self.__start, self.__end = self.__get_fragment_position(self.__xml, self.__json)
+        self.__start, self.__end = self.__get_fragment_position_without_adhering_tags(self.__xml, self.__start, self.__end)
 
         self.__start, self.__end = self.__get_fragment_position_with_adhering_tags(self.__xml, self.__start, self.__end)
         self.__fragment_to_annotate = self.__xml[self.__start: self.__end]
@@ -142,6 +143,28 @@ class Annotator:
         chars_to_end += end_col
 
         return chars_to_start, chars_to_end
+
+    def __get_fragment_position_without_adhering_tags(self, string, start, end):
+        found_tag = True
+
+        while found_tag:
+            found_tag = False
+
+            marked_fragment = string[start:end]
+
+            match = re.search(r'^\s*<[^<>]*?>\s*', marked_fragment)
+            if match is not None:
+                tag_open = match.group()
+                start += len(tag_open)
+                found_tag = True
+
+            match = re.search(r'\s*<[^<>]*?>\s*$', marked_fragment)
+            if match is not None:
+                tag_close = match.group()
+                end -= len(tag_close)
+                found_tag = True
+
+        return start, end
 
     def __get_fragment_position_with_adhering_tags(self, string, start, end):
         found_tag = True

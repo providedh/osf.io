@@ -488,6 +488,34 @@ class TestAnnotator:
 
         assert result == expected_text
 
+    def test_add_annotation__position_in_request_with_adhering_tags__string(self, mock_get_user_data_from_db):
+        json = {
+            "start_row": 227,
+            "start_col": 19,
+            "end_row": 227,
+            "end_col": 56,
+            "tag": "test"
+        }
+
+        dirname = os.path.dirname(__file__)
+        input_file_path = os.path.join(dirname, "test_annotator_files", "source_files", "source_file.xml")
+        expected_file_path = os.path.join(dirname, "test_annotator_files", "result_files",
+                                          "position_in_request_with_adhering_tags__result.xml")
+
+        input_text = read_file(input_file_path)
+        expected_text = read_file(expected_file_path)
+
+        user_guid = 'abcde'
+
+        input_text = input_text.decode('utf-8')
+
+        annotator = Annotator()
+        result = annotator.add_annotation(input_text, json, user_guid)
+
+        result = result.encode('utf-8')
+
+        assert result == expected_text
+
     test_data_add_annotation__wrong_request_parameters = [
         (
             "_empty_parameters",

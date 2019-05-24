@@ -260,6 +260,17 @@ source="variation" cert="high"></span>
   <section id="editor">
   </section>
      <div id="close-reading-widget"></div>
+
+    ##     FOR WEBSOCKETS TEST
+
+    <div>
+        <textarea id="input_field"></textarea>
+        <button onclick="send()">SEND</button>
+        <br>
+        <label id="lbl">Data</label>
+    </div>
+
+##     END WEBSOCKETS TEST
 </div>
 
 
@@ -279,4 +290,35 @@ ${parent.javascript_bottom()}
     });
 </script>
 <script src=${"/static/public/js/teiclose-page.js" | webpack_asset}></script>
+
+##     FOR WEBSOCKETS TEST
+
+<script>
+    var socket = new WebSocket('ws://' + window.location.host.split(':')[0] + ':8000' + '/websock/');
+
+    socket.onopen = function open() {
+        console.log("WebSockets connection created.");
+    };
+
+    socket.onmessage = function message(event) {
+          console.log("data from socket:" + event.data);
+          lbl.innerText = event.data;
+    };
+
+    if (socket.readyState == WebSocket.OPEN) {
+          socket.onopen();
+    }
+
+    function send()
+    {
+        var zawartosc = document.getElementById("input_field").value;
+        socket.send(zawartosc);
+    }
+
+
+
+
+</script>
+
+##     END WEBSOCKETS TEST
 </%def>

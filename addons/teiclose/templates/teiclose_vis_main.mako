@@ -294,19 +294,32 @@ ${parent.javascript_bottom()}
 ##     FOR WEBSOCKETS TEST
 
 <script>
-    var socket = new WebSocket('ws://' + window.location.host.split(':')[0] + ':8000' + '/websock/');
 
-    socket.onopen = function open() {
-        console.log("WebSockets connection created.");
-    };
+    $(document).ready(function () {
+        ## Without setTimeout WebSocket are created before window.project and window.file variables
+        ## was set, and connection is established on "../websocket/undefined_undefined/" url
+        ##  TODO: Create WebSocket after complete page load, without setTimeout
+        setTimeout(createWebSocket, 2000);
+    });
+    
+    var socket = null;
 
-    socket.onmessage = function message(event) {
-          console.log("data from socket:" + event.data);
-          lbl.innerText = event.data;
-    };
+    function createWebSocket()
+    {
+        socket = new WebSocket('ws://' + window.location.host.split(':')[0] + ':8000' + '/websocket/' + window.project + '_' + window.file + '/');
 
-    if (socket.readyState == WebSocket.OPEN) {
-          socket.onopen();
+        socket.onopen = function open() {
+            console.log("WebSockets connection created.");
+        };
+
+        socket.onmessage = function message(event) {
+            console.log("data from socket:" + event.data);
+            lbl.innerText = event.data;
+        };
+
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.onopen();
+        }
     }
 
     function send()
@@ -314,9 +327,6 @@ ${parent.javascript_bottom()}
         var zawartosc = document.getElementById("input_field").value;
         socket.send(zawartosc);
     }
-
-
-
 
 </script>
 

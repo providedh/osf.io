@@ -36,6 +36,30 @@ def load_file(project_guid, file_guid, version=None):
     return text
 
 
+def load_file_with_cookies(project_guid, file_guid, cookies, version=None):
+    try:
+        guid = Guid.objects.get(_id=file_guid)
+        base_file_node = BaseFileNode.objects.get(id=guid.object_id)
+
+    except (Guid.DoesNotExist, BaseFileNode.DoesNotExist):
+        raise HTTPError(http.NOT_FOUND)
+
+    provider = base_file_node.provider
+    file_path = '/' + base_file_node._id
+
+    if version:
+        waterbutler_url = waterbutler_api_url_for(project_guid, provider, file_path, True, version=version)
+    else:
+        waterbutler_url = waterbutler_api_url_for(project_guid, provider, file_path, True)
+
+    auth_header = None
+    file_response = call_waterbutler_quietly(waterbutler_url, cookies, auth_header)
+
+    text = file_response.content
+
+    return text
+
+
 def save_file(project_id, file_id, text):
     try:
         guid = Guid.objects.get(_id=file_id)

@@ -7,3 +7,7 @@ class AnnotationHistory(BaseModel):
     project_guid = models.TextField()
     file_guid = models.TextField()
     history = JSONField(blank=True, default=list)
+
+class AnnotatingXmlContent(BaseModel):
+    file_symbol = models.TextField()
+    xml_content = models.TextField()

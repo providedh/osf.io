@@ -1,15 +1,28 @@
 from channels import Group
+import json
 
+from channels.sessions import channel_session
 from channels.auth import channel_session_user, channel_session_user_from_http
 
 from pprint import pprint
 from models import AnnotatingXmlContent
 from addons.teiclose.waterbutler_file_handler import load_file_with_cookies
 
+from addons.teiclose.annotator import Annotator
+from framework.sessions import get_session
 
+
+# @channel_session
 @channel_session_user_from_http
 def ws_connect(message):
     room_symbol = get_room_symbol(message)
+
+    print '\n'              #
+    pprint(message)         #
+    print '\n'              #
+    pprint(vars(message))   # to print object variables to console
+    print '\n'              #
+    print message.user.username
 
     try:
         annotating_xml_content = AnnotatingXmlContent.objects.get(file_symbol=room_symbol)
@@ -18,30 +31,75 @@ def ws_connect(message):
         cookies = get_cookies_for_waterbutler(message)
 
         xml_content = load_file_with_cookies(project_guid, file_guid, cookies)
+        xml_content = xml_content.decode('utf-8')
 
         annotating_xml_content = AnnotatingXmlContent(file_symbol=room_symbol, xml_content=xml_content)
         annotating_xml_content.save()
 
     Group(room_symbol).add(message.reply_channel)
-    message.reply_channel.send({'text': annotating_xml_content.xml_content})
+
+    response = {
+        'status': 200,
+        'message': 'OK',
+        'xml_content': annotating_xml_content.xml_content,
+    }
+
+    response = json.dumps(response)
+
+    message.reply_channel.send({'text': response})
 
 
-
+# @channel_session
+@channel_session_user
 def ws_message(message):
     room_symbol = get_room_symbol(message)
+    request_json = message.content['text']
 
-    recived_text = message.content['text']
+    annotating_xml_content = AnnotatingXmlContent.objects.get(file_symbol=room_symbol)
+    xml_content = annotating_xml_content.xml_content
 
-    print recived_text
+    # Temporary hardcoded user giud (user with this guid must be in database)
+    # TODO: Get user guid from session
+    user_guid = 'wenuq'
 
-    # Group(room_symbol).send({'text': recived_text})
+    request_json = json.loads(request_json)
+
+    try:
+        annotator = Annotator()
+        xml_content = annotator.add_annotation(xml_content, request_json, user_guid)
+
+        annotating_xml_content.xml_content = xml_content
+        annotating_xml_content.save()
+
+        response = {
+            'status': 200,
+            'message': 'OK',
+            'xml_content': annotating_xml_content.xml_content,
+        }
+
+        response = json.dumps(response)
+
+        Group(room_symbol).send({'text': response})
+
+    except (ValueError, TypeError) as error:
+        response = {
+            'status': 400,
+            'message': error.message,
+            'xml_content': None,
+        }
+
+        response = json.dumps(response)
+
+        message.reply_channel.send(response)
 
 
-
+@channel_session_user
 def ws_disconnect(message):
     room_symbol = get_room_symbol(message)
 
-    Group(room_symbol).send({'text': 'disconnected'})
+    annotating_xml_content = AnnotatingXmlContent.objects.get(file_symbol=room_symbol)
+    annotating_xml_content.delete()
+
     Group(room_symbol).discard(message.reply_channel)
 
 

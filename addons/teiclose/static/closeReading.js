@@ -45,67 +45,88 @@ var CloseReadingWidget = {
         self.socket = null;
         self.first_entry = true;
 
-        // createWebSocket();
-        //
-        // function createWebSocket()
-        // {
-        //     self.socket = new WebSocket('ws://' + window.location.host.split(':')[0] + ':8000' + '/websocket/' + self.node.id + '_' + self.file.id + '/');
-        //
-        //     if (self.socket.readyState === WebSocket.OPEN) {
-        //         self.socket.onopen();
-        //     }
-        //
-        //     self.socket.onopen = function open() {
-        //         console.log("WebSockets connection created.");
-        //     };
-        //
-        //     self.socket.onmessage = function message(event) {
-        //         console.log("data from socket:" + event.data);
-        //
-        //         if (self.first_entry)
-        //         {
-        //             m.startComputation();
-        //             self.loaded = true;
-        //             self.content = event.data;
-        //             m.endComputation();
-        //
-        //             annotator.setup(self.content);
-        //
-        //             self.first_entry = false;
-        //         }
-        //         else
-        //         {
-        //             self.content = event.data;
-        //         }
-        //
-        //         // self.content = event.data;
-        //     };
-        // }
+        createWebSocket();
 
-        self.loadFile = function(reload) {
-            self.loaded = false;
-            var response = FileFetcher.fetch(self.url, reload);
+        function createWebSocket()
+        {
+            self.socket = new WebSocket('ws://' + window.location.host.split(':')[0] + ':8000' + '/websocket/' + self.node.id + '_' + self.file.id + '/');
 
-            response.done(function (parsed, status, response) {
-                m.startComputation();
-                self.loaded = true;
-                self.content = response.responseText;
-                m.endComputation();
+            if (self.socket.readyState === WebSocket.OPEN) {
+                self.socket.onopen();
+            }
 
-                annotator.setup(self.content);
-            });
+            self.socket.onopen = function open() {
+                console.log("WebSockets connection created.");
+            };
 
-            response.fail(function (xhr, textStatus, error) {
-                $osf.growl('Error','The file content could not be loaded.');
-                Raven.captureMessage('Could not GET file contents.', {
-                    extra: {
-                        url: self.url,
-                        textStatus: textStatus,
-                        error: error
+            self.socket.onmessage = function message(event) {
+                console.log("data from socket:" + event.data);
+
+                if (self.first_entry)
+                {
+                    m.startComputation();
+                    self.loaded = true;
+                    self.content = JSON.parse(event.data);
+                    m.endComputation();
+
+                    if (self.content.status === 200)
+                    {
+                        annotator.setup(self.content.xml_content);
+                        self.first_entry = false;
                     }
-                });
-            });
+                }
+                else
+                {
+                    self.content = JSON.parse(event.data);
+
+                    if (self.content.status === 200)
+                    {
+                        console.log('annotate - success < ', self.content);
+                        window.updateFile(self.content.xml_content);
+                    }
+                    else
+                    {
+                        console.log('annotate - failed < ', self.content);
+                    }
+                }
+
+                // self.content = event.data;
+            };
+        }
+
+        window.send = function (json)
+        {
+            // var zawartosc = document.getElementById("input_field").value;
+            // socket.send(zawartosc);
+
+            // socket.send(json);
+            self.socket.send(json);
         };
+
+        // self.loadFile = function(reload) {
+        //     self.loaded = false;
+        //     var response = FileFetcher.fetch(self.url, reload);
+        //
+        //     response.done(function (parsed, status, response) {
+        //         m.startComputation();
+        //         self.loaded = true;
+        //         self.content = response.responseText;
+        //         m.endComputation();
+        //
+        //         annotator.setup(self.content);
+        //     });
+        //
+        //     response.fail(function (xhr, textStatus, error) {
+        //         $osf.growl('Error','The file content could not be loaded.');
+        //         Raven.captureMessage('Could not GET file contents.', {
+        //             extra: {
+        //                 url: self.url,
+        //                 textStatus: textStatus,
+        //                 error: error
+        //             }
+        //         });
+        //     });
+        // };
 
 
         let linkVersions = '/' + self.file.id + '/?show=revision&version=' + self.file.version;
@@ -124,7 +145,7 @@ var CloseReadingWidget = {
             return false;
         }
 
-        self.loadFile(false);
+        // self.loadFile(false);
 
         return self;
     },

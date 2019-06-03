@@ -92,6 +92,10 @@ var CloseReadingWidget = {
 
                 // self.content = event.data;
             };
+
+            setInterval(function () {
+            self.socket.send(JSON.stringify('heartbeat'));
+            }, 30000);
         }
 
         window.send = function (json)

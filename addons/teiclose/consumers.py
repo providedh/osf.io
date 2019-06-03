@@ -1,30 +1,41 @@
-from channels import Group
+
 import json
 
-from channels.sessions import channel_session
-from channels.auth import channel_session_user, channel_session_user_from_http
-
-from pprint import pprint
-from models import AnnotatingXmlContent
-from addons.teiclose.waterbutler_file_handler import load_file_with_cookies
-
 from addons.teiclose.annotator import Annotator
-from framework.sessions import get_session
-
+from addons.teiclose.waterbutler_file_handler import load_file_with_cookies
+from channels import Group
+from channels.auth import channel_session_user, channel_session_user_from_http
 from channels_presence.models import Room
 from channels_presence.decorators import touch_presence
+from models import AnnotatingXmlContent
+from osf.models import Session
 
 
-# @channel_session
 @channel_session_user_from_http
 def ws_connect(message):
     room_symbol = get_room_symbol(message)
+    cookies = get_cookies_for_waterbutler(message)
+
+    try:
+        user_guid = get_user_guid(cookies)
+        message.channel_session['user_guid'] = user_guid
+
+    except Exception as exception:
+        response = {
+            'status': 401,
+            'message': exception.message,
+            'xml_content': None,
+        }
+
+        response = json.dumps(response)
+        message.reply_channel.send(response)
+        return
 
     try:
         annotating_xml_content = AnnotatingXmlContent.objects.get(file_symbol=room_symbol)
+
     except AnnotatingXmlContent.DoesNotExist:
         project_guid, file_guid = room_symbol.split('_')
-        cookies = get_cookies_for_waterbutler(message)
 
         xml_content = load_file_with_cookies(project_guid, file_guid, cookies)
         xml_content = xml_content.decode('utf-8')
@@ -55,16 +66,9 @@ def ws_message(message):
     annotating_xml_content = AnnotatingXmlContent.objects.get(file_symbol=room_symbol)
     xml_content = annotating_xml_content.xml_content
 
-    # Temporary hardcoded user giud (user with this guid must be in database)
-    # TODO: Get user guid from session
-    user_guid = 'wenuq'
+    user_guid = message.channel_session['user_guid']
 
     request_json = json.loads(request_json)
-
-    room = Room.objects.get(channel_name=room_symbol)
-    userzy = room.get_anonymous_count()
-
-    print 'USERZY ANONIMOWI: %s' % userzy
 
     try:
         annotator = Annotator()
@@ -99,8 +103,12 @@ def ws_message(message):
 def ws_disconnect(message):
     room_symbol = get_room_symbol(message)
 
-    annotating_xml_content = AnnotatingXmlContent.objects.get(file_symbol=room_symbol)
-    annotating_xml_content.delete()
+    room = Room.objects.get(channel_name=room_symbol)
+    users_connected = room.get_anonymous_count()
+
+    if users_connected < 2:
+        annotating_xml_content = AnnotatingXmlContent.objects.get(file_symbol=room_symbol)
+        annotating_xml_content.delete()
 
     Group(room_symbol).discard(message.reply_channel)
     Room.objects.remove(room_symbol, message.reply_channel.name)
@@ -125,12 +133,16 @@ def get_cookies_for_waterbutler(message):
     return cookies_for_waterbutler
 
 
+def get_user_guid(cookies):
+    osf_id = cookies['osf']
+    osf_id = osf_id.split('.')[0]
 
+    try:
+        osf_session = Session.objects.get(_id=osf_id)
+    except Session.DoesNotExist:
+        raise Exception("No session in database for this user.")
 
-
-
-    # print '\n'              #
-    # pprint(message)         #
-    # print '\n'              #
-    # pprint(vars(message))   # to print object variables to console
-    # print '\n'              #
+    if "auth_user_id" not in osf_session.data:
+        raise Exception("User unauthenticated.")
+    else:
+        return osf_session.data["auth_user_id"]

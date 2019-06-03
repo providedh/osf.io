@@ -639,6 +639,11 @@ class CeleryConfig:
                 'task': 'teiclose.channels_presence.tasks.prune_rooms',
                 'schedule': timedelta(seconds=300)
             },
+
+            'teiclose.prune_orphaned_annotating_xml_contents': {
+                'task': 'teiclose.prune_orphaned_annotating_xml_contents',
+                'schedule': timedelta(seconds=300)
+            }
         }
 
         # Tasks that need metrics and release requirements

@@ -11,18 +11,14 @@ from addons.teiclose.waterbutler_file_handler import load_file_with_cookies
 from addons.teiclose.annotator import Annotator
 from framework.sessions import get_session
 
+from channels_presence.models import Room
+from channels_presence.decorators import touch_presence
+
 
 # @channel_session
 @channel_session_user_from_http
 def ws_connect(message):
     room_symbol = get_room_symbol(message)
-
-    print '\n'              #
-    pprint(message)         #
-    print '\n'              #
-    pprint(vars(message))   # to print object variables to console
-    print '\n'              #
-    print message.user.username
 
     try:
         annotating_xml_content = AnnotatingXmlContent.objects.get(file_symbol=room_symbol)
@@ -37,6 +33,7 @@ def ws_connect(message):
         annotating_xml_content.save()
 
     Group(room_symbol).add(message.reply_channel)
+    Room.objects.add(room_symbol, message.reply_channel.name, message.user)
 
     response = {
         'status': 200,
@@ -49,7 +46,7 @@ def ws_connect(message):
     message.reply_channel.send({'text': response})
 
 
-# @channel_session
+@touch_presence
 @channel_session_user
 def ws_message(message):
     room_symbol = get_room_symbol(message)
@@ -63,6 +60,11 @@ def ws_message(message):
     user_guid = 'wenuq'
 
     request_json = json.loads(request_json)
+
+    room = Room.objects.get(channel_name=room_symbol)
+    userzy = room.get_anonymous_count()
+
+    print 'USERZY ANONIMOWI: %s' % userzy
 
     try:
         annotator = Annotator()
@@ -101,6 +103,7 @@ def ws_disconnect(message):
     annotating_xml_content.delete()
 
     Group(room_symbol).discard(message.reply_channel)
+    Room.objects.remove(room_symbol, message.reply_channel.name)
 
 
 def get_room_symbol(message):

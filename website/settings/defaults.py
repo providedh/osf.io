@@ -628,6 +628,17 @@ class CeleryConfig:
                 'task': 'scripts.generate_prereg_csv',
                 'schedule': crontab(minute=0, hour=10, day_of_week=0),  # Sunday 5:00 a.m.
             },
+
+            # Tasks for WebSockets in TEI Close Reading addon
+            'teiclose.channels_presence.tasks.prune_presences': {
+                'task': 'teiclose.channels_presence.tasks.prune_presences',
+                'schedule': timedelta(seconds=60)
+            },
+
+            'teiclose.channels_presence.tasks.prune_rooms': {
+                'task': 'teiclose.channels_presence.tasks.prune_rooms',
+                'schedule': timedelta(seconds=300)
+            },
         }
 
         # Tasks that need metrics and release requirements

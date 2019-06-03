@@ -90,6 +90,7 @@ INSTALLED_APPS = (
     'storages',
     'waffle',
     'channels',
+    'channels_presence',
 
     # OSF
     'osf',

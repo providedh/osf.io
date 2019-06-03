@@ -22,7 +22,6 @@ from website.project.views.node import _view_project
 from addons.teiclose.annotation_history_handler import AnnotationHistoryHandler
 from addons.teiclose.annotator import Annotator
 from addons.teiclose.waterbutler_file_handler import load_file, save_file
-
 from models import AnnotatingXmlContent
 
 
@@ -111,10 +110,6 @@ def teiclose_save_annotations(**kwargs):
     file_guid = kwargs['file_guid']
     project_guid = kwargs['project_guid']
 
-    # current_session = get_session()
-    #
-    # file_key = '_'.join(('xml_text', project_guid, file_guid))
-
     file_symbol = '_'.join((project_guid, file_guid))
 
     try:
@@ -129,23 +124,6 @@ def teiclose_save_annotations(**kwargs):
     save_file(project_guid, file_guid, xml_content)
 
     return '', 200
-
-
-
-
-    # if file_key not in current_session.data:
-    #     return '', 304
-
-    # else:
-    #     xml_text = current_session.data[file_key]
-    #     xml_text = xml_text.encode('utf-8')
-    #
-    #     save_file(project_guid, file_guid, xml_text)
-    #
-    #     current_session.data.pop(file_key, None)
-    #     current_session.save()
-    #
-    #     return '', 200
 
 
 def teiclose_get_annotation_history(**kwargs):

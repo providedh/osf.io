@@ -432,7 +432,7 @@ placeName,
 place,
 country,
 [type="place"]{
-    border-color: #33a02c;
+    border-color: #204191;
 }
 
 div#annotator-root[display-annotations="true"] placeName::before,
@@ -442,7 +442,7 @@ div#annotator-root[display-annotations="true"] place::before{
 
 div#annotator-root[color-annotations="true"] placeName::before,
 div#annotator-root[color-annotations="true"] place::before{
-    color: #33a02c;
+    color: #204191;
 }
 
 div#annotator-root[display-annotations="true"] country::before{
@@ -450,19 +450,19 @@ div#annotator-root[display-annotations="true"] country::before{
 }
 
 div#annotator-root[color-annotations="true"] country::before{
-    color: #33a02c;
+    color: #204191;
 }
 
 span.teiLegendElement#placeName span.color,
 span.teiLegendElement#country span.color,
 span.teiLegendElement#place span.color{
-    background-color: #33a02c;
+    background-color: #204191;
 }
 
 location,
 geolocation,
 geogName{
-    border-color: #b2df8a;
+    border-color: #ff6464;
 }
 
 div#annotator-root[display-annotations="true"] location::before,
@@ -474,12 +474,12 @@ div#annotator-root[display-annotations="true"] geogName::before{
 div#annotator-root[color-annotations="true"] location::before,
 div#annotator-root[color-annotations="true"] geolocation::before,
 div#annotator-root[color-annotations="true"] geogName::before{
-    color: #b2df8a;
+    color: #ff6464;
 }
 
 span.teiLegendElement#geogName span.color,
 span.teiLegendElement#location span.color{
-    background-color: #b2df8a;
+    background-color: #ff6464;
 }
 
 /* People
@@ -505,7 +505,7 @@ span.teiLegendElement#person span.color{
 
 name,
 persName{
-    border-color: #fdbf6f;
+    border-color: #5385c4;
 }
 
 div#annotator-root[display-annotations="true"] name::before,
@@ -515,17 +515,17 @@ div#annotator-root[display-annotations="true"] persName::before{
 
 div#annotator-root[color-annotations="true"] name::before,
 div#annotator-root[color-annotations="true"] persName::before{
-    color: #fdbf6f;
+    color: #5385c4;
 }
 
 span.teiLegendElement#persName span.color,
 span.teiLegendElement#name span.color{
-    background-color: #fdbf6f;
+    background-color: #5385c4;
 }
 
 
 occupation{
-    border-color: #b15928;
+    border-color: #3c8745;
 }
 
 div#annotator-root[display-annotations="true"] occupation::before{
@@ -533,16 +533,16 @@ div#annotator-root[display-annotations="true"] occupation::before{
 }
 
 div#annotator-root[color-annotations="true"] occupation::before{
-    color: #b15928;
+    color: #3c8745;
 }
 
 span.teiLegendElement#occupation span.color{
-    background-color: #b15928;
+    background-color: #3c8745;
 }
 /* Events
  */
 event{
-    border-color: #cab2d6;
+    border-color: #cecece;
 }
 
 div#annotator-root[display-annotations="true"] event::before{
@@ -550,17 +550,17 @@ div#annotator-root[display-annotations="true"] event::before{
 }
 
 div#annotator-root[color-annotations="true"] event::before{
-    color: #cab2d6;
+    color: #cecece;
 }
 
 span.teiLegendElement#event span.color{
-    background-color: #cab2d6;
+    background-color: #cecece;
 }
 
 /* Objects 
  */
 object{
-    border-color: #6a3d9a;
+    border-color: #b4d38d;
 }
 
 div#annotator-root[display-annotations="true"] object::before{
@@ -568,52 +568,52 @@ div#annotator-root[display-annotations="true"] object::before{
 }
 
 div#annotator-root[color-annotations="true"] object::before{
-    color: #6a3d9a;
+    color: #b4d38d;
 }
 
 span.teiLegendElement#object span.color{
-    background-color: #6a3d9a;
+    background-color: #b4d38d;
 }
 
 /* Time
  */
 date{
-    border-color: #e31a1c;
+    border-color: #868788;
 }
 div#annotator-root[display-annotations="true"] date::before{
     content:"\f073";
 }
 div#annotator-root[color-annotations="true"] date::before{
-    color: #e31a1c;
+    color: #868788;
 }
 span.teiLegendElement#date span.color{
-    background-color: #e31a1c;
+    background-color: #868788;
 }
 
 time{
-    border-color: #fb9a99;
+    border-color: #eab9e4;
 }
 div#annotator-root[display-annotations="true"] time::before{
     content:'\f017';
 }
 div#annotator-root[color-annotations="true"] time::before{
-    color: #fb9a99;
+    color: #eab9e4;
 }
 span.teiLegendElement#time span.color{
-    background-color: #fb9a99;
+    background-color: #eab9e4;
 }
 
 org{
-    border-color: #1f78b4;
+    border-color: #b4edfc;
 }
 div#annotator-root[display-annotations="true"] org::before{
     content:"\f1ad";
 }
 div#annotator-root[color-annotations="true"] org::before{
-    color: #1f78b4;
+    color: #b4edfc;
 }
 span.teiLegendElement#org span.color{
-    background-color: #1f78b4;
+    background-color: #b4edfc;
 }
 
 pb{
@@ -622,7 +622,7 @@ pb{
     border-color: blue;
 }
 
-rolename{
+roleName{
     width: 15px;
     z-index: 200;
     border-color: black;
@@ -637,102 +637,102 @@ desc{
 
 .ignorance{
     /*Blue*/
-    background-color: rgba(23,85,141,0.5);
+    background-color: rgba(146, 112, 168,0.5);
 }
 
 .imprecision{
     /*Violet*/
-    background-color: rgba(148,15,137,0.5);
+    background-color: rgba(241, 209, 85, 0.5);
 }
 
 .credibility{
     /*Orange*/
-    background-color: rgba(218,136,21,0.5);
+    background-color: rgba(204, 76, 59, 0.5);
 }
 
 .incompleteness{
     /*Green*/
-    background-color: rgba(174,210,21,0.5);
+    background-color: rgba(103, 178, 172, 0.5);
 }
 
 [source="ignorance"]{
     /*Blue*/
-    background-color: #17558D;
+    background-color: #9270a8;
 }
 
 [source="imprecision"]{
     /*Violet*/
-    background-color: #940F89;
+    background-color: #f1d155;
 }
 
 [source="credibility"]{
     /*Orange*/
-    background-color: #DA8815;
+    background-color: #cc4c3b;
 }
 
 [source="incompleteness"]{
     /*Green*/
-    background-color: #AED215;
+    background-color: #67b2ac;
 }
 
 [source="ignorance"][cert="medium"]{
     /*Blue*/
-    background-color: #31699B;
+    background-color: #aa95bb;
 }
 
 [source="imprecision"][cert="medium"]{
     /*Violet*/
-    background-color: #A32B99;
+    background-color: #f2dd8f;
 }
 
 [source="credibility"][cert="medium"]{
     /*Orange*/
-    background-color: #F0A740;
+    background-color: #d87c6f;
 }
 
 [source="incompleteness"][cert="medium"]{
     /*Green*/
-    background-color: #C6E73D;
+    background-color: #9bc4c1;
 }
 
 [source="ignorance"][cert="low"]{
     /*Blue*/
-    background-color: #4D80AE;
+    background-color: #c7b7d3;
 }
 
 [source="imprecision"][cert="low"]{
     /*Violet*/
-    background-color: #B548AC;
+    background-color: #f6e7a9;
 }
 
 [source="credibility"][cert="low"]{
     /*Orange*/
-    background-color: #FFBF66;
+    background-color: #ebb1a6;
 }
 
 [source="incompleteness"][cert="low"]{
     /*Green*/
-    background-color: #DAF662;
+    background-color: #bbd7d5;
 }
 
 [source="ignorance"][cert="unknown"]{
     /*Blue*/
-    background-color: #79A4CB;
+    background-color: #e2dce8;
 }
 
 [source="imprecision"][cert="unknown"]{
     /*Violet*/
-    background-color: #D075C8;
+    background-color: #fbf3d4;
 }
 
 [source="credibility"][cert="unknown"]{
     /*Orange*/
-    background-color: #FFD190;
+    background-color: #f1d9d4;
 }
 
 [source="incompleteness"][cert="unknown"]{
     /*Green*/
-    background-color: #E4F98C;
+    background-color: #dceaea;
 }
 
 certainty{

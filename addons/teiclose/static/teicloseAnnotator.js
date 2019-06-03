@@ -1,6 +1,7 @@
 require('./teicloseAnnotator.css');
 var d3 = require('d3');
 window.API_urls = require('./annotationApiUrlBuilder.js').API_urls;
+window.colorSchemes = require('./teicloseColorSchemes.js').colorSchemes;
 
 function saveVersion(){
     $.ajax({
@@ -83,8 +84,6 @@ function setup(file){
         panel.updateControls(e.target.value, getAnnotatorAttribute('locus'));
     });
 
-
-
     // Add event handlers for all the application
     document.getElementById('saveFile').addEventListener('click', ()=>saveVersion());
     document.getElementById('openPanel').addEventListener('click', ()=>panel.show());
@@ -103,6 +102,7 @@ function setup(file){
 }
 
 function fileChange (model, sidepanel, file){
+    console.log('update')
     model.loadTEI(file).then((tei_doc)=>{
         console.log({d3:d3})
         for(annotation of Array.from(document.getElementsByTagName('certainty'))){
@@ -122,11 +122,41 @@ function fileChange (model, sidepanel, file){
                 if(node != undefined){
                     node.addEventListener('mouseenter', ()=>sidepanel.show(annotation,node.textContent, node.nodeName));
                     node.addEventListener('mouseleave', ()=>sidepanel.hide());       
+//                    addStyles(
+//                        node, 
+//                        annotation.attributes['source'].value, 
+//                        annotation.attributes['cert'].value
+//                        );
                 }
             });
         updateStatistics();
     });
 }
+
+//function addStyles(node, source, cert){
+//    const antecesors = [];
+//    $(node).parents().addBack().not('html').each(function() {
+//        let entry = this.tagName.toLowerCase();
+//          if (this.id)
+//          entry += '#' + this.id.replace(/ /g, '#');
+//
+//        antecesors.push(entry);
+//      });
+//
+//    const rootPath = temp2.slice(temp2.indexOf('section#editor'));
+//
+//    const greyRule = 'div#annotator-root[display-uncertainty=true] ' 
+//        + rootPath.join(' ')
+//        + '{background-color: lightrgey;}';
+//    const colorRule = 'div#annotator-root[color-uncertainty=true] ' 
+//        + rootPath.join(' ')
+//        + `{background-color: ${window.colorScheme[source][cert]};}`;
+//
+//    console.log(greyRule, colorRule);
+//
+//    document.stylesheets[0].insertRule(greyRule);
+//    document.stylesheets[0].insertRule(colorScheme);
+//}
 
 function handleDisplayChange(evt){ 
     $('div#annotator-root').attr(evt.target.id,evt.target.checked);
@@ -477,6 +507,9 @@ Panel.prototype.handleSelection = function(model){
 }
 
 Panel.prototype.createAnnotation = function(){
+    if(this.selection == null)
+        return
+
     const values = {};
     Array.from($("#top-panel input"), x=>x).map(i=>values[i.id]=i.value);
     Array.from($("#top-panel select"), x=>x).map(i=>values[i.id]=i.value);
@@ -523,7 +556,8 @@ Panel.prototype.createAnnotation = function(){
         scriptCharset: 'utf8',
         success: function (xml) {
             console.log('annotate - success < ',xml);
-            window.updateFile(xml)
+            this.selection = null;
+            $('input#selection').html('');
         },
         error: function(data) {
             console.log('annotate - error < ', data);

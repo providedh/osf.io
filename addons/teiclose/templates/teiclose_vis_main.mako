@@ -86,8 +86,8 @@
       </div>
       <div class="row">
         <span class="toolbar-control" id="">
-              Source of uncertainty <a title="help : source of the uncertainty" class='help'>?</a> 
-              <select name="" id='source'>
+              Category of uncertainty <a title="help : category of the uncertainty" class='help'>?</a> 
+              <select name="" id='category'>
                   <option class="ignorance" value="ignorance">Ignorance</option>
                   <option class="credibility" value="credibility">Credibility</option>
                   <option class="imprecision" value="imprecision">Imprecision</option>
@@ -172,46 +172,46 @@
       <b>Uncertainty notion color scheme</b><br/>
       <span class="teiLegendElement">
         <span class="color uncertainty" author="me" title="unknown"
-source="ignorance" cert="unknown"></span> 
+category="ignorance" cert="unknown"></span> 
         <span class="color uncertainty" author="me" title="low"
-source="ignorance" cert="low"></span> 
+category="ignorance" cert="low"></span> 
         <span class="color uncertainty" author="me" title="medium" 
-source="ignorance" cert="medium"></span> 
+category="ignorance" cert="medium"></span> 
         <span class="color uncertainty" author="me" title="high" 
-source="ignorance" cert="high"></span> 
+category="ignorance" cert="high"></span> 
         Ignorance
       </span>
       <span class="teiLegendElement">
         <span class="color uncertainty" author="me" title="unknown"
-source="credibility" cert="unknown"></span> 
+category="credibility" cert="unknown"></span> 
         <span class="color uncertainty" author="me" title="low"
-source="credibility" cert="low"></span> 
+category="credibility" cert="low"></span> 
         <span class="color uncertainty" author="me" title="medium"
-source="credibility" cert="medium"></span> 
+category="credibility" cert="medium"></span> 
         <span class="color uncertainty" author="me" title="high" 
-source="credibility" cert="high"></span> 
+category="credibility" cert="high"></span> 
         Credibility
       </span>
       <span class="teiLegendElement">
         <span class="color uncertainty" author="me" title="unknown"
-source="imprecision" cert="unknown"></span> 
+category="imprecision" cert="unknown"></span> 
         <span class="color uncertainty" author="me" title="low"
-source="imprecision" cert="low"></span> 
+category="imprecision" cert="low"></span> 
         <span class="color uncertainty" author="me" title="medium"
-source="imprecision" cert="medium"></span> 
+category="imprecision" cert="medium"></span> 
         <span class="color uncertainty" author="me" title="high"
-source="imprecision" cert="high"></span> 
+category="imprecision" cert="high"></span> 
         Imprecision
       </span>
       <span class="teiLegendElement">
         <span class="color uncertainty" author="me" title="unknown"
-source="incompleteness" cert="unknown"></span>
+category="incompleteness" cert="unknown"></span>
         <span class="color uncertainty" author="me" title="low"
-source="incompleteness" cert="low"></span> 
+category="incompleteness" cert="low"></span> 
         <span class="color uncertainty" author="me" title="medium"
-source="incompleteness" cert="medium"></span> 
+category="incompleteness" cert="medium"></span> 
         <span class="color uncertainty" author="me" title="high"
-source="incompleteness" cert="high"></span> 
+category="incompleteness" cert="high"></span> 
         Incompleteness
       </span>
   </div>
@@ -227,7 +227,7 @@ source="incompleteness" cert="high"></span>
           <hr/>
           <div id="annotation" class="row">
           <b>Locus :</b><span id="locus"></span></br>
-          <b>Source of uncertainty :</b><span id="source"></span></br>
+          <b>Category of uncertainty :</b><span id="category"></span></br>
           <b>Certainty :</b>
           <div id="certrange">
                 <span title="Unknown"></span>

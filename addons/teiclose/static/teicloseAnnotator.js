@@ -3,6 +3,8 @@ var d3 = require('d3');
 window.API_urls = require('./annotationApiUrlBuilder.js').API_urls;
 window.colorSchemes = require('./teicloseColorSchemes.js').colorSchemes;
 
+const XML_EXTRA_CHAR_SPACER="xxxx"; // Used to keep string lengths for ids.
+
 function saveVersion(){
     $.ajax({
         url: API_urls.get_save_url(window.project, window.file),
@@ -107,6 +109,7 @@ function setup(file){
 }
 
 function fileChange (model, sidepanel, file){
+    console.log('fileChange', {file:file})
     model.loadTEI(file).then((tei_doc)=>{
         console.log({d3:d3})
         for(annotation of Array.from(document.getElementsByTagName('certainty'))){
@@ -114,21 +117,17 @@ function fileChange (model, sidepanel, file){
             annotation.addEventListener('mouseleave', (e)=>sidepanel.hide());
         }
 
-        const page = document.getElementsByTagName('page')[0];
-        let identifyed = Array.from(page.getElementsByTagName('*'), a=>a.attributes['xml:id']?a:null);
-        identifyed = identifyed.filter(x=>x!=null);
-        const identifyed_map = Object.fromEntries(identifyed.map(x=>[x.attributes['xml:id'].value, x]));
-
         Array.from(tei_doc.getElementsByTagName('teiHeader')[0].getElementsByTagName('certainty'), a=>a)
             .forEach(annotation=>{
-                annotation.attributes['target'].value.split(" ").forEach(target=>{
-                    const node = document.getElementById(target.slice(1));
+                annotation.attributes['target'].value.trim().split(" ").forEach(target=>{
+                    console.log(target)
+                    const node = document.getElementById(XML_EXTRA_CHAR_SPACER+target.slice(1));
                     if(node != null){
                         node.addEventListener('mouseenter', ()=>sidepanel.show(annotation,node.textContent, node.nodeName));
                         node.addEventListener('mouseleave', ()=>sidepanel.hide());       
                         addStyles(
-                            target.slice(1), 
-                            annotation.attributes['source'].value, 
+                            XML_EXTRA_CHAR_SPACER+target.slice(1), 
+                            annotation.attributes['category'].value, 
                             annotation.attributes['cert'].value
                             );
                     }
@@ -138,13 +137,13 @@ function fileChange (model, sidepanel, file){
     });
 }
 
-function addStyles(id, source, cert){
+function addStyles(id, category, cert){
     const greyRule = 'div#annotator-root[display-uncertainty=true] ' 
         + '#'+id
         + '{background-color: lightgrey;}';
     const colorRule = 'div#annotator-root[display-uncertainty=true][color-uncertainty=true] ' 
         + '#'+id
-        + `{background-color: ${window.colorSchemes[source][cert]};}`;
+        + `{background-color: ${window.colorSchemes[category][cert]};}`;
 
     document.styleSheets[0].insertRule(greyRule);
     document.styleSheets[0].insertRule(colorRule);
@@ -332,15 +331,15 @@ Timeline.prototype.handleTimestampMouseenter = function(evt,timestamp){
       </span>
       <span>
         <span class="color uncertainty" author="me" title="high"
-            style="width:${xScale(timestamp.imprecision)}em;" source="imprecision" cert="high"></span></br>
+            style="width:${xScale(timestamp.imprecision)}em;" category="imprecision" cert="high"></span></br>
         <span class="color uncertainty" author="me" title="high" 
-            style="width:${xScale(timestamp.incompleteness)}em;" source="incompleteness" cert="high"></span></br>
+            style="width:${xScale(timestamp.incompleteness)}em;" category="incompleteness" cert="high"></span></br>
         <span class="color uncertainty" author="me" title="high" 
-            style="width:${xScale(timestamp.ignorance)}em;" source="ignorance" cert="high"></span></br>
+            style="width:${xScale(timestamp.ignorance)}em;" category="ignorance" cert="high"></span></br>
         <span class="color uncertainty" author="me" title="high" 
-            style="width:${xScale(timestamp.credibility)}em;" source="credibility" cert="high"></span></br>
+            style="width:${xScale(timestamp.credibility)}em;" category="credibility" cert="high"></span></br>
         <span class="color variation" author="me" title="high" 
-            style="width:${xScale(timestamp.variation)}em;" source="variation" cert="high"></span></br>
+            style="width:${xScale(timestamp.variation)}em;" category="variation" cert="high"></span></br>
       </span>
       <span>
         ${timestamp.imprecision}</br> 
@@ -376,7 +375,7 @@ Model.prototype.expandedEmptyTag = function(empty_tag){
 Model.prototype.loadTEI = function(xml){
     return new Promise((resolve, error)=>{
         const sanityzed_xml = xml.replace(/\r/gm," "),
-            ids_replaced_xml = xml.replace(/xml:id/gm,"id"),
+            ids_replaced_xml = xml.replace(/xml:id="/gm,'id="'+XML_EXTRA_CHAR_SPACER),
             body_replaced_xml = ids_replaced_xml.replace(/body>/gm, 'page>'), // Creating a separate div would alter structure
             parsed_tei = $.parseXML(body_replaced_xml).documentElement,
             body = parsed_tei.getElementsByTagName('page')[0];
@@ -399,7 +398,7 @@ Model.prototype.loadTEI = function(xml){
  * */
 function SidePanel(){
     this.shown = false;
-    this.attributes = ['locus','cert','assertedValue','source'];
+    this.attributes = ['locus','cert','assertedValue','category'];
 }
 SidePanel.prototype.show = function(annotation, value, id){
     console.log(annotation)
@@ -516,7 +515,7 @@ Panel.prototype.createAnnotation = function(){
             "start_pos": this.selection.abs_positions.start,
             "end_pos": this.selection.abs_positions.end,
             "asserted_value": "",
-            "source": "",
+            "category": "",
             "locus": "",
             "certainty": "",
             "asserted_value": "",
@@ -526,7 +525,7 @@ Panel.prototype.createAnnotation = function(){
 
     if(getAnnotatorAttribute('annotation') == 'uncertainty'){
         Object.assign(data, {
-            "source": values.source,
+            "category": values.category,
             "locus": values.locus,
             "certainty": values.cert,
             "asserted_value": values.proposedValue,
@@ -576,18 +575,18 @@ function Annotation(){
     this.cert = '';
     this.value = '';
     this.proposedValue = '';
-    this.source = '';
+    this.category = '';
     this.desc = ''
 }
 
 Annotation.prototype.fromDict = function(values){
-    const {locus, cert, value, proposedValue, source, desc} = values;
+    const {locus, cert, value, proposedValue, category, desc} = values;
 
     this.locus = locus;
     this.cert = cert;
     this.value = value;
     this.proposedValue = proposedValue;
-    this.source = source;
+    this.category = category;
     this.desc = desc;
 
     return this;
@@ -616,9 +615,9 @@ Annotation.prototype.renderHTML = function(){
     annotation.setAttribute('author', 'me');
     annotation.setAttribute('value', this.value);
     annotation.setAttribute('proposedValue', this.proposedValue);
-    annotation.setAttribute('source', this.source);
+    annotation.setAttribute('category', this.category);
     annotation.setAttribute('title',
-        `${this.source} cert=${this.cert} locus=${this.locus}`);
+        `${this.category} cert=${this.cert} locus=${this.locus}`);
 
     if(this.desc != ''){
         desc = document.createElement('desc');

@@ -655,82 +655,82 @@ desc{
     background-color: rgba(103, 178, 172, 0.5);
 }
 
-[source="ignorance"]{
+[category="ignorance"]{
     /*Blue*/
     background-color: #9270a8;
 }
 
-[source="imprecision"]{
+[category="imprecision"]{
     /*Violet*/
     background-color: #f1d155;
 }
 
-[source="credibility"]{
+[category="credibility"]{
     /*Orange*/
     background-color: #cc4c3b;
 }
 
-[source="incompleteness"]{
+[category="incompleteness"]{
     /*Green*/
     background-color: #67b2ac;
 }
 
-[source="ignorance"][cert="medium"]{
+[category="ignorance"][cert="medium"]{
     /*Blue*/
     background-color: #aa95bb;
 }
 
-[source="imprecision"][cert="medium"]{
+[category="imprecision"][cert="medium"]{
     /*Violet*/
     background-color: #f2dd8f;
 }
 
-[source="credibility"][cert="medium"]{
+[category="credibility"][cert="medium"]{
     /*Orange*/
     background-color: #d87c6f;
 }
 
-[source="incompleteness"][cert="medium"]{
+[category="incompleteness"][cert="medium"]{
     /*Green*/
     background-color: #9bc4c1;
 }
 
-[source="ignorance"][cert="low"]{
+[category="ignorance"][cert="low"]{
     /*Blue*/
     background-color: #c7b7d3;
 }
 
-[source="imprecision"][cert="low"]{
+[category="imprecision"][cert="low"]{
     /*Violet*/
     background-color: #f6e7a9;
 }
 
-[source="credibility"][cert="low"]{
+[category="credibility"][cert="low"]{
     /*Orange*/
     background-color: #ebb1a6;
 }
 
-[source="incompleteness"][cert="low"]{
+[category="incompleteness"][cert="low"]{
     /*Green*/
     background-color: #bbd7d5;
 }
 
-[source="ignorance"][cert="unknown"]{
+[category="ignorance"][cert="unknown"]{
     /*Blue*/
     background-color: #e2dce8;
 }
 
-[source="imprecision"][cert="unknown"]{
+[category="imprecision"][cert="unknown"]{
     /*Violet*/
     background-color: #fbf3d4;
 }
 
-[source="credibility"][cert="unknown"]{
+[category="credibility"][cert="unknown"]{
     /*Orange*/
     background-color: #f1d9d4;
 }
 
-[source="incompleteness"][cert="unknown"]{
+[category="incompleteness"][cert="unknown"]{
     /*Green*/
     background-color: #dceaea;
 }

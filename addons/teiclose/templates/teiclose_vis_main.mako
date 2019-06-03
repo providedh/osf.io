@@ -44,13 +44,13 @@
     <div class="toolbarRow" id="toolbar-controls">
       <div class="row" id="display-options">
         <span class="toolbar-control" id="">Display:
-          <input id="display-uncertainty" type="checkbox"> Uncertainty 
-          <input id="display-annotations" type="checkbox"> Annotations 
+          <input id="display-uncertainty" type="checkbox" checked> Uncertainty 
+          <input id="display-annotations" type="checkbox" checked> Annotations 
           <input id="display-legend" type="checkbox"> Legend
         </span>
         <span class="toolbar-control" id="">Use different colour for:
-          <input id="color-uncertainty" type="checkbox"> Uncertainty types
-          <input id="color-annotations" type="checkbox"> Annotation types
+          <input id="color-uncertainty" type="checkbox" checked> Uncertainty types
+          <input id="color-annotations" type="checkbox" checked> Annotation types
         </span>
       </div>
       <div class="row">

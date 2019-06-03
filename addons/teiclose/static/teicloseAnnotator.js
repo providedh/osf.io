@@ -109,7 +109,6 @@ function setup(file){
 }
 
 function fileChange (model, sidepanel, file){
-    console.log('fileChange', {file:file})
     model.loadTEI(file).then((tei_doc)=>{
         console.log({d3:d3})
         for(annotation of Array.from(document.getElementsByTagName('certainty'))){
@@ -120,7 +119,6 @@ function fileChange (model, sidepanel, file){
         Array.from(tei_doc.getElementsByTagName('teiHeader')[0].getElementsByTagName('certainty'), a=>a)
             .forEach(annotation=>{
                 annotation.attributes['target'].value.trim().split(" ").forEach(target=>{
-                    console.log(target)
                     const node = document.getElementById(XML_EXTRA_CHAR_SPACER+target.slice(1));
                     if(node != null){
                         node.addEventListener('mouseenter', ()=>sidepanel.show(annotation,node.textContent, node.nodeName));
@@ -401,7 +399,6 @@ function SidePanel(){
     this.attributes = ['locus','cert','assertedValue','category'];
 }
 SidePanel.prototype.show = function(annotation, value, id){
-    console.log(annotation)
     for(let attr of this.attributes){
         $('div#side-panel span#'+attr).text(' '+annotation.attributes[attr].value);
     }
@@ -487,7 +484,6 @@ Panel.prototype.hide = function(){
 
 Panel.prototype.handleSelection = function(model){
     const selection = getUserSelection(model);
-    console.log(selection);
     if(selection.range.collapsed === false){
 
         $('section#top-panel #value').val(selection.text);   
@@ -547,12 +543,12 @@ Panel.prototype.createAnnotation = function(){
         data: JSON.stringify(data),      //Data as js object
         scriptCharset: 'utf8',
         success: function (xml) {
-            console.log('annotate - success < ',xml);
             this.selection = null;
             $('input#selection').html('');
+            window.updateFile(xml);
         },
         error: function(data) {
-            console.log('annotate - error < ', data);
+            console.error('annotate - error < ', data);
         }
     })
 }

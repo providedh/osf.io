@@ -70,6 +70,11 @@ function setup(file){
 
     panel.updateControls(annotationType, locus);
 
+    // Setup visual attributes based on selections
+    Object
+        .values($('#display-options input[type=checkbox]'))
+        .forEach(input=>$('div#annotator-root').attr(input.id, input.checked));
+
     // Add event handlers for all the application
     document.getElementById("attribute-name-input").setAttribute('locus', 
         document.getElementById('locus').value);

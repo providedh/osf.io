@@ -102,7 +102,6 @@ function setup(file){
 }
 
 function fileChange (model, sidepanel, file){
-    console.log('update')
     model.loadTEI(file).then((tei_doc)=>{
         console.log({d3:d3})
         for(annotation of Array.from(document.getElementsByTagName('certainty'))){
@@ -117,46 +116,34 @@ function fileChange (model, sidepanel, file){
 
         Array.from(tei_doc.getElementsByTagName('teiHeader')[0].getElementsByTagName('certainty'), a=>a)
             .forEach(annotation=>{
-                const node = identifyed_map[annotation.attributes['target'].value.slice(1)];
-                
-                if(node != undefined){
-                    node.addEventListener('mouseenter', ()=>sidepanel.show(annotation,node.textContent, node.nodeName));
-                    node.addEventListener('mouseleave', ()=>sidepanel.hide());       
-//                    addStyles(
-//                        node, 
-//                        annotation.attributes['source'].value, 
-//                        annotation.attributes['cert'].value
-//                        );
-                }
+                annotation.attributes['target'].value.split(" ").forEach(target=>{
+                    const node = document.getElementById(target.slice(1));
+                    if(node != null){
+                        node.addEventListener('mouseenter', ()=>sidepanel.show(annotation,node.textContent, node.nodeName));
+                        node.addEventListener('mouseleave', ()=>sidepanel.hide());       
+                        addStyles(
+                            target.slice(1), 
+                            annotation.attributes['source'].value, 
+                            annotation.attributes['cert'].value
+                            );
+                    }
+                })
             });
         updateStatistics();
     });
 }
 
-//function addStyles(node, source, cert){
-//    const antecesors = [];
-//    $(node).parents().addBack().not('html').each(function() {
-//        let entry = this.tagName.toLowerCase();
-//          if (this.id)
-//          entry += '#' + this.id.replace(/ /g, '#');
-//
-//        antecesors.push(entry);
-//      });
-//
-//    const rootPath = temp2.slice(temp2.indexOf('section#editor'));
-//
-//    const greyRule = 'div#annotator-root[display-uncertainty=true] ' 
-//        + rootPath.join(' ')
-//        + '{background-color: lightrgey;}';
-//    const colorRule = 'div#annotator-root[color-uncertainty=true] ' 
-//        + rootPath.join(' ')
-//        + `{background-color: ${window.colorScheme[source][cert]};}`;
-//
-//    console.log(greyRule, colorRule);
-//
-//    document.stylesheets[0].insertRule(greyRule);
-//    document.stylesheets[0].insertRule(colorScheme);
-//}
+function addStyles(id, source, cert){
+    const greyRule = 'div#annotator-root[display-uncertainty=true] ' 
+        + '#'+id
+        + '{background-color: lightgrey;}';
+    const colorRule = 'div#annotator-root[display-uncertainty=true][color-uncertainty=true] ' 
+        + '#'+id
+        + `{background-color: ${window.colorSchemes[source][cert]};}`;
+
+    document.styleSheets[0].insertRule(greyRule);
+    document.styleSheets[0].insertRule(colorRule);
+}
 
 function handleDisplayChange(evt){ 
     $('div#annotator-root').attr(evt.target.id,evt.target.checked);
@@ -384,7 +371,8 @@ Model.prototype.expandedEmptyTag = function(empty_tag){
 Model.prototype.loadTEI = function(xml){
     return new Promise((resolve, error)=>{
         const sanityzed_xml = xml.replace(/\r/gm," "),
-            body_replaced_xml = sanityzed_xml.replace(/body>/gm, 'page>'), // Creating a separate div would alter structure
+            ids_replaced_xml = xml.replace(/xml:id/gm,"id"),
+            body_replaced_xml = ids_replaced_xml.replace(/body>/gm, 'page>'), // Creating a separate div would alter structure
             parsed_tei = $.parseXML(body_replaced_xml).documentElement,
             body = parsed_tei.getElementsByTagName('page')[0];
         

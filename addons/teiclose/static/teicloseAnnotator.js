@@ -513,23 +513,7 @@ Panel.prototype.createAnnotation = function(){
             data['tag'] = values.proposedValue;
     }
 
-
     window.send(JSON.stringify(data));
-    
-    // $.ajax({
-    //     url: url,
-    //     type: 'PUT',   //type is any HTTP method
-    //     contentType: "application/json; charset=UTF-8",
-    //     data: JSON.stringify(data),      //Data as js object
-    //     scriptCharset: 'utf8',
-    //     success: function (xml) {
-    //         console.log('annotate - success < ',xml);
-    //         window.updateFile(xml)
-    //     },
-    //     error: function(data) {
-    //         console.log('annotate - error < ', data);
-    //     }
-    // })
 }
 
 Panel.prototype.updateControls = function(annotationType, locus){

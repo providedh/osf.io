@@ -79,7 +79,6 @@ def save_file(project_id, file_id, text):
     file_response = call_waterbutler_quietly_put(waterbutler_url, text, cookies, auth_header)
 
 
-
 def call_waterbutler_quietly_put(url, data, cookies, auth_header):
     logger.debug('Calling WaterButler: {}'.format(url))
 

@@ -53,7 +53,6 @@ def ws_connect(message):
     }
 
     response = json.dumps(response)
-
     message.reply_channel.send({'text': response})
 
 
@@ -67,7 +66,6 @@ def ws_message(message):
     xml_content = annotating_xml_content.xml_content
 
     user_guid = message.channel_session['user_guid']
-
     request_json = json.loads(request_json)
 
     try:
@@ -95,7 +93,6 @@ def ws_message(message):
         }
 
         response = json.dumps(response)
-
         message.reply_channel.send(response)
 
 

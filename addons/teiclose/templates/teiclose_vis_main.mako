@@ -260,17 +260,6 @@ source="variation" cert="high"></span>
   <section id="editor">
   </section>
      <div id="close-reading-widget"></div>
-
-    ##     FOR WEBSOCKETS TEST
-
-    <div>
-        <textarea id="input_field"></textarea>
-        <button onclick="send()">SEND</button>
-        <br>
-        <label id="lbl">Data</label>
-    </div>
-
-##     END WEBSOCKETS TEST
 </div>
 
 
@@ -290,45 +279,4 @@ ${parent.javascript_bottom()}
     });
 </script>
 <script src=${"/static/public/js/teiclose-page.js" | webpack_asset}></script>
-
-##     FOR WEBSOCKETS TEST
-
-<script>
-
-    ##  $(document).ready(function () {
-    ##      ## Without setTimeout WebSocket are created before window.project and window.file variables
-    ##      ## was set, and connection is established on "../websocket/undefined_undefined/" url
-    ##      ##  TODO: Create WebSocket after complete page load, without setTimeout
-    ##      setTimeout(createWebSocket, 2000);
-    ##  });
-    ##
-    ##  var socket = null;
-    ##
-    ##  function createWebSocket()
-    ##  {
-    ##      socket = new WebSocket('ws://' + window.location.host.split(':')[0] + ':8000' + '/websocket/' + window.project + '_' + window.file + '/');
-    ##
-    ##      socket.onopen = function open() {
-    ##          console.log("WebSockets connection created.");
-    ##      };
-    ##
-    ##      socket.onmessage = function message(event) {
-    ##          console.log("data from socket:" + event.data);
-    ##          lbl.innerText = event.data;
-    ##      };
-    ##
-    ##      if (socket.readyState === WebSocket.OPEN) {
-    ##          socket.onopen();
-    ##      }
-    ##  }
-    ##
-    ##  function send()
-    ##  {
-    ##      var zawartosc = document.getElementById("input_field").value;
-    ##      socket.send(zawartosc);
-    ##  }
-
-</script>
-
-##     END WEBSOCKETS TEST
 </%def>

@@ -421,7 +421,7 @@ services:
 
   worker:
     image: providedh/osf-io:develop
-    command: invoke celery_worker
+    command: invoke celery_worker --beat
     restart: unless-stopped
     depends_on:
       - postgres

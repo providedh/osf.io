@@ -535,22 +535,8 @@ Panel.prototype.createAnnotation = function(){
         if(values['locus'] == 'name')
             data['tag'] = values.proposedValue;
     }
-    
-    $.ajax({
-        url: url,
-        type: 'PUT',   //type is any HTTP method
-        contentType: "application/json; charset=UTF-8",
-        data: JSON.stringify(data),      //Data as js object
-        scriptCharset: 'utf8',
-        success: function (xml) {
-            this.selection = null;
-            $('input#selection').html('');
-            window.updateFile(xml);
-        },
-        error: function(data) {
-            console.error('annotate - error < ', data);
-        }
-    })
+
+    window.send(JSON.stringify(data));
 }
 
 Panel.prototype.updateControls = function(annotationType, locus){

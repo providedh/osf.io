@@ -39,15 +39,6 @@ api_routes = {
         ),
         Rule(
             [
-                '/project/<project_guid>/teiclose/<file_guid>/annotate/',
-                '/project/<project_guid>/node/<node_guid>/teiclose/<file_guid>/annotate/',
-            ],
-            'put',
-            views.teiclose_add_annotation,
-            lambda x: x,
-        ),
-        Rule(
-            [
                 '/project/<project_guid>/teiclose/<file_guid>/save/',
                 '/project/<project_guid>/node/<node_guid>/teiclose/<file_guid>/save/',
             ],

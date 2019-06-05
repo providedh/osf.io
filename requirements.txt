@@ -108,3 +108,8 @@ datacite==1.0.1
 
 # test parameterizing requirement
 parameterized==0.7.0
+
+# websockets in tei close reading annotation requirements
+channels==1.1.8
+asgi-rabbitmq==0.5.5
+django-channels-presence==0.0.9

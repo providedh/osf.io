@@ -529,6 +529,9 @@ class Annotator:
         if 'encoding=' in xml_annotated_in_lines[0]:
             xml_annotated = '\n'.join((xml_annotated_in_lines[0], xml_annotated))
 
+        if 'xml version="' not in xml_annotated:
+            xml_annotated = '\n'.join((u'<?xml version="1.0"?>', xml_annotated))
+
         self.__xml_annotated = xml_annotated
 
     def __add_tagged_string(self, xml, new_fragment):

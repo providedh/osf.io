@@ -89,6 +89,8 @@ INSTALLED_APPS = (
     'guardian',
     'storages',
     'waffle',
+    'channels',
+    'channels_presence',
 
     # OSF
     'osf',
@@ -285,3 +287,18 @@ ANONYMOUS_USER_NAME = None
 
 # If set to True, automated tests with extra queries will fail.
 NPLUSONE_RAISE = False
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'asgi_rabbitmq.RabbitmqChannelLayer',
+        'ROUTING': 'routing.channel_routing',
+        'CONFIG': {
+            'url': 'amqp://guest:guest@rabbitmq:5672/%2F',
+        }
+    }
+}
+
+# block debug messages from module 'pika'
+import logging
+logging.getLogger("pika").setLevel(logging.WARNING)

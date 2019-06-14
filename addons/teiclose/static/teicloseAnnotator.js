@@ -363,7 +363,7 @@ Timeline.prototype.handleTimestampMouseleave = function(evt){
 function Model(){}
 
 Model.prototype.expandedEmptyTag = function(empty_tag){
-    const tag_name = empty_tag.slice(1).split(' ')[0],
+    const tag_name = empty_tag.match(/[^ ,<,/,>]+/gm)[0],
         opening_tag = empty_tag.replace('/>','>'),
         closing_tag = '</'+tag_name+'>';
 

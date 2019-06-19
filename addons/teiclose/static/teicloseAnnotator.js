@@ -400,7 +400,7 @@ function SidePanel(){
 }
 SidePanel.prototype.show = function(annotation, value, id){
     for(let attr of this.attributes){
-        $('div#side-panel span#'+attr).text(' '+annotation.attributes[attr].value);
+        $('div#side-panel span#'+attr).text(' '+annotation.attributes[attr]==undefined?'':annotation.attributes[attr].value);
     }
 
     $('div#side-panel div#text').text(value);
@@ -530,7 +530,7 @@ Panel.prototype.createAnnotation = function(){
         });
 
         if(values['locus'] == 'attribute')
-            data['attribute'] = values.attributeName;
+            data['attribute_name'] = values.attribute_name;
 
         if(values['locus'] == 'name')
             data['tag'] = values.proposedValue;

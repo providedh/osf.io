@@ -100,7 +100,7 @@
                   <option value="attribute">Attribute</option>
               </select>
               <span id="attribute-name-input"> 
-                Attribute name <a title="help : attribute name" class='help'>?</a> <input type="text" id="attributeName"> 
+                Attribute name <a title="help : attribute name" class='help'>?</a> <input type="text" id="attribute-name"> 
               </span>
         </span>
       </div>

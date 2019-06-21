@@ -111,6 +111,7 @@ INSTALLED_APPS = (
     'addons.twofactor',
     'addons.teistats',
     'addons.teiclose',
+    'addons.peoplevis',
     'addons.wiki',
     'addons.zotero',
 )

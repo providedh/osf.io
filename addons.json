@@ -15,6 +15,7 @@
         "s3",
         "teistats",
         "teiclose",
+        "peoplevis",
         "twofactor",
         "wiki",
         "googledrive",
@@ -39,6 +40,7 @@
         "s3": "partial",
         "teistats": "full",
         "teiclose": "full",
+        "peoplevis": "full",
         "wiki": "full",
         "bitbucket": "partial"
     },
@@ -76,6 +78,7 @@
         "s3": "Amazon S3 is a file storage add-on. Connect your S3 account to an PROVIDEDH project to interact with files hosted on S3 via the PROVIDEDH.",
         "teistats": "Sample add-on that counts given XML elements in TEI P5 files. The first test add-on in the PROVIDEDH.",
         "teiclose": "Close reading of TEI P5 files and user-friendly annotating them.",
+        "peoplevis": "Visualization of connections between uncertanities on map",
         "twofactor": "Two-factor authentication is a security add-on. By using two-factor authentication, you'll protect your PROVIDEDH account with both your password and your mobile phone.",
         "wiki": "The wiki is a versatile communication tool. Wikis can be used to explain the main points of your project and can contain information like lab notes or contact information.",
         "googledrive": "Google Drive is a file storage add-on. Connect your Google Drive account to an PROVIDEDH project to interact with files hosted on Google Drive via the PROVIDEDH.",

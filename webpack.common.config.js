@@ -39,6 +39,7 @@ var entry = {
     'wiki-edit-page': staticPath('js/pages/wiki-edit-page.js'),
     'teistats-page': staticPath('js/pages/teistats-page.js'),
     'teiclose-page': staticPath('js/pages/teiclose-page.js'),
+    'peoplevis-page': staticPath('js/pages/peoplevis-page.js'),
     'statistics-page': staticPath('js/pages/statistics-page.js'),
     'request-access-page': staticPath('js/pages/request-access-page.js'),
     'file-page': staticPath('js/pages/file-page.js'),

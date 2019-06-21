@@ -11,10 +11,26 @@ function saveVersion(){
         type: 'PUT',   //type is any HTTP method
         data: {},      //Data as js object
         success: function (a) {
-            console.log('save - success < ',API_urls.get_save_url(window.project, window.file),' < ',a)
+            console.log('save - success < ',API_urls.get_save_url(window.project, window.file),' < ',a);
         },
         error: function (a) {
             console.log('save - error < ',API_urls.get_save_url(window.project, window.file),' < ',a)
+        }
+    })
+}
+
+function updateAutocompleteOptions(entityType, text){
+    $.ajax({
+        url: API_urls.get_autocomplete_url(window.project, entityType, text),
+        type: 'GET',   //type is any HTTP method
+        data: {},      //Data as js object
+        success: function (a) {
+            console.log('autocomplete - success < ',API_urls.get_autocomplete_url(window.project, entityType, text),' < ',a)
+            document.getElementById("references-autocomplete").options = a.map(a=>({name: a._source.name, id:a._source.id}))
+            updateAutocompleteInput(document.getElementById("references-autocomplete"));
+        },
+        error: function (a) {
+            console.log('autocomplete - error < ',API_urls.get_autocomplete_url(window.project, entityType, text),' < ',a)
         }
     })
 }
@@ -38,6 +54,7 @@ function setAnnotatorAttribute(attr, val){
 }
 
 function setup(file){
+    console.info('Setup started.')
     window.project = window.location.pathname.split('/')[1]
     window.file = window.location.pathname.split('/')[3]
     window.version = window.location.pathname.split('/')[4]
@@ -65,10 +82,14 @@ function setup(file){
 
     // Setup the annotation controls based on the locus
     const annotationType = $("#annotation-options input:checked")[0].value,
-        locus = document.getElementById('locus').value;
+        locus = document.getElementById('locus').value,
+        attribute = document.getElementById('attribute-name'),
+        tag = document.getElementById('tag-name');
 
     setAnnotatorAttribute('locus', locus);
     setAnnotatorAttribute('annotation', annotationType);
+    setAnnotatorAttribute('tag-name', tag);
+    setAnnotatorAttribute('attribute-name', attribute);
 
     panel.updateControls(annotationType, locus);
 
@@ -85,12 +106,31 @@ function setup(file){
         panel.updateControls(getAnnotatorAttribute('annotation'), evt.target.value);
     }, false);
 
+    document.getElementById('tag-name').addEventListener('input', (evt)=>{
+        setAnnotatorAttribute('tag-name', evt.target.value);
+    }, false);
+
+    document.getElementById('attribute-name').addEventListener('input', (evt)=>{
+        setAnnotatorAttribute('attribute-name', evt.target.value);
+    }, false);
+
     for(let input of document.getElementById('annotation-options').getElementsByTagName('input'))
         input.addEventListener('click', (e)=>{
         setAnnotatorAttribute('annotation', e.target.value);
         panel.updateControls(e.target.value, getAnnotatorAttribute('locus'));
     });
 
+    document.getElementById('references-autocomplete').addEventListener('input', e=>{
+        const tag = getAnnotatorAttribute('tag-name');
+        document.getElementById('references').value = e.target.value;
+        if(getAnnotatorAttribute('attribute-name') == 'sameAs' &&
+            ['person', 'event', 'org', 'place'].includes(tag)){
+            updateAutocompleteOptions(tag.replace('org','organization'), e.target.value);
+        }
+
+    })
+    document.getElementById("references-autocomplete").options = [];
+    autocomplete(document.getElementById("references-autocomplete"));
     // Add event handlers for all the application
     document.getElementById('saveFile').addEventListener('click', ()=>saveVersion());
     document.getElementById('openPanel').addEventListener('click', ()=>panel.show());
@@ -106,6 +146,7 @@ function setup(file){
 
     fileChange(model, sidepanel, file);
     window.updateFile = (f)=>fileChange(model, sidepanel, f); 
+    console.info('Setup completed.')
 }
 
 function fileChange (model, sidepanel, file){
@@ -399,9 +440,10 @@ function SidePanel(){
     this.attributes = ['locus','cert','assertedValue','category'];
 }
 SidePanel.prototype.show = function(annotation, value, id){
-    for(let attr of this.attributes){
-        $('div#side-panel span#'+attr).text(' '+annotation.attributes[attr]==undefined?'':annotation.attributes[attr].value);
-    }
+    this.attributes.forEach(attr=>{
+        const text = annotation.attributes[attr]==undefined?'':annotation.attributes[attr].value;
+        $('div#side-panel span#'+attr).text(' '+text);
+    })
 
     $('div#side-panel div#text').text(value);
     
@@ -532,9 +574,17 @@ Panel.prototype.createAnnotation = function(){
         if(values['locus'] == 'attribute')
             data['attribute_name'] = values.attribute_name;
 
+        if(values['locus'] == 'attribute')
+            data['tag-name'] = values['tag-name'];
+
+        if(values['locus'] == 'attribute' && ['person', 'event', 'org', 'place'].includes(values['tag-name']) && values['references'] != '')
+            data['references'] = values.references
+
         if(values['locus'] == 'name')
             data['tag'] = values.proposedValue;
     }
+
+    console.log(JSON.stringify(data))
 
     window.send(JSON.stringify(data));
 }
@@ -611,7 +661,100 @@ Annotation.prototype.renderHTML = function(){
     return annotation;
 }
 
-// Returns the TEI XML code for such annotation
-Annotation.prototype.renderTEI = function(){}
+function autocomplete(inp) {
+        //Snippet from w3school.com
+        var currentFocus;
+     
+        inp.addEventListener("input", function(e) {
+              var a, b, i, val = this.value;
+        closeAllLists();
+        if (!val) { return false;}
+        currentFocus = -1;
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        this.parentNode.appendChild(a);
+        for (i = 0; i < inp.options.length; i++) {
+            if (inp.options[i].name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+              b = document.createElement("DIV");
+              b.innerHTML = "<strong>" + inp.options[i].name.substr(0, val.length) + "</strong>";
+              b.innerHTML += inp.options[i].name.substr(val.length);
+              b.innerHTML += "<input type='hidden' id='"+inp.options[i].id+"' value='" + inp.options[i].name + "'>";
+              b.addEventListener("click", function(e) {
+                  inp.value = this.getElementsByTagName("input")[0].value;
+                  document.getElementById('references').value = this.getElementsByTagName("input")[0].id;
+                  closeAllLists();
+              });
+              a.appendChild(b);
+            }
+        }
+      });
+
+      inp.addEventListener("keydown", function(e) {
+          var x = document.getElementById(this.id + "autocomplete-list");
+          if (x) x = x.getElementsByTagName("div");
+          if (e.keyCode == 40) {
+            currentFocus++;
+            addActive(x);
+          } else if (e.keyCode == 38) { //up
+            currentFocus--;
+            addActive(x);
+          } else if (e.keyCode == 13) {
+            e.preventDefault();
+            if (currentFocus > -1) {
+              if (x) x[currentFocus].click();
+            }
+          }
+      });
+      function addActive(x) {
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        x[currentFocus].classList.add("autocomplete-active");
+      }
+      function removeActive(x) {
+        for (var i = 0; i < x.length; i++) {
+          x[i].classList.remove("autocomplete-active");
+        }
+      }
+      function closeAllLists(elmnt) {
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+          if (elmnt != x[i] && elmnt != inp) {
+            x[i].parentNode.removeChild(x[i]);
+          }
+        }
+      }
+      document.addEventListener("click", function (e) {
+          closeAllLists(e.target);
+      });
+    }
+
+function updateAutocompleteInput(inp){
+    var a, b, i, val = this.value;
+    document.getElementById("references-autocomplete-autocomplete-list").remove();
+    if (!val) { return false;}
+    currentFocus = -1;
+    a = document.createElement("DIV");
+    a.setAttribute("id", this.id + "-autocomplete-list");
+    a.setAttribute("class", "autocomplete-items");
+    this.parentNode.appendChild(a);
+    for (i = 0; i < inp.options.length; i++) {
+    if (inp.options[i].name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+      b = document.createElement("DIV");
+      b.innerHTML = "<strong>" + inp.options[i].name.substr(0, val.length) + "</strong>";
+      b.innerHTML += inp.options[i].name.substr(val.length);
+      b.innerHTML += "<input type='hidden' id='"+inp.options[i].id+"' value='" + inp.options[i].name + "'>";
+      b.addEventListener("click", function(e) {
+          inp.value = this.getElementsByTagName("input")[0].value;
+          document.getElementById('references').value = this.getElementsByTagName("input")[0].id;
+          closeAllLists();
+      });
+      a.appendChild(b);
+    }
+    }
+}
 
 module.exports = { setup };
+

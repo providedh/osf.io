@@ -100,6 +100,19 @@
                   <option value="attribute">Attribute</option>
               </select>
               <span id="attribute-name-input"> 
+                Tag name <a title="help : tag name" class='help'>?</a> 
+                <select locus="name" id='tag-name'>
+                  <option value="date">Date</option>
+                  <option value="event">Event</option>
+                  <option value="geolocation">geolocation</option>
+                  <option value="name">Name</option>
+                  <option value="occupation">Occupation</option>
+                  <option value="object">Object</option>
+                  <option value="org">Org</option>
+                  <option value="person">Person</option>
+                  <option value="country">country</option>
+                  <option value="time">Time</option>
+                </select>
                 Attribute name <a title="help : attribute name" class='help'>?</a> <input type="text" id="attribute-name"> 
               </span>
         </span>
@@ -123,7 +136,13 @@
       </div>
       <div class="row">
         <span class="toolbar-control" id="">
-          References <a title="help : references" class='help'>?</a> <input type="text" id="references"> 
+          <span id="references-container">
+            References <a title="help : references" class='help'>?</a> 
+            <div class="autocomplete">
+              <input type="text" id="references-autocomplete"> 
+              <input type="text" id="references"> 
+            </div>
+          </span>
           Description <a title="help : description" class='help'>?</a> <input type="text" id="desc"> 
         </span>
       </div>

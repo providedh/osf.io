@@ -9,6 +9,7 @@ from channels_presence.models import Room
 from channels_presence.decorators import touch_presence
 from models import AnnotatingXmlContent
 from osf.models import Session
+from annotator import NotModifiedException
 
 
 @channel_session_user_from_http
@@ -68,12 +69,16 @@ def ws_message(message):
     user_guid = message.channel_session['user_guid']
     request_json = json.loads(request_json)
 
+    print "REQUEST JSON: %s" % request_json
+
     try:
         annotator = Annotator()
         xml_content = annotator.add_annotation(xml_content, request_json, user_guid)
 
         annotating_xml_content.xml_content = xml_content
         annotating_xml_content.save()
+
+        print "ODPOWIEDZ: %s" % annotating_xml_content.xml_content
 
         response = {
             'status': 200,
@@ -82,8 +87,19 @@ def ws_message(message):
         }
 
         response = json.dumps(response)
-
         Group(room_symbol).send({'text': response})
+
+    except NotModifiedException as exception:
+        response = {
+            'status': 304,
+            'message': exception.message,
+            'xml_content': None,
+        }
+
+        print "ODPOWIEDZ: %s" % response
+
+        response = json.dumps(response)
+        message.reply_channel.send({'text': response})
 
     except (ValueError, TypeError) as error:
         response = {
@@ -92,8 +108,10 @@ def ws_message(message):
             'xml_content': None,
         }
 
+        print "ODPOWIEDZ: %s" % response
+
         response = json.dumps(response)
-        message.reply_channel.send(response)
+        message.reply_channel.send({'text': response})
 
 
 @channel_session_user

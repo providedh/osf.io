@@ -591,9 +591,10 @@ Panel.prototype.createAnnotation = function(){
 }
 
 Panel.prototype.updateControls = function(annotationType, locus){
-    if(annotationType == 'tei')
+    if(annotationType == 'tei'){
         $("#asserted-value-container").html($('#asserted-value-input-options [locus=name]')[0].outerHTML);
-    else{
+        $("#asserted-value-container .input").attr('id','proposedValue');
+    }else{
         const input = $('#asserted-value-input-options [locus='+locus+']')[0];
         $("#asserted-value-container").html(input.outerHTML);
         $("#asserted-value-container .input").attr('id','proposedValue');

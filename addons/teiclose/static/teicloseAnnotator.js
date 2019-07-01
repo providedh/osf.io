@@ -56,7 +56,7 @@ function setAnnotatorAttribute(attr, val){
 }
 
 function setup(file){
-    console.info('Setup started.')
+    console.info('Starting setup.')
     window.project = window.location.pathname.split('/')[1]
     window.file = window.location.pathname.split('/')[3]
     window.version = window.location.pathname.split('/')[4]
@@ -554,11 +554,10 @@ Panel.prototype.createAnnotation = function(){
     const data = {
             "start_pos": this.selection.abs_positions.start,
             "end_pos": this.selection.abs_positions.end,
-            "asserted_value": "",
+            "asserted_value": values.proposedValue,
             "category": "",
             "locus": "",
             "certainty": "",
-            "asserted_value": "",
             "description": "",
             "tag": values.proposedValue
         }

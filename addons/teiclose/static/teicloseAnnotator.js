@@ -26,7 +26,9 @@ function updateAutocompleteOptions(entityType, text){
         data: {},      //Data as js object
         success: function (a) {
             console.log('autocomplete - success < ',API_urls.get_autocomplete_url(window.project, entityType, text),' < ',a)
-            document.getElementById("references-autocomplete").options = a.map(a=>({name: a._source.name, id:a._source.id}))
+            document.getElementById("references-autocomplete").options = a.map(a=>(
+                {name: a._source.name, id:a._source.id, filepath:a._source.filepath}
+            ))
             updateAutocompleteInput(document.getElementById("references-autocomplete"));
         },
         error: function (a) {
@@ -568,17 +570,16 @@ Panel.prototype.createAnnotation = function(){
             "certainty": values.cert,
             "asserted_value": values.proposedValue,
             "description": values.desc,
-            "tag": ""
+            "tag": values['tag-name'],
+            "tag-name": values['tag-name']
         });
 
         if(values['locus'] == 'attribute')
             data['attribute_name'] = values.attribute_name;
 
-        if(values['locus'] == 'attribute')
-            data['tag-name'] = values['tag-name'];
-
-        if(values['locus'] == 'attribute' && ['person', 'event', 'org', 'place'].includes(values['tag-name']) && values['references'] != '')
+        if(values['locus'] == 'attribute' && ['person', 'event', 'org', 'place'].includes(values['tag-name']) && values['references'] != ''){
             data['references'] = values.references
+        }
 
         if(values['locus'] == 'name')
             data['tag'] = values.proposedValue;
@@ -595,6 +596,7 @@ Panel.prototype.updateControls = function(annotationType, locus){
     else{
         const input = $('#asserted-value-input-options [locus='+locus+']')[0];
         $("#asserted-value-container").html(input.outerHTML);
+        $("#asserted-value-container .input").attr('id','proposedValue');
     }
 }
 
@@ -666,7 +668,7 @@ function autocomplete(inp) {
         var currentFocus;
      
         inp.addEventListener("input", function(e) {
-              var a, b, i, val = this.value;
+              let a, b, i, val = inp.value;
         closeAllLists();
         if (!val) { return false;}
         currentFocus = -1;
@@ -677,12 +679,14 @@ function autocomplete(inp) {
         for (i = 0; i < inp.options.length; i++) {
             if (inp.options[i].name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
               b = document.createElement("DIV");
+              b.data = inp.options[i];
               b.innerHTML = "<strong>" + inp.options[i].name.substr(0, val.length) + "</strong>";
               b.innerHTML += inp.options[i].name.substr(val.length);
               b.innerHTML += "<input type='hidden' id='"+inp.options[i].id+"' value='" + inp.options[i].name + "'>";
               b.addEventListener("click", function(e) {
-                  inp.value = this.getElementsByTagName("input")[0].value;
-                  document.getElementById('references').value = this.getElementsByTagName("input")[0].id;
+                  document.getElementById('references').value = this.data.name;
+                  inp.value = this.data.name;
+                  document.getElementById('proposedValue').value = this.data.id;
                   closeAllLists();
               });
               a.appendChild(b);
@@ -732,27 +736,25 @@ function autocomplete(inp) {
     }
 
 function updateAutocompleteInput(inp){
-    var a, b, i, val = this.value;
-    document.getElementById("references-autocomplete-autocomplete-list").remove();
-    if (!val) { return false;}
     currentFocus = -1;
-    a = document.createElement("DIV");
+    let a = document.createElement("DIV");
     a.setAttribute("id", this.id + "-autocomplete-list");
     a.setAttribute("class", "autocomplete-items");
-    this.parentNode.appendChild(a);
     for (i = 0; i < inp.options.length; i++) {
-    if (inp.options[i].name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-      b = document.createElement("DIV");
-      b.innerHTML = "<strong>" + inp.options[i].name.substr(0, val.length) + "</strong>";
-      b.innerHTML += inp.options[i].name.substr(val.length);
-      b.innerHTML += "<input type='hidden' id='"+inp.options[i].id+"' value='" + inp.options[i].name + "'>";
-      b.addEventListener("click", function(e) {
-          inp.value = this.getElementsByTagName("input")[0].value;
-          document.getElementById('references').value = this.getElementsByTagName("input")[0].id;
-          closeAllLists();
-      });
-      a.appendChild(b);
-    }
+        if (inp.options[i].name.substr(0, inp.value.length).toUpperCase() == inp.value.toUpperCase()) {
+          b = document.createElement("DIV");
+          b.data = inp.options[i];
+          b.innerHTML = "<strong>" + inp.options[i].name.substr(0, inp.value.length) + "</strong>";
+          b.innerHTML += inp.options[i].name.substr(inp.value.length);
+          b.innerHTML += "<input type='hidden' id='"+inp.options[i].id+"' value='" + inp.options[i].name + "'>";
+          b.addEventListener("click", function(e) {
+              document.getElementById('references').value = this.data.name;
+              inp.value = this.data.name;
+              document.getElementById('proposedValue').value = this.data.id;
+              closeAllLists();
+          });
+          a.appendChild(b);
+        }
     }
 }
 

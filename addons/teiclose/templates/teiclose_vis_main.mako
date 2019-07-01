@@ -61,9 +61,9 @@
     </div>
   </section>
   <section id="asserted-value-input-options">
-    <input locus="attribute" type="text" id="proposedValue">
-    <input locus="value" type="text" id="proposedValue">
-    <select locus="name" id='proposedValue'>
+    <input locus="attribute" type="text" class="input">
+    <input locus="value" type="text" class="input">
+    <select locus="name" class="input">
         <option value="date">Date</option>
         <option value="event">Event</option>
         <option value="geolocation">geolocation</option>
@@ -99,7 +99,6 @@
                   <option value="name">Name</option>
                   <option value="attribute">Attribute</option>
               </select>
-              <span id="attribute-name-input"> 
                 Tag name <a title="help : tag name" class='help'>?</a> 
                 <select locus="name" id='tag-name'>
                   <option value="date">Date</option>
@@ -113,6 +112,7 @@
                   <option value="country">country</option>
                   <option value="time">Time</option>
                 </select>
+              <span id="attribute-name-input"> 
                 Attribute name <a title="help : attribute name" class='help'>?</a> <input type="text" id="attribute-name"> 
               </span>
         </span>

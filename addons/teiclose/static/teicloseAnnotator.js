@@ -682,10 +682,12 @@ function autocomplete(inp) {
               b.data = inp.options[i];
               b.innerHTML = "<strong>" + inp.options[i].name.substr(0, val.length) + "</strong>";
               b.innerHTML += inp.options[i].name.substr(val.length);
-              b.innerHTML += "<input type='hidden' id='"+inp.options[i].id+"' value='" + inp.options[i].name + "'>";
+              b.innerHTML += ` | ${inp.options[i].filepath}`;
+              b.innerHTML += "<input type='hidden' id='"+inp.options[i].id+"' value='" + 
+                `${inp.options[i].name} | ${inp.options[i].filepath}`; + "'>";
               b.addEventListener("click", function(e) {
                   document.getElementById('references').value = this.data.name;
-                  inp.value = this.data.name;
+                  inp.value = `${this.data.name} | ${this.data.filepath}`;
                   document.getElementById('proposedValue').value = this.data.id;
                   closeAllLists();
               });
@@ -746,10 +748,12 @@ function updateAutocompleteInput(inp){
           b.data = inp.options[i];
           b.innerHTML = "<strong>" + inp.options[i].name.substr(0, inp.value.length) + "</strong>";
           b.innerHTML += inp.options[i].name.substr(inp.value.length);
-          b.innerHTML += "<input type='hidden' id='"+inp.options[i].id+"' value='" + inp.options[i].name + "'>";
+          b.innerHTML += ` | ${inp.options[i].filepath}`;
+          b.innerHTML += "<input type='hidden' id='"+inp.options[i].id+"' value='" + 
+            `${inp.options[i].name} | ${inp.options[i].filepath}` + "'>";
           b.addEventListener("click", function(e) {
               document.getElementById('references').value = this.data.name;
-              inp.value = this.data.name;
+              inp.value = `${this.data.name} | ${this.data.filepath}`;
               document.getElementById('proposedValue').value = this.data.id;
               closeAllLists();
           });

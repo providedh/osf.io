@@ -89,3 +89,38 @@ def teiclose_get_annotation_history(**kwargs):
     history = annotation_history_handler.get_history(file_version)
 
     return history
+
+
+# only for debugging annotator
+def teiclose_add_annotation(**kwargs):
+    from framework.sessions import get_session
+    import json
+    from flask import request
+    from addons.teiclose.waterbutler_file_handler import load_file
+    from addons.teiclose.annotator import Annotator
+
+    file_guid = kwargs['file_guid']
+    project_guid = kwargs['project_guid']
+
+    current_session = get_session()
+    user_guid = current_session.data['auth_user_id']
+
+    request_json = json.loads(request.data)
+
+    file_key = '_'.join(('xml_text', project_guid, file_guid))
+
+    if file_key not in current_session.data:
+        xml_text = load_file(project_guid, file_guid)
+        current_session.data[file_key] = xml_text
+
+    xml_text = load_file(project_guid, file_guid)   # ONLY FOR TESTS - RELOAD DEFAULT FILE TO current_session.data
+    current_session.data[file_key] = xml_text       # ONLY FOR TESTS - RELOAD DEFAULT FILE TO current_session.data
+
+    xml_text = current_session.data[file_key]
+
+    annotator = Annotator()
+    xml_text = annotator.add_annotation(xml_text, request_json, user_guid)
+    current_session.data[file_key] = xml_text
+    current_session.save()
+
+    return current_session.data[file_key]

@@ -77,6 +77,7 @@
           <certainty category="variation" locus="sameAs" cert="medium" resp="#personercfd" target="#person000011" assertedValue="dep_835104r162_tei#person835104r162_2"/>
           <certainty category="credibility" locus="value" cert="medium" resp="#personercfd" target="#desc000002"/>
           <certainty category="credibility" locus="value" cert="medium" resp="#personercfd" target="#ab000003 #ab000004"/>
+          <certainty category="ignorance" locus="sex" cert="high" resp="#personercfd" target="#person000010" assertedValue="male"/>
         </classCode>
         <keywords scheme="1641">
           <list type="deposition_type">

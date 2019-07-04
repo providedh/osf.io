@@ -4,6 +4,9 @@ from lxml import etree
 
 from osf.models import Guid, OSFUser
 
+import logging
+logger = logging.getLogger(__name__)
+
 NAMESPACES = {
     'default': 'http://www.tei-c.org/ns/1.0',
     'xml': 'http://www.w3.org/XML/1998/namespace',
@@ -41,6 +44,7 @@ class Annotator:
 
         self.__get_data_from_xml()
         self.__prepare_xml_parts()
+        self.__check_if_new_elements_already_exist()
         self.__create_new_xml()
 
         return self.__xml_annotated
@@ -66,7 +70,6 @@ class Annotator:
             'description',
             'tag',
             'attribute_name',
-            'reference',
         ]
 
         position_v1 = all(elements in json.keys() for elements in position_params_v1)
@@ -97,7 +100,7 @@ class Annotator:
             raise ValueError("Start position of annotating fragment is greater or equal to end position.")
 
         for param in optional_params:
-            if param in json:
+            if param in json and json[param] is not None:
                 validated_json.update({param: json[param]})
             else:
                 validated_json.update({param: ''})
@@ -295,129 +298,59 @@ class Annotator:
         return biggest_number + 1
 
     def __prepare_xml_parts(self):
-
-        # # 1. Add_tag to text (2.4.1 remark)
-        # if not self.__tags and self.__json['tag'] and not self.__json['certainty']:
-        #     self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate,
-        #                                                                self.__json["tag"])
-        #
-        # # 2. Add certainty to text (2.1)
-        # elif not self.__tags and not self.__json['tag'] and self.__json['certainty']:
-        #     self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate,
-        #                                                                self.__json["tag"],
-        #                                                                self.__json['certainty'])
-        #
-        #     self.__certainty_to_add = self.__create_certainty_description(self.__json, annotation_ids,
-        #                                                                   self.__annotator_xml_id)
-        #     self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
-        #
-        # # 3. Add tag and certainty to text (2.4.1)
-        # elif not self.__tags and self.__json['tag'] and self.__json['certainty']:
-        #     self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate,
-        #                                                                self.__json["tag"],
-        #                                                                self.__json['certainty'])
-        #
-        #     self.__certainty_to_add = self.__create_certainty_description(self.__json, annotation_ids,
-        #                                                                   self.__annotator_xml_id)
-        #     self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
-        #
-        # # 4. Add tag to text with tag
-        # # 9. Add tag to text with tag and certainty
-        # elif (self.__tags and self.__json['tag'] and self.__json['tag'] not in self.__tags and not
-        # self.__json['certainty']):
-        #     self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate,
-        #                                                                self.__json["tag"])
-        #
-        # # 5. Add tag to text with same tag (2.4.2 remark)
-        # elif self.__tags and self.__json['tag'] and self.__json['tag'] in self.__tags and \
-        #         'xml:id' not in self.__tags[self.__json['tag']] and not self.__json['certainty']:
-        #     self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate,
-        #                                                                self.__json["tag"],
-        #                                                                self.__json['certainty'])
-        #
-        #     new_json = {
-        #         "category": "imprecision",
-        #         "locus": "name",
-        #         "certainty": "unknown",
-        #         "asserted_value": "",
-        #         "description": "",
-        #         "tag": "place"
-        #     }
-        #
-        #     self.__certainty_to_add = self.__create_certainty_description(new_json, annotation_ids,
-        #                                                                   self.__annotator_xml_id)
-        #     self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
-        #
-        # # 6. Add certainty to text with same tag (2.2)
-        # elif self.__tags and self.__json['tag'] and self.__json['tag'] in self.__tags and \
-        #         'xml:id' not in self.__tags[self.__json['tag']] and self.__json['certainty']:
-        #     self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate,
-        #                                                                self.__json["tag"],
-        #                                                                self.__json['certainty'])
-        #
-        #     self.__certainty_to_add = self.__create_certainty_description(self.__json, annotation_ids,
-        #                                                                   self.__annotator_xml_id)
-        #     self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
-        #
-        # # 7. Add certainty to text with tag
-        # # 11. Add certainty to text with tag and certainty
-        # elif self.__tags and not self.__json['tag'] and self.__json['certainty']:
-        #     self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate,
-        #                                                                self.__json["tag"],
-        #                                                                self.__json['certainty'])
-        #
-        #     self.__certainty_to_add = self.__create_certainty_description(self.__json, annotation_ids,
-        #                                                                   self.__annotator_xml_id)
-        #     self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
-        #
-        # # 8. Add tag and certainty to text with other tag
-        # # 12. Add tag and certainty to text with other tag and certainty
-        # elif self.__tags and self.__json['tag'] and self.__json['tag'] not in self.__tags and self.__json['certainty']:
-        #     self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate,
-        #                                                                self.__json["tag"],
-        #                                                                self.__json['certainty'])
-        #
-        #     self.__certainty_to_add = self.__create_certainty_description(self.__json, annotation_ids,
-        #                                                                   self.__annotator_xml_id)
-        #     self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
-        #
-        # # 10. Add certainty to text with same tag and certainty (2.3)
-        # elif (self.__tags and self.__tags[self.__json['tag']] and
-        #       self.__tags[self.__json['tag']]['xml:id'] is not None and self.__json['certainty']):
-        #     self.__fragment_annotated = self.__fragment_to_annotate
-        #
-        #     annotation_ids = list()
-        #     annotation_ids.append('#' + self.__tags[self.__json['tag']]['xml:id'])
-        #
-        #     self.__certainty_to_add = self.__create_certainty_description(self.__json, annotation_ids,
-        #                                                                   self.__annotator_xml_id)
-        #     self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
-
-        print "LALALA"
-
+        # 1.Add tag to text
         if self.__json['locus'] == '' and self.__json['tag'] != '' and self.__json['attribute_name'] == '':
             self.__fragment_annotated, _ = self.__add_tag(self.__fragment_to_annotate, self.__json["tag"])
 
-        elif self.__json['locus'] == 'value' and self.__json['tag'] != '' and self.__json['attribute_name'] == '':
-            self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate, self.__json["tag"],
-                                                                       uncertainty=True)
-            self.__certainty_to_add = self.__create_certainty_description(self.__json, annotation_ids,
-                                                                          self.__annotator_xml_id)
-            self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
-
+        # 2.Add certainty without tag to text
         elif self.__json['locus'] == 'value' and self.__json['tag'] == '' and self.__json['attribute_name'] == '':
             self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate, 'ab',
                                                                        uncertainty=True)
-            self.__certainty_to_add = self.__create_certainty_description(self.__json, annotation_ids,
-                                                                          self.__annotator_xml_id)
+            self.__certainty_to_add = self.__create_certainty_description_for_value_or_name(self.__json, annotation_ids,
+                                                                                            self.__annotator_xml_id)
             self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
+
+        # 3.Add certainty with tag to text
+        elif self.__json['locus'] == 'value' and self.__json['tag'] != '' and self.__json['attribute_name'] == '':
+            self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate, self.__json["tag"],
+                                                                       uncertainty=True)
+            self.__certainty_to_add = self.__create_certainty_description_for_value_or_name(self.__json, annotation_ids,
+                                                                                            self.__annotator_xml_id)
+            self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
+
+        # 4.Add certainty to tag
+        elif self.__json['locus'] == 'name' and self.__json['tag'] != '' and self.__json['attribute_name'] == '':
+            self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate, self.__json["tag"],
+                                                                       uncertainty=True)
+            self.__certainty_to_add = self.__create_certainty_description_for_value_or_name(self.__json, annotation_ids,
+                                                                                            self.__annotator_xml_id)
+            self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
+
+            if self.__json['tag'] not in self.__tags and self.__json['asserted_value'] != '':
+                raise ValueError("You can't add asserted value for tag name when you creating new tag.")
+
+        # 5.Add reference to tag
+        elif self.__json['locus'] == 'attribute' and self.__json['tag'] != '' and \
+                self.__json['attribute_name'] == 'sameAs' and self.__json['asserted_value'] != '':
+            self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate, self.__json["tag"],
+                                                                       uncertainty=True)
+            self.__certainty_to_add = self.__create_certainty_description_for_attribute(self.__json, annotation_ids,
+                                                                                        self.__annotator_xml_id)
+            self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
+
+        # 6.Add attribute to tag
+        elif self.__json['locus'] == 'attribute' and self.__json['tag'] != '' and \
+                self.__json['attribute_name'] != '' and self.__json['asserted_value'] != '':
+            self.__fragment_annotated, annotation_ids = self.__add_tag(self.__fragment_to_annotate, self.__json["tag"],
+                                                                       uncertainty=True)
+            self.__certainty_to_add = self.__create_certainty_description_for_attribute(self.__json, annotation_ids,
+                                                                                        self.__annotator_xml_id)
+            self.__annotator_to_add = self.__create_annotator(self.__annotator_xml_id)
+
         else:
             raise ValueError("There is no method to modify xml according to given parameters.")
 
     def __add_tag(self, annotated_fragment, tag, uncertainty=False):
-        # if not tag:
-        #     tag = 'ab'
-
         new_annotated_fragment = ''
         annotation_ids = []
 
@@ -427,22 +360,33 @@ class Annotator:
                 match = re.search(r'^\s*?<[^<>]*?>', annotated_fragment)
                 tag_to_move = match.group()
 
-                if tag in tag_to_move and '/' + tag not in tag_to_move:
+                end_tag = '</' + tag
+                empty_tag = '<' + tag + '/'
+
+                if tag in tag_to_move and end_tag not in tag_to_move and empty_tag not in tag_to_move:
                     match = re.search(r'<[^>\s]+', tag_to_move)
                     tag_begin = match.group()
 
-                    id = '{0}{1:06d}'.format(tag, self.__first_free_certainty_number)
-                    attribute = ' xml:id="{0}"'.format(id)
+                    if 'xml:id="' not in tag_to_move:
+                        id = '{0}{1:06d}'.format(tag, self.__first_free_certainty_number)
+                        attribute = ' xml:id="{0}"'.format(id)
 
-                    annotation_ids.append('#' + id)
+                        annotation_ids.append('#' + id)
 
-                    new_tag_to_move = "{0}{1}{2}".format(tag_to_move[:len(tag_begin)], attribute,
-                                                         tag_to_move[len(tag_begin):])
+                        new_tag_to_move = "{0}{1}{2}".format(tag_to_move[:len(tag_begin)], attribute,
+                                                             tag_to_move[len(tag_begin):])
+
+                        self.__first_free_certainty_number += 1
+                    else:
+                        match = re.search(r'xml:id=".*?"', tag_to_move)
+                        existing_id = match.group()
+                        existing_id = existing_id.replace('xml:id="', '')
+                        existing_id = existing_id.replace('"', '')
+
+                        annotation_ids.append('#' + existing_id)
+                        new_tag_to_move = tag_to_move
 
                     new_annotated_fragment += new_tag_to_move
-
-                    self.__first_free_certainty_number += 1
-
                 else:
                     new_annotated_fragment += tag_to_move
 
@@ -479,19 +423,33 @@ class Annotator:
 
         return new_annotated_fragment, annotation_ids
 
-    def __create_certainty_description(self, json, annotation_ids, user_uuid):
+    def __create_certainty_description_for_value_or_name(self, json, annotation_ids, user_uuid):
         target = u" ".join(annotation_ids)
 
-        certainty = u'<certainty category="{0}" locus="{1}" cert="{2}" resp="#{3}" target="{4}"/>'.format(json['category'],
-                                                                                                        json['locus'],
-                                                                                                        json['certainty'],
-                                                                                                        user_uuid,
-                                                                                                        target)
+        certainty = u'<certainty category="{0}" locus="{1}" cert="{2}" resp="#{3}" ' \
+                    u'target="{4}"/>'.format(json['category'], json['locus'], json['certainty'],  user_uuid, target)
 
         new_element = etree.fromstring(certainty)
 
         if json["asserted_value"]:
             new_element.set('assertedValue', json["asserted_value"])
+
+        if json["description"]:
+            description = etree.Element("desc")
+            description.text = json["description"]
+
+            new_element.append(description)
+
+        return new_element
+
+    def __create_certainty_description_for_attribute(self, json, annotation_ids, user_uuid):
+        target = u" ".join(annotation_ids)
+
+        certainty = u'<certainty category="{0}" locus="{1}" cert="{2}" resp="#{3}" target="{4}" ' \
+                    u'assertedValue="{5}"/>'.format(json['category'], json['attribute_name'], json['certainty'],
+                                             user_uuid, target, json['asserted_value'])
+
+        new_element = etree.fromstring(certainty)
 
         if json["description"]:
             description = etree.Element("desc")
@@ -535,26 +493,48 @@ class Annotator:
 
         return data
 
-    def __create_new_xml(self):
-        # check if modification already exist
+    def __check_if_new_elements_already_exist(self):
         if self.__json['locus'] == '' and self.__json['tag'] in self.__tags:
             raise NotModifiedException('This tag already exist.')
 
-        # tree = etree.fromstring(self.__xml)
-        #
-        # existing_certainty = tree.xpath('//default:teiHeader'
-        #                                 '//default:classCode[@scheme="http://providedh.eu/uncertainty/ns/1.0"]',
-        #                                 namespaces=NAMESPACES)
-        #
-        # print "ISTNIEJĄCE NIEPEWNOŚCI: %s" % len(existing_certainty)
-        #
-        # if existing_certainty:
-        #     raise NotModifiedException('This certainty already exist.')
+        if self.__certainty_to_add is not None:
+            xml = self.__xml
 
+            xml_in_lines = xml.splitlines()
+            if 'encoding=' in xml_in_lines[0]:
+                xml = '\n'.join(xml_in_lines[1:])
 
+            tree = etree.fromstring(xml)
+            xpath = '//default:teiHeader' \
+                    '//default:classCode[' \
+                    '@scheme="http://providedh.eu/uncertainty/ns/1.0"]' \
+                    '//default:certainty[' \
+                    '@category="{0}" and ' \
+                    '@locus="{1}" and ' \
+                    '@cert="{2}" and ' \
+                    '@target="{3}"'.format(self.__certainty_to_add.attrib['category'],
+                                           self.__certainty_to_add.attrib['locus'],
+                                           self.__certainty_to_add.attrib['cert'],
+                                           self.__certainty_to_add.attrib['target'])
 
+            if self.__json['asserted_value']:
+                xpath += ' and @assertedValue="{0}"'.format(self.__json['asserted_value'])
 
+            xpath += ']'
 
+            existing_certainties = tree.xpath(xpath, namespaces=NAMESPACES)
+
+            if existing_certainties and self.__json['description']:
+                descriptions = tree.xpath(xpath + '/default:desc', namespaces=NAMESPACES)
+
+                for desc in descriptions:
+                    if desc.text == self.__json['description']:
+                        raise NotModifiedException('This certainty already exist.')
+
+            elif existing_certainties and not self.__json['description']:
+                raise NotModifiedException('This certainty already exist.')
+
+    def __create_new_xml(self):
         xml_annotated = self.__add_tagged_string(self.__xml, self.__fragment_annotated)
 
         xml_annotated_in_lines = xml_annotated.splitlines()

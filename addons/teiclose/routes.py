@@ -45,7 +45,17 @@ api_routes = {
             'put',
             views.teiclose_save_annotations,
             lambda x: x,
-        )
+        ),
+        # only for debugging annotator
+        Rule(
+            [
+                '/project/<project_guid>/teiclose/<file_guid>/annotate/',
+                '/project/<project_guid>/node/<node_guid>/teiclose/<file_guid>/annotate/',
+            ],
+            'put',
+            views.teiclose_add_annotation,
+            lambda x: x,
+        ),
     ],
     'prefix': '/api/v1',
 }

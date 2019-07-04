@@ -57,6 +57,14 @@
             </persName>
             <link>https://providedh.ehum.psnc.pl/zuay9/</link>
           </person>
+          <person xml:id="personabcde">
+            <persName>
+              <forename>Tony</forename>
+              <surname>Stark</surname>
+              <email>tony.stark@zmyslonymail.com</email>
+            </persName>
+            <link>https://providedh.ehum.psnc.pl/abcde/</link>
+          </person>
         </listPerson>
       </particDesc>
       <textClass>
@@ -78,6 +86,9 @@
           <certainty category="credibility" locus="value" cert="medium" resp="#personercfd" target="#desc000002"/>
           <certainty category="credibility" locus="value" cert="medium" resp="#personercfd" target="#ab000003 #ab000004"/>
           <certainty category="ignorance" locus="sex" cert="high" resp="#personercfd" target="#person000010" assertedValue="male"/>
+          <certainty category="ignorance" locus="value" cert="high" resp="#personabcde" target="#name000007" assertedValue="Pepper">
+            <desc>awesome description</desc>
+          </certainty>
         </classCode>
         <keywords scheme="1641">
           <list type="deposition_type">

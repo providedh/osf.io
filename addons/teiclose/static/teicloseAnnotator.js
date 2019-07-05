@@ -56,7 +56,7 @@ function setAnnotatorAttribute(attr, val){
 }
 
 function setup(file){
-    console.info('Starting setup.')
+    console.info('Starting setup. ')
     window.project = window.location.pathname.split('/')[1]
     window.file = window.location.pathname.split('/')[3]
     window.version = window.location.pathname.split('/')[4]
@@ -570,11 +570,10 @@ Panel.prototype.createAnnotation = function(){
             "asserted_value": values.proposedValue,
             "description": values.desc,
             "tag": values['tag-name'],
-            "tag-name": values['tag-name']
         });
 
         if(values['locus'] == 'attribute')
-            data['attribute_name'] = values.attribute_name;
+            data['attribute_name'] = values['attribute-name'];
 
         if(values['locus'] == 'attribute' &&
                 values.attribute_name == 'sameAs' &&

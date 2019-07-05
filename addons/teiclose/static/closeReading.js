@@ -21,7 +21,9 @@ var CloseReadingWidget = {
 
         function createWebSocket()
         {
-            self.socket = new WebSocket('ws://' + window.location.host.split(':')[0] + ':8000' + '/websocket/' + self.node.id + '_' + self.file.id + '/');
+            let wsPrefix = (window.location.protocol === 'https:') ? 'wss://' : 'ws://';
+
+            self.socket = new WebSocket(wsPrefix + window.location.host.split(':')[0] + ':8000' + '/websocket/' + self.node.id + '_' + self.file.id + '/');
 
             if (self.socket.readyState === WebSocket.OPEN) {
                 self.socket.onopen();

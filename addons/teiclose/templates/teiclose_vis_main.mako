@@ -64,6 +64,7 @@
     <input locus="attribute" type="text" class="input">
     <input locus="value" type="text" class="input">
     <select locus="name" class="input">
+        <option value="">None</option>
         <option value="date">Date</option>
         <option value="event">Event</option>
         <option value="geolocation">geolocation</option>
@@ -101,6 +102,7 @@
               </select>
                 Tag name <a title="help : tag name" class='help'>?</a> 
                 <select locus="name" id='tag-name'>
+                  <option value="">None</option>
                   <option value="date">Date</option>
                   <option value="event">Event</option>
                   <option value="geolocation">geolocation</option>

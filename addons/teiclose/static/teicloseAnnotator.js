@@ -576,7 +576,10 @@ Panel.prototype.createAnnotation = function(){
         if(values['locus'] == 'attribute')
             data['attribute_name'] = values.attribute_name;
 
-        if(values['locus'] == 'attribute' && ['person', 'event', 'org', 'place'].includes(values['tag-name']) && values['references'] != ''){
+        if(values['locus'] == 'attribute' &&
+                values.attribute_name == 'sameAs' &&
+                ['person', 'event', 'org', 'place'].includes(values['tag-name']) && 
+                values['references'] != ''){
             data['references'] = values.references
         }
 
